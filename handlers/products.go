@@ -1,10 +1,10 @@
 package handlers
 
 import (
+	"github.com/gorilla/mux"
 	"github.com/oleksiivelychko/go-microservice/api"
 	"log"
 	"net/http"
-	"regexp"
 	"strconv"
 )
 
@@ -16,20 +16,7 @@ func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
 }
 
-func (p *Products) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		p.getProducts(w, r)
-	case http.MethodPost:
-		p.addProduct(w, r)
-	case http.MethodPut:
-		p.updateProduct(w, r)
-	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	}
-}
-
-func (p *Products) getProducts(w http.ResponseWriter, r *http.Request) {
+func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
 	p.l.Println("Handle GET Products", r.URL.Path)
 
 	lp := api.GetProducts()
@@ -39,7 +26,7 @@ func (p *Products) getProducts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (p *Products) addProduct(w http.ResponseWriter, r *http.Request) {
+func (p *Products) AddProduct(w http.ResponseWriter, r *http.Request) {
 	p.l.Println("Handle POST Products", r.URL.Path)
 
 	product := &api.Product{}
@@ -53,28 +40,13 @@ func (p *Products) addProduct(w http.ResponseWriter, r *http.Request) {
 	api.AddProducts(product)
 }
 
-func (p *Products) updateProduct(w http.ResponseWriter, r *http.Request) {
+func (p *Products) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	p.l.Println("Handle PUT Products", r.URL.Path)
 
-	// expects ID in URL
-	regex := regexp.MustCompile("/([0-9]+)")
-	g := regex.FindAllStringSubmatch(r.URL.Path, -1)
-	if len(g) != 1 {
-		p.l.Println("Invalid URI has more than one ID")
-		http.Error(w, "Invalid URI", http.StatusBadRequest)
-		return
-	}
-
-	if len(g[0]) != 2 {
-		p.l.Println("Invalid URI has more than one capture group")
-		http.Error(w, "Invalid URI", http.StatusBadRequest)
-		return
-	}
-
-	id, err := strconv.Atoi(g[0][1])
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		p.l.Println("Invalid URI has id that unable to convert to integer")
-		http.Error(w, "Invalid URI", http.StatusBadRequest)
+		http.Error(w, "Unable to convert ID", http.StatusBadRequest)
 		return
 	}
 

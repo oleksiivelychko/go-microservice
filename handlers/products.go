@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"github.com/gorilla/mux"
 	"github.com/oleksiivelychko/go-microservice/api"
 	"log"
@@ -16,6 +17,8 @@ func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
 }
 
+type KeyProduct struct{}
+
 func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
 	p.l.Println("Handle GET Products", r.URL.Path)
 
@@ -29,15 +32,8 @@ func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
 func (p *Products) AddProduct(w http.ResponseWriter, r *http.Request) {
 	p.l.Println("Handle POST Products", r.URL.Path)
 
-	product := &api.Product{}
-
-	err := product.FromJSON(r.Body)
-	if err != nil {
-		http.Error(w, "Unable to marshal json", http.StatusBadRequest)
-		return
-	}
-
-	api.AddProducts(product)
+	product := r.Context().Value(KeyProduct{}).(api.Product)
+	api.AddProducts(&product)
 }
 
 func (p *Products) UpdateProduct(w http.ResponseWriter, r *http.Request) {
@@ -50,15 +46,8 @@ func (p *Products) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product := &api.Product{}
-
-	err = product.FromJSON(r.Body)
-	if err != nil {
-		http.Error(w, "Unable to marshal json", http.StatusBadRequest)
-		return
-	}
-
-	err = api.UpdateProducts(id, product)
+	product := r.Context().Value(KeyProduct{}).(api.Product)
+	err = api.UpdateProducts(id, &product)
 	if err == api.ErrProductNotFound {
 		http.Error(w, "Product not found", http.StatusNotFound)
 		return
@@ -68,4 +57,22 @@ func (p *Products) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Product not found", http.StatusInternalServerError)
 		return
 	}
+}
+
+func (p *Products) MiddlewareProductValidation(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		product := api.Product{}
+
+		err := product.FromJSON(r.Body)
+		if err != nil {
+			p.l.Println("[ERROR] deserializing product", err)
+			http.Error(rw, "Error reading product", http.StatusBadRequest)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), KeyProduct{}, product)
+		r = r.WithContext(ctx)
+
+		next.ServeHTTP(rw, r)
+	})
 }

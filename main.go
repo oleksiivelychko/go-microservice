@@ -21,8 +21,10 @@ func main() {
 	getRouter.HandleFunc("/products", h.GetProducts)
 	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/products", h.AddProduct)
+	postRouter.Use(h.MiddlewareProductValidation)
 	putRouter := serveMux.Methods(http.MethodPut).Subrouter()
 	putRouter.HandleFunc("/products/{id:[0-9]+}", h.UpdateProduct)
+	putRouter.Use(h.MiddlewareProductValidation)
 
 	server := &http.Server{
 		Addr:         ":9090",

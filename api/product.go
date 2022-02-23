@@ -32,6 +32,14 @@ type Product struct {
 	DeletedAt   string  `json:"-"`
 }
 
+// A list of products returns to the response
+// swagger:response ProductsResponse
+type ProductsResponse struct {
+	// All products in the system
+	// in: body
+	Body []Product
+}
+
 func (p *Product) Validate() error {
 	validate := validator.New()
 	validate.RegisterValidation("sku", validateSKU)

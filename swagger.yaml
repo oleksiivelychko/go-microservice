@@ -6,7 +6,12 @@ info:
     Product API
     Documentation
   version: 1.0.0
-paths: {}
+paths:
+  /products:
+    get:
+      operationId: listProducts
+      tags:
+      - products
 produces:
 - application/json
 schemes:

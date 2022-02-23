@@ -20,6 +20,10 @@ func NewProducts(l *log.Logger) *Products {
 
 type KeyProduct struct{}
 
+// swagger:route GET /products products listProducts
+// Returns a list of products from data store
+// responses:
+//	200: ProductsResponse
 func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
 	p.l.Println("Handle GET Products", r.URL.Path)
 

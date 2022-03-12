@@ -1,4 +1,4 @@
-package api
+package json
 
 import (
 	"fmt"
@@ -41,13 +41,18 @@ func NewValidation() *Validation {
 }
 
 func (v *Validation) Validate(i interface{}) ValidationErrors {
-	errs := v.validate.Struct(i).(validator.ValidationErrors)
-	if len(errs) == 0 {
+	errs := v.validate.Struct(i)
+	if errs == nil {
+		return ValidationErrors{}
+	}
+
+	validatorErrs := errs.(validator.ValidationErrors)
+	if len(validatorErrs) == 0 {
 		return nil
 	}
 
 	var fmtErrs []ValidationError
-	for _, err := range errs {
+	for _, err := range validatorErrs {
 		ve := ValidationError{err.(validator.FieldError)}
 		fmtErrs = append(fmtErrs, ve)
 	}

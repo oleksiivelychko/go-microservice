@@ -10,11 +10,10 @@
 // 		- application/json
 //
 // swagger:meta
-package openapi
+package handlers
 
 import (
 	"github.com/oleksiivelychko/go-microservice/api"
-	"github.com/oleksiivelychko/go-microservice/handlers"
 )
 
 // NOTE: Types defined here are purely for documentation purposes these types are not used by any of the handlers
@@ -24,7 +23,7 @@ import (
 type errResponseWrapper struct {
 	// Description of the error
 	// in: body
-	Body handlers.GenericError
+	Body GenericError
 }
 
 // Validation errors defined as an array of strings.
@@ -32,7 +31,7 @@ type errResponseWrapper struct {
 type errValidationWrapper struct {
 	// Collection of the errors
 	// in: body
-	Body handlers.ValidationError
+	Body ValidationError
 }
 
 // swagger:response productsResponse

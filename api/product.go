@@ -1,15 +1,3 @@
-// Product API
-// Documentation
-//
-// Schemes: http
-// BasePath: /
-// vVersion: 1.0.0
-//
-// Consumes:
-// - application/json
-// Produces:
-// - application/json
-// swagger:meta
 package api
 
 import (

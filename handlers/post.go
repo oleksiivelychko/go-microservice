@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// swagger:route POST /products
+// swagger:route POST /products products createProduct
 // Create a new product
 //
 // responses:
@@ -15,7 +15,7 @@ import (
 func (p *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(api.Product)
-	p.L.Printf("[DEBUG] Inserting product: %#v\n", product)
+	p.L.Printf("[DEBUG] inserting product: %#v\n", product)
 
 	api.AddProduct(product)
 }

@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// swagger:route PUT /products
+// swagger:route PUT /products products updateProduct
 // Update a products details
 //
 // responses:
@@ -20,10 +20,10 @@ func (p *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request) 
 
 	err := api.UpdateProduct(product)
 	if err == api.ErrProductNotFound {
-		p.L.Println("[ERROR] product not found", err)
+		p.L.Println("[ERROR] updating record id does not exist", err)
 
 		rw.WriteHeader(http.StatusNotFound)
-		_ = utils.ToJSON(&GenericError{Message: "Product not found"}, rw)
+		_ = utils.ToJSON(&GenericError{Message: "product not found"}, rw)
 		return
 	}
 

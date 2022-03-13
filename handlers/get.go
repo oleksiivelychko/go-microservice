@@ -6,12 +6,12 @@ import (
 	"net/http"
 )
 
-// swagger:route GET /products
+// swagger:route GET /products products listProducts
 // Returns a list of products.
 // responses:
 //	200: productsResponse
 func (p *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
-	p.L.Println("[DEBUG] handle GET:all products", r.URL.Path)
+	p.L.Println("[DEBUG] get all records")
 
 	list := api.GetProducts()
 	err := utils.ToJSON(list, rw)

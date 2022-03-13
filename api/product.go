@@ -13,100 +13,112 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/go-playground/validator/v10"
-	"io"
-	"regexp"
 	"time"
 )
 
+// Product defines the structure for an API product
+// swagger:model
 type Product struct {
-	ID          int     `json:"id"`
-	Name        string  `json:"name" validate:"required"`
-	Description string  `json:"description"`
-	Price       float32 `json:"price" validate:"gt=0"`
-	SKU         string  `json:"sku" validate:"required,sku"`
-	CreatedAt   string  `json:"-"`
-	UpdatedAt   string  `json:"-"`
-	DeletedAt   string  `json:"-"`
-}
+	// Unique identifier
+	//
+	// required: false
+	// min: 1
+	ID int `json:"id"`
 
-// A list of products returns to the response
-// swagger:response ProductsResponse
-type ProductsResponse struct {
-	// All products in the system
-	// in: body
-	Body []Product
-}
+	// name
+	//
+	// required: true
+	// max length: 255
+	Name string `json:"name" validate:"required"`
 
-func (p *Product) Validate() error {
-	validate := validator.New()
-	validate.RegisterValidation("sku", validateSKU)
-	return validate.Struct(p)
-}
+	// description
+	//
+	// required: false
+	// max length: 10000
+	Description string `json:"description"`
 
-func validateSKU(fl validator.FieldLevel) bool {
-	re := regexp.MustCompile(`[0-9]+-[0-9]+-[0-9]+`)
-	matches := re.FindAllString(fl.Field().String(), -1)
-	if len(matches) != 1 {
-		return false
-	}
+	// price
+	//
+	// required: true
+	// min: 0.01
+	Price float32 `json:"price" validate:"gt=0"`
 
-	return true
+	// SKU - in the field of inventory management, a stock keeping unit is a distinct type of item for sale, purchased, or tracked in inventory,
+	// such as a product or service, and all attributes associated with the item type that distinguish it from other item types.
+	// For a product, these attributes can include manufacturer, description, material, size, color, packaging, and warranty terms.
+	// When a business takes inventory of its stock, it counts the quantity it has of each SKU.
+	// SKU can also refer to a unique identifier or code, sometimes represented via a barcode for scanning and tracking, that refers to the particular stock keeping unit.
+	// These identifiers are not regulated or standardized.
+	// When a company receives items from a vendor, it has a choice of maintaining the vendor's SKU or creating its own
+	// Original source: https://en.wikipedia.org/wiki/Stock_keeping_unit
+	//
+	// required: true
+	// pattern: [a-z]+-[a-z]+-[a-z]+
+	SKU string `json:"sku" validate:"required,sku"`
+
+	CreatedAt string `json:"-"`
+	UpdatedAt string `json:"-"`
+	DeletedAt string `json:"-"`
 }
 
 type Products []*Product
 
-/*ToJSON as JSON serializer
-this approach provides better performance (reduces allocations) than json.Unmarshall()
-it does not have to buffer the output into an in memory slice of bytes
-*/
-func (p *Products) ToJSON(w io.Writer) error {
-	e := json.NewEncoder(w)
-	return e.Encode(p)
-}
-
-func (p *Product) FromJSON(r io.Reader) error {
-	d := json.NewDecoder(r)
-	return d.Decode(p)
-}
-
-func getNextID() int {
-	lp := productsList[len(productsList)-1]
-	return lp.ID + 1
-}
-
-func findProduct(id int) (*Product, int, error) {
-	for pos, p := range productsList {
-		if p.ID == id {
-			return p, pos, nil
-		}
-	}
-	return nil, -1, ErrProductNotFound
-}
-
-func AddProducts(p *Product) {
-	p.ID = getNextID()
-	productsList = append(productsList, p)
-}
-
-func UpdateProducts(id int, p *Product) error {
-	_, pos, err := findProduct(id)
-	if err != nil {
-		return err
-	}
-	p.ID = id
-	productsList[pos] = p
-
-	return nil
-}
+var ErrProductNotFound = fmt.Errorf("product not found")
 
 func GetProducts() Products {
 	return productsList
 }
 
-var ErrProductNotFound = fmt.Errorf("product not found")
+func GetProduct(id int) (*Product, error) {
+	i := findIndexByProductID(id)
+	if id == -1 {
+		return nil, ErrProductNotFound
+	}
+
+	return productsList[i], nil
+}
+
+func UpdateProduct(p Product) error {
+	i := findIndexByProductID(p.ID)
+	if i == -1 {
+		return ErrProductNotFound
+	}
+
+	productsList[i] = &p
+	return nil
+}
+
+func AddProduct(p Product) {
+	// get the next id in sequence
+	maxID := productsList[len(productsList)-1].ID
+	p.ID = maxID + 1
+	productsList = append(productsList, &p)
+}
+
+func DeleteProduct(id int) error {
+	i := findIndexByProductID(id)
+	if i == -1 {
+		return ErrProductNotFound
+	}
+
+	productsList = append(productsList[:i], productsList[i+1])
+	return nil
+}
+
+/**
+findIndexByProductID finds the index of a product
+returns -1 when no product can be found
+*/
+func findIndexByProductID(id int) int {
+	for i, p := range productsList {
+		if p.ID == id {
+			return i
+		}
+	}
+
+	return -1
+}
 
 var productsList = []*Product{
 	&Product{

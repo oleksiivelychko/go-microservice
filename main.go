@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
-	"github.com/nicholasjackson/env"
 	"github.com/oleksiivelychko/go-microservice/handlers"
 	"github.com/oleksiivelychko/go-microservice/utils"
 	"log"
@@ -14,9 +13,9 @@ import (
 	"time"
 )
 
-var bindAddress = env.String("BIND_ADDRESS", false, ":9090", "Bind address for the server")
-
 func main() {
+	port := utils.GetPort()
+
 	l := log.New(os.Stdout, "go-microservice", log.LstdFlags)
 	v := utils.NewValidation()
 
@@ -43,7 +42,7 @@ func main() {
 	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
 	server := &http.Server{
-		Addr:         *bindAddress,
+		Addr:         port,
 		Handler:      serveMux,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
@@ -51,7 +50,7 @@ func main() {
 	}
 
 	go func() {
-		l.Println("Starting server on port 9090")
+		l.Printf("Starting server on %s port\n", port)
 
 		err := server.ListenAndServe()
 		if err != nil {

@@ -3,7 +3,7 @@ package api
 import (
 	"bytes"
 	"fmt"
-	"github.com/oleksiivelychko/go-microservice/helpers"
+	"github.com/oleksiivelychko/go-microservice/utils"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -13,7 +13,7 @@ func TestProductName(t *testing.T) {
 		Price: 1.2,
 	}
 
-	v := helpers.NewValidation()
+	v := utils.NewValidation()
 	err := v.Validate(p)
 
 	if err == nil {
@@ -29,7 +29,7 @@ func TestProductPrice(t *testing.T) {
 		Price: -1,
 	}
 
-	v := helpers.NewValidation()
+	v := utils.NewValidation()
 	err := v.Validate(p)
 
 	if err == nil {
@@ -46,7 +46,7 @@ func TestProductSKU(t *testing.T) {
 		SKU:   "abc",
 	}
 
-	v := helpers.NewValidation()
+	v := utils.NewValidation()
 	err := v.Validate(p)
 
 	if err == nil {
@@ -63,7 +63,7 @@ func TestValidProduct(t *testing.T) {
 		SKU:   "123-456-789",
 	}
 
-	v := helpers.NewValidation()
+	v := utils.NewValidation()
 	err := v.Validate(p)
 
 	if len(err) > 0 {
@@ -79,6 +79,6 @@ func TestProductsToJSON(t *testing.T) {
 	}
 
 	b := bytes.NewBufferString("")
-	err := helpers.ToJSON(ps, b)
+	err := utils.ToJSON(ps, b)
 	assert.NoError(t, err)
 }

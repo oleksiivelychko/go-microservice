@@ -6,7 +6,7 @@ require (
 	github.com/go-openapi/runtime v0.23.1
 	github.com/go-playground/validator/v10 v10.10.0
 	github.com/gorilla/mux v1.8.0
-	github.com/oleksiivelychko/go-helper v0.0.0-20220312122909-e57b3ffde4f1
+	github.com/nicholasjackson/env v0.6.0
 	github.com/stretchr/testify v1.7.0
 )
 

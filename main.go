@@ -4,7 +4,9 @@ import (
 	"context"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
+	"github.com/nicholasjackson/env"
 	"github.com/oleksiivelychko/go-microservice/handlers"
+	"github.com/oleksiivelychko/go-microservice/utils"
 	"log"
 	"net/http"
 	"os"
@@ -12,17 +14,20 @@ import (
 	"time"
 )
 
+var bindAddress = env.String("BIND_ADDRESS", false, ":9090", "Bind address for the server")
+
 func main() {
 	l := log.New(os.Stdout, "go-microservice", log.LstdFlags)
+	v := utils.NewValidation()
 
-	h := handlers.NewProducts(l)
+	h := handlers.NewProductHandler(l, v)
 	serveMux := mux.NewRouter()
 
 	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/products", h.GetProducts)
+	getRouter.HandleFunc("/products", h.GetAll)
 
 	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/products", h.AddProduct)
+	postRouter.HandleFunc("/products", h.CreateProduct)
 	postRouter.Use(h.MiddlewareProductValidation)
 
 	putRouter := serveMux.Methods(http.MethodPut).Subrouter()
@@ -38,7 +43,7 @@ func main() {
 	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
 	server := &http.Server{
-		Addr:         ":9090",
+		Addr:         *bindAddress,
 		Handler:      serveMux,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,

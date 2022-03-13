@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/oleksiivelychko/go-microservice/utils"
 	"log"
@@ -11,8 +10,8 @@ import (
 
 // ProductHandler for getting and updating products
 type ProductHandler struct {
-	L *log.Logger
-	V *utils.Validation
+	l *log.Logger
+	v *utils.Validation
 }
 
 // KeyProduct is a key used for the Product object in the context
@@ -22,9 +21,6 @@ type KeyProduct struct{}
 func NewProductHandler(l *log.Logger, v *utils.Validation) *ProductHandler {
 	return &ProductHandler{l, v}
 }
-
-// ErrInvalidProductPath is an error message when the product path is not valid
-var ErrInvalidProductPath = fmt.Errorf("invalid Path, path should be /products/[id]")
 
 // GenericError is a generic error message returned by a server
 type GenericError struct {

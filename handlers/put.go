@@ -16,11 +16,11 @@ import (
 func (p *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(api.Product)
-	p.L.Println("[DEBUG] updating record id", product.ID)
+	p.l.Println("[DEBUG] updating record id", product.ID)
 
 	err := api.UpdateProduct(product)
 	if err == api.ErrProductNotFound {
-		p.L.Println("[ERROR] updating record id does not exist", err)
+		p.l.Println("[ERROR] updating record id does not exist", err)
 
 		rw.WriteHeader(http.StatusNotFound)
 		_ = utils.ToJSON(&GenericError{Message: "product not found"}, rw)

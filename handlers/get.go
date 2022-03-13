@@ -11,12 +11,12 @@ import (
 // responses:
 //	200: productsResponse
 func (p *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
-	p.L.Println("[DEBUG] get all records")
+	p.l.Println("[DEBUG] get all records")
 
 	list := api.GetProducts()
 	err := utils.ToJSON(list, rw)
 	if err != nil {
-		p.L.Println("[ERROR] serializing product", err)
+		p.l.Println("[ERROR] serializing product", err)
 	}
 }
 
@@ -27,20 +27,20 @@ func (p *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 //  404: errorResponse
 func (p *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 	id := getProductID(r)
-	p.L.Println("[DEBUG] get record id", id)
+	p.l.Println("[DEBUG] get record id", id)
 
 	product, err := api.GetProduct(id)
 
 	switch err {
 	case nil:
 	case api.ErrProductNotFound:
-		p.L.Println("[ERROR] fetching product", err)
+		p.l.Println("[ERROR] fetching product", err)
 
 		rw.WriteHeader(http.StatusNotFound)
 		_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)
 		return
 	default:
-		p.L.Println("[ERROR] fetching product", err)
+		p.l.Println("[ERROR] fetching product", err)
 
 		rw.WriteHeader(http.StatusInternalServerError)
 		_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)
@@ -50,6 +50,6 @@ func (p *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 	err = utils.ToJSON(product, rw)
 
 	if err != nil {
-		p.L.Println("[ERROR] serializing product", err)
+		p.l.Println("[ERROR] serializing product", err)
 	}
 }

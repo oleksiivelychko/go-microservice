@@ -15,11 +15,11 @@ import (
 //  501: errorResponse
 func (p *ProductHandler) DeleteProduct(rw http.ResponseWriter, r *http.Request) {
 	id := getProductID(r)
-	p.L.Println("[DEBUG] deleting record id", id)
+	p.l.Println("[DEBUG] deleting record id", id)
 
 	err := api.DeleteProduct(id)
 	if err == api.ErrProductNotFound {
-		p.L.Println("[ERROR] deleting record id does not exist")
+		p.l.Println("[ERROR] deleting record id does not exist")
 
 		rw.WriteHeader(http.StatusNotFound)
 		_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)
@@ -27,7 +27,7 @@ func (p *ProductHandler) DeleteProduct(rw http.ResponseWriter, r *http.Request) 
 	}
 
 	if err != nil {
-		p.L.Println("[ERROR] deleting record", err)
+		p.l.Println("[ERROR] deleting record", err)
 
 		rw.WriteHeader(http.StatusInternalServerError)
 		_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)

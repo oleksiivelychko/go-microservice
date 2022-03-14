@@ -6,8 +6,9 @@ import (
 	"net/http"
 )
 
-// swagger:route GET /products products listProducts
-// Returns a list of products.
+// swagger:route GET /products products getProducts
+// Returns a list of products
+//
 // responses:
 //	200: productsResponse
 func (p *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
@@ -20,8 +21,9 @@ func (p *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// swagger:route GET /products/{id}
+// swagger:route GET /products/{id} products getProduct
 // Returns a single product by ID
+//
 // responses:
 //	200: productResponse
 //  404: errorResponse

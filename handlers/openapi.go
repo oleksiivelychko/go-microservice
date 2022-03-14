@@ -34,6 +34,7 @@ type errValidationWrapper struct {
 	Body ValidationError
 }
 
+// Data structure representing a list of product
 // swagger:response productsResponse
 type productsResponseWrapper struct {
 	// A list of all products

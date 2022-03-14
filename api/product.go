@@ -8,7 +8,7 @@ import (
 // Product defines the structure for an API product
 // swagger:model
 type Product struct {
-	// Unique identifier
+	// unique identifier
 	//
 	// required: false
 	// min: 1
@@ -38,7 +38,8 @@ type Product struct {
 	// When a business takes inventory of its stock, it counts the quantity it has of each SKU.
 	// SKU can also refer to a unique identifier or code, sometimes represented via a barcode for scanning and tracking, that refers to the particular stock keeping unit.
 	// These identifiers are not regulated or standardized.
-	// When a company receives items from a vendor, it has a choice of maintaining the vendor's SKU or creating its own
+	// When a company receives items from a vendor, it has a choice of maintaining the vendor's SKU or creating its own.
+	//
 	// Original source: https://en.wikipedia.org/wiki/Stock_keeping_unit
 	//
 	// required: true

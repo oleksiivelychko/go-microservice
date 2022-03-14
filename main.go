@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	port := utils.GetPort()
+	addr := utils.GetAddr()
 
 	l := log.New(os.Stdout, "go-microservice", log.LstdFlags)
 	v := utils.NewValidation()
@@ -42,7 +42,7 @@ func main() {
 	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
 	server := &http.Server{
-		Addr:         port,
+		Addr:         addr,
 		Handler:      serveMux,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
@@ -50,7 +50,7 @@ func main() {
 	}
 
 	go func() {
-		l.Printf("Starting server on %s port\n", port)
+		l.Printf("Starting server on %s\n", addr)
 
 		err := server.ListenAndServe()
 		if err != nil {

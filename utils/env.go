@@ -2,11 +2,17 @@ package utils
 
 import "os"
 
-func GetPort() string {
+func GetAddr() string {
+	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
+
+	if host == "" {
+		host = "localhost"
+	}
+
 	if port == "" {
 		port = "9090"
 	}
 
-	return ":" + port
+	return host + ":" + port
 }

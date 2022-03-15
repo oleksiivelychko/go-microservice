@@ -10,7 +10,17 @@ definitions:
         x-go-name: Message
     type: object
     x-go-package: github.com/oleksiivelychko/go-microservice/handlers
-  Product:
+  ValidationError:
+    description: ValidationError is a collection of validation error messages
+    properties:
+      messages:
+        items:
+          type: string
+        type: array
+        x-go-name: Messages
+    type: object
+    x-go-package: github.com/oleksiivelychko/go-microservice/handlers
+  product:
     description: Product defines the structure for an API product
     properties:
       description:
@@ -54,19 +64,15 @@ definitions:
     - price
     - sku
     type: object
+    x-go-name: Product
     x-go-package: github.com/oleksiivelychko/go-microservice/api
-  ValidationError:
-    description: ValidationError is a collection of validation error messages
-    properties:
-      messages:
-        items:
-          type: string
-        type: array
-        x-go-name: Messages
-    type: object
-    x-go-package: github.com/oleksiivelychko/go-microservice/handlers
+host: localhost
 info:
-  description: Documentation of Product API
+  description: |-
+    Schemes:
+    http
+    https
+  title: Documentation of microservice API
   version: 1.0.0
 paths:
   /products:
@@ -89,7 +95,7 @@ paths:
         name: Body
         required: true
         schema:
-          $ref: '#/definitions/Product'
+          $ref: '#/definitions/product'
       responses:
         "200":
           $ref: '#/responses/productResponse'
@@ -110,7 +116,7 @@ paths:
         name: Body
         required: true
         schema:
-          $ref: '#/definitions/Product'
+          $ref: '#/definitions/product'
       - description: The id of the product for which the operation relates
         format: int64
         in: path
@@ -166,13 +172,11 @@ responses:
   productResponse:
     description: Data structure representing a single product
     schema:
-      $ref: '#/definitions/Product'
+      $ref: '#/definitions/product'
   productsResponse:
     description: Data structure representing a list of product
     schema:
       items:
-        $ref: '#/definitions/Product'
+        $ref: '#/definitions/product'
       type: array
-schemes:
-- http
 swagger: "2.0"

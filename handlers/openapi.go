@@ -1,15 +1,19 @@
-// Documentation of Product API
-//
-// 		Schemes: http
-// 		BasePath: /
-//		Version: 1.0.0
-//
-// 		Consumes:
-// 		- application/json
-// 		Produces:
-// 		- application/json
-//
-// swagger:meta
+/*
+Documentation of microservice API
+
+    Schemes:
+      http
+      https
+    Host: localhost
+    BasePath: /
+    Version: 1.0.0
+    Consumes:
+    - application/json
+    Produces:
+    - application/json
+
+swagger:meta
+*/
 package handlers
 
 import (

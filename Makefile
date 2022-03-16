@@ -9,3 +9,7 @@ install-redoc:
 
 run: swagger
 	PORT=9090 go run main.go
+
+gen-client: swagger
+	$(info swagger generate client --help)
+	swagger generate client -A go-microservice -f swagger.yaml -t sdk

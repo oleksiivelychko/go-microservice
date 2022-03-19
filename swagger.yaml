@@ -4,7 +4,9 @@ consumes:
 definitions:
   GenericError:
     description: GenericError GenericError GenericError GenericError GenericError
-      is a generic error message returned by a server
+      GenericError GenericError GenericError GenericError GenericError GenericError
+      GenericError GenericError GenericError GenericError is a generic error message
+      returned by a server
     properties:
       message:
         description: message
@@ -59,6 +61,8 @@ definitions:
     x-go-package: github.com/oleksiivelychko/go-microservice/sdk/models
   ValidationError:
     description: ValidationError ValidationError ValidationError ValidationError ValidationError
+      ValidationError ValidationError ValidationError ValidationError ValidationError
+      ValidationError ValidationError ValidationError ValidationError ValidationError
       is a collection of validation error messages
     properties:
       messages:
@@ -148,6 +152,8 @@ paths:
       responses:
         "200":
           $ref: '#/responses/productResponse'
+        "400":
+          $ref: '#/responses/errorValidation'
         "422":
           $ref: '#/responses/errorValidation'
         "501":

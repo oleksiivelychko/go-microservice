@@ -29,6 +29,12 @@ func (o *CreateProductReader) ReadResponse(response runtime.ClientResponse, cons
 			return nil, err
 		}
 		return result, nil
+	case 400:
+		result := NewCreateProductBadRequest()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 422:
 		result := NewCreateProductUnprocessableEntity()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -69,6 +75,38 @@ func (o *CreateProductOK) GetPayload() *models.Product {
 func (o *CreateProductOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Product)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewCreateProductBadRequest creates a CreateProductBadRequest with default headers values
+func NewCreateProductBadRequest() *CreateProductBadRequest {
+	return &CreateProductBadRequest{}
+}
+
+/* CreateProductBadRequest describes a response with status code 400, with default header values.
+
+Validation errors defined as an array of strings.
+*/
+type CreateProductBadRequest struct {
+	Payload *models.ValidationError
+}
+
+func (o *CreateProductBadRequest) Error() string {
+	return fmt.Sprintf("[POST /products][%d] createProductBadRequest  %+v", 400, o.Payload)
+}
+func (o *CreateProductBadRequest) GetPayload() *models.ValidationError {
+	return o.Payload
+}
+
+func (o *CreateProductBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.ValidationError)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

@@ -12,6 +12,7 @@ import (
 // responses:
 //	200: productsResponse
 func (p *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
 	p.l.Println("[DEBUG] get all records")
 
 	list := api.GetProducts()
@@ -28,6 +29,8 @@ func (p *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 //	200: productResponse
 //  404: errorResponse
 func (p *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
+
 	id := getProductID(r)
 	p.l.Println("[DEBUG] get record id", id)
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
+	"github.com/oleksiivelychko/go-helper/env_addr"
 	"github.com/oleksiivelychko/go-microservice/handlers"
 	"github.com/oleksiivelychko/go-microservice/utils"
 	"log"
@@ -14,7 +15,7 @@ import (
 )
 
 func main() {
-	addr := utils.GetAddr()
+	addr := env_addr.GetAddr()
 
 	l := log.New(os.Stdout, "go-microservice", log.LstdFlags)
 	v := utils.NewValidation()
@@ -24,6 +25,7 @@ func main() {
 
 	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/products", h.GetAll)
+	getRouter.HandleFunc("/products/{id:[0-9]+}", h.GetOne)
 
 	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/products", h.CreateProduct)

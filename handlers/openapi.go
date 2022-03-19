@@ -49,7 +49,7 @@ type productsResponseWrapper struct {
 // Data structure representing a single product
 // swagger:response productResponse
 type productResponseWrapper struct {
-	// Newly created product
+	// A single product
 	// in: body
 	Body api.Product
 }

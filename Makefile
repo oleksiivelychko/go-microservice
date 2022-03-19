@@ -7,8 +7,8 @@ swagger:
 install-redoc:
 	npm i -g redoc-cli
 
-run: swagger
-	PORT=9090 go run main.go
+start: gen-client
+	HOST=localhost PORT=9090 go run main.go
 
 gen-client: swagger
 	$(info swagger generate client --help)

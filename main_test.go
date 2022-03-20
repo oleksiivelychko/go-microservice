@@ -85,6 +85,18 @@ func TestHttpClientCreateProduct(t *testing.T) {
 	}
 }
 
+/**
+TestHttpClientUpdateProduct
+https://github.com/go-swagger/go-swagger/discussions/2742
+*/
+func TestHttpClientUpdateProduct(t *testing.T) {
+
+}
+
+func TestHttpClientDeleteProduct(t *testing.T) {
+
+}
+
 func createHttpClient() *httpClient.GoMicroservice {
 	addr := env_addr.GetAddr()
 	cfg := httpClient.DefaultTransportConfig().WithHost(addr)

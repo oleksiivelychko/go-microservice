@@ -43,7 +43,7 @@ func TestProductSKU(t *testing.T) {
 	p := Product{
 		Name:  "abc",
 		Price: 1.2,
-		SKU:   "abc",
+		SKU:   "123-456-789",
 	}
 
 	v := utils.NewValidation()

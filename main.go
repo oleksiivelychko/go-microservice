@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/go-openapi/runtime/middleware"
+	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/oleksiivelychko/go-helper/env_addr"
 	"github.com/oleksiivelychko/go-microservice/handlers"
@@ -16,6 +17,9 @@ import (
 
 func main() {
 	addr := env_addr.GetAddr()
+	var origins = []string{
+		"http://" + addr,
+	}
 
 	l := log.New(os.Stdout, "go-microservice", log.LstdFlags)
 	v := utils.NewValidation()
@@ -43,9 +47,12 @@ func main() {
 	getRouter.Handle("/docs", apiHandler)
 	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
+	// Cross-Origin Resource Sharing
+	goHandler := gohandlers.CORS(gohandlers.AllowedOrigins(origins))
+
 	server := &http.Server{
 		Addr:         addr,
-		Handler:      serveMux,
+		Handler:      goHandler(serveMux),
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
 		WriteTimeout: 1 * time.Second,

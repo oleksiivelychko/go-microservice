@@ -23,6 +23,12 @@ type UpdateProductReader struct {
 // ReadResponse reads a server response into the received o.
 func (o *UpdateProductReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
+	case 200:
+		result := NewUpdateProductOK()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return result, nil
 	case 201:
 		result := NewUpdateProductCreated()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -41,9 +47,47 @@ func (o *UpdateProductReader) ReadResponse(response runtime.ClientResponse, cons
 			return nil, err
 		}
 		return nil, result
+	case 501:
+		result := NewUpdateProductNotImplemented()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	default:
 		return nil, runtime.NewAPIError("response status code does not match any response statuses defined for this endpoint in the swagger spec", response, response.Code())
 	}
+}
+
+// NewUpdateProductOK creates a UpdateProductOK with default headers values
+func NewUpdateProductOK() *UpdateProductOK {
+	return &UpdateProductOK{}
+}
+
+/* UpdateProductOK describes a response with status code 200, with default header values.
+
+Data structure representing a single product
+*/
+type UpdateProductOK struct {
+	Payload *models.Product
+}
+
+func (o *UpdateProductOK) Error() string {
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductOK  %+v", 200, o.Payload)
+}
+func (o *UpdateProductOK) GetPayload() *models.Product {
+	return o.Payload
+}
+
+func (o *UpdateProductOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Product)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
 }
 
 // NewUpdateProductCreated creates a UpdateProductCreated with default headers values
@@ -53,16 +97,27 @@ func NewUpdateProductCreated() *UpdateProductCreated {
 
 /* UpdateProductCreated describes a response with status code 201, with default header values.
 
-No content is returned by this API endpoint
+Data structure representing a single product
 */
 type UpdateProductCreated struct {
+	Payload *models.Product
 }
 
 func (o *UpdateProductCreated) Error() string {
-	return fmt.Sprintf("[PUT /products][%d] updateProductCreated ", 201)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductCreated  %+v", 201, o.Payload)
+}
+func (o *UpdateProductCreated) GetPayload() *models.Product {
+	return o.Payload
 }
 
 func (o *UpdateProductCreated) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Product)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -81,7 +136,7 @@ type UpdateProductNotFound struct {
 }
 
 func (o *UpdateProductNotFound) Error() string {
-	return fmt.Sprintf("[PUT /products][%d] updateProductNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductNotFound  %+v", 404, o.Payload)
 }
 func (o *UpdateProductNotFound) GetPayload() *models.GenericError {
 	return o.Payload
@@ -113,7 +168,7 @@ type UpdateProductUnprocessableEntity struct {
 }
 
 func (o *UpdateProductUnprocessableEntity) Error() string {
-	return fmt.Sprintf("[PUT /products][%d] updateProductUnprocessableEntity  %+v", 422, o.Payload)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductUnprocessableEntity  %+v", 422, o.Payload)
 }
 func (o *UpdateProductUnprocessableEntity) GetPayload() *models.ValidationError {
 	return o.Payload
@@ -122,6 +177,38 @@ func (o *UpdateProductUnprocessableEntity) GetPayload() *models.ValidationError 
 func (o *UpdateProductUnprocessableEntity) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.ValidationError)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewUpdateProductNotImplemented creates a UpdateProductNotImplemented with default headers values
+func NewUpdateProductNotImplemented() *UpdateProductNotImplemented {
+	return &UpdateProductNotImplemented{}
+}
+
+/* UpdateProductNotImplemented describes a response with status code 501, with default header values.
+
+Generic error message returned as a string.
+*/
+type UpdateProductNotImplemented struct {
+	Payload *models.GenericError
+}
+
+func (o *UpdateProductNotImplemented) Error() string {
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductNotImplemented  %+v", 501, o.Payload)
+}
+func (o *UpdateProductNotImplemented) GetPayload() *models.GenericError {
+	return o.Payload
+}
+
+func (o *UpdateProductNotImplemented) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.GenericError)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

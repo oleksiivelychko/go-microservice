@@ -38,7 +38,7 @@ type ClientService interface {
 
 	GetProducts(params *GetProductsParams, opts ...ClientOption) (*GetProductsOK, error)
 
-	UpdateProduct(params *UpdateProductParams, opts ...ClientOption) (*UpdateProductOK, *UpdateProductCreated, error)
+	UpdateProduct(params *UpdateProductParams, opts ...ClientOption) (*UpdateProductCreated, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
@@ -198,7 +198,7 @@ func (a *Client) GetProducts(params *GetProductsParams, opts ...ClientOption) (*
 /*
   UpdateProduct Update a products details
 */
-func (a *Client) UpdateProduct(params *UpdateProductParams, opts ...ClientOption) (*UpdateProductOK, *UpdateProductCreated, error) {
+func (a *Client) UpdateProduct(params *UpdateProductParams, opts ...ClientOption) (*UpdateProductCreated, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewUpdateProductParams()
@@ -221,16 +221,15 @@ func (a *Client) UpdateProduct(params *UpdateProductParams, opts ...ClientOption
 
 	result, err := a.transport.Submit(op)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	switch value := result.(type) {
-	case *UpdateProductOK:
-		return value, nil, nil
-	case *UpdateProductCreated:
-		return nil, value, nil
+	success, ok := result.(*UpdateProductCreated)
+	if ok {
+		return success, nil
 	}
+	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for products: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	msg := fmt.Sprintf("unexpected success response for updateProduct: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 

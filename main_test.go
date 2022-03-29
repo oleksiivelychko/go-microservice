@@ -51,7 +51,6 @@ func TestHttpClientCreateProduct(t *testing.T) {
 	var pSKU = "000-000-000"
 	var pDescription = "Coffee with milk"
 	params.Body = &models.Product{
-		ID:          3,
 		Name:        &pName,
 		Description: pDescription,
 		Price:       &pPrice,
@@ -69,19 +68,19 @@ func TestHttpClientCreateProduct(t *testing.T) {
 	}
 
 	if *productOne.GetPayload().Name != pName {
-		t.Fatal("Product name doesn't math")
+		t.Fatal("Product name doesn't match")
 	}
 
 	if productOne.GetPayload().Description != pDescription {
-		t.Fatal("Product description doesn't math")
+		t.Fatal("Product description doesn't match")
 	}
 
 	if *productOne.GetPayload().Price != pPrice {
-		t.Fatal("Product price doesn't math")
+		t.Fatal("Product price doesn't match")
 	}
 
 	if *productOne.GetPayload().SKU != pSKU {
-		t.Fatal("Product SKU doesn't math")
+		t.Fatal("Product SKU doesn't match")
 	}
 }
 
@@ -90,7 +89,40 @@ TestHttpClientUpdateProduct
 https://github.com/go-swagger/go-swagger/discussions/2742
 */
 func TestHttpClientUpdateProduct(t *testing.T) {
+	params := products.NewUpdateProductParams()
+	params.ID = 3
 
+	var pName = "Coffee with milk"
+	var pPrice float32 = 1.99
+	var pSKU = "111-111-111"
+	params.Body = &models.Product{
+		ID:    3,
+		Name:  &pName,
+		Price: &pPrice,
+		SKU:   &pSKU,
+	}
+
+	_, err := client.Products.UpdateProduct(params)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	productOne, err := fetchProduct(3)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if *productOne.GetPayload().Name != pName {
+		t.Fatal("Product name doesn't match")
+	}
+
+	if *productOne.GetPayload().Price != pPrice {
+		t.Fatal("Product price doesn't match")
+	}
+
+	if *productOne.GetPayload().SKU != pSKU {
+		t.Fatal("Product SKU doesn't match")
+	}
 }
 
 func TestHttpClientDeleteProduct(t *testing.T) {

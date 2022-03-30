@@ -14,7 +14,6 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 
 	"github.com/oleksiivelychko/go-microservice/sdk/models"
 )
@@ -68,14 +67,6 @@ type UpdateProductParams struct {
 	Note: the id field is ignored by update and create operations
 	*/
 	Body *models.Product
-
-	/* ID.
-
-	   The id of the product for which the operation relates
-
-	   Format: int64
-	*/
-	ID int64
 
 	timeout    time.Duration
 	Context    context.Context
@@ -141,17 +132,6 @@ func (o *UpdateProductParams) SetBody(body *models.Product) {
 	o.Body = body
 }
 
-// WithID adds the id to the update product params
-func (o *UpdateProductParams) WithID(id int64) *UpdateProductParams {
-	o.SetID(id)
-	return o
-}
-
-// SetID adds the id to the update product params
-func (o *UpdateProductParams) SetID(id int64) {
-	o.ID = id
-}
-
 // WriteToRequest writes these params to a swagger request
 func (o *UpdateProductParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -163,11 +143,6 @@ func (o *UpdateProductParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		if err := r.SetBodyParam(o.Body); err != nil {
 			return err
 		}
-	}
-
-	// path param id
-	if err := r.SetPathParam("id", swag.FormatInt64(o.ID)); err != nil {
-		return err
 	}
 
 	if len(res) > 0 {

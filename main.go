@@ -36,7 +36,7 @@ func main() {
 	postRouter.Use(h.MiddlewareProductValidation)
 
 	putRouter := serveMux.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc("/products/{id:[0-9]+}", h.UpdateProduct)
+	putRouter.HandleFunc("/products", h.UpdateProduct)
 	putRouter.Use(h.MiddlewareProductValidation)
 
 	deleteRouter := serveMux.Methods(http.MethodDelete).Subrouter()

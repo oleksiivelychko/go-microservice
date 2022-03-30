@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// swagger:route PUT /products/{id} products updateProduct
+// swagger:route PUT /products products updateProduct
 // Update a products details
 //
 // responses:

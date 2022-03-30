@@ -206,7 +206,7 @@ func (a *Client) UpdateProduct(params *UpdateProductParams, opts ...ClientOption
 	op := &runtime.ClientOperation{
 		ID:                 "updateProduct",
 		Method:             "PUT",
-		PathPattern:        "/products/{id}",
+		PathPattern:        "/products",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},

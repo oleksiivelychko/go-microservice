@@ -66,7 +66,7 @@ type UpdateProductCreated struct {
 }
 
 func (o *UpdateProductCreated) Error() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductCreated  %+v", 201, o.Payload)
+	return fmt.Sprintf("[PUT /products][%d] updateProductCreated  %+v", 201, o.Payload)
 }
 func (o *UpdateProductCreated) GetPayload() *models.Product {
 	return o.Payload
@@ -98,7 +98,7 @@ type UpdateProductNotFound struct {
 }
 
 func (o *UpdateProductNotFound) Error() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[PUT /products][%d] updateProductNotFound  %+v", 404, o.Payload)
 }
 func (o *UpdateProductNotFound) GetPayload() *models.GenericError {
 	return o.Payload
@@ -130,7 +130,7 @@ type UpdateProductUnprocessableEntity struct {
 }
 
 func (o *UpdateProductUnprocessableEntity) Error() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductUnprocessableEntity  %+v", 422, o.Payload)
+	return fmt.Sprintf("[PUT /products][%d] updateProductUnprocessableEntity  %+v", 422, o.Payload)
 }
 func (o *UpdateProductUnprocessableEntity) GetPayload() *models.ValidationError {
 	return o.Payload
@@ -162,7 +162,7 @@ type UpdateProductNotImplemented struct {
 }
 
 func (o *UpdateProductNotImplemented) Error() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductNotImplemented  %+v", 501, o.Payload)
+	return fmt.Sprintf("[PUT /products][%d] updateProductNotImplemented  %+v", 501, o.Payload)
 }
 func (o *UpdateProductNotImplemented) GetPayload() *models.GenericError {
 	return o.Payload

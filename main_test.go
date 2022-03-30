@@ -90,7 +90,6 @@ https://github.com/go-swagger/go-swagger/discussions/2742
 */
 func TestHttpClientUpdateProduct(t *testing.T) {
 	params := products.NewUpdateProductParams()
-	params.ID = 3
 
 	var pName = "Coffee with milk"
 	var pPrice float32 = 1.99

@@ -91,7 +91,7 @@ func DeleteProduct(id int) error {
 		return ErrProductNotFound
 	}
 
-	productsList = append(productsList[:i], productsList[i+1])
+	productsList = RemoveProductByIndex(productsList, i)
 	return nil
 }
 
@@ -107,6 +107,10 @@ func findIndexByProductID(id int) int {
 	}
 
 	return -1
+}
+
+func RemoveProductByIndex(s []*Product, index int) []*Product {
+	return append(s[:index], s[index+1:]...)
 }
 
 var productsList = []*Product{

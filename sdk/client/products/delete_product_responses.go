@@ -23,8 +23,8 @@ type DeleteProductReader struct {
 // ReadResponse reads a server response into the received o.
 func (o *DeleteProductReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
-	case 201:
-		result := NewDeleteProductCreated()
+	case 204:
+		result := NewDeleteProductNoContent()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -46,23 +46,23 @@ func (o *DeleteProductReader) ReadResponse(response runtime.ClientResponse, cons
 	}
 }
 
-// NewDeleteProductCreated creates a DeleteProductCreated with default headers values
-func NewDeleteProductCreated() *DeleteProductCreated {
-	return &DeleteProductCreated{}
+// NewDeleteProductNoContent creates a DeleteProductNoContent with default headers values
+func NewDeleteProductNoContent() *DeleteProductNoContent {
+	return &DeleteProductNoContent{}
 }
 
-/* DeleteProductCreated describes a response with status code 201, with default header values.
+/* DeleteProductNoContent describes a response with status code 204, with default header values.
 
 No content is returned by this API endpoint
 */
-type DeleteProductCreated struct {
+type DeleteProductNoContent struct {
 }
 
-func (o *DeleteProductCreated) Error() string {
-	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductCreated ", 201)
+func (o *DeleteProductNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNoContent ", 204)
 }
 
-func (o *DeleteProductCreated) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+func (o *DeleteProductNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }

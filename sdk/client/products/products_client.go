@@ -32,7 +32,7 @@ type ClientOption func(*runtime.ClientOperation)
 type ClientService interface {
 	CreateProduct(params *CreateProductParams, opts ...ClientOption) (*CreateProductOK, error)
 
-	DeleteProduct(params *DeleteProductParams, opts ...ClientOption) (*DeleteProductCreated, error)
+	DeleteProduct(params *DeleteProductParams, opts ...ClientOption) (*DeleteProductNoContent, error)
 
 	GetProduct(params *GetProductParams, opts ...ClientOption) (*GetProductOK, error)
 
@@ -84,7 +84,7 @@ func (a *Client) CreateProduct(params *CreateProductParams, opts ...ClientOption
 /*
   DeleteProduct Delete a product
 */
-func (a *Client) DeleteProduct(params *DeleteProductParams, opts ...ClientOption) (*DeleteProductCreated, error) {
+func (a *Client) DeleteProduct(params *DeleteProductParams, opts ...ClientOption) (*DeleteProductNoContent, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewDeleteProductParams()
@@ -109,7 +109,7 @@ func (a *Client) DeleteProduct(params *DeleteProductParams, opts ...ClientOption
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*DeleteProductCreated)
+	success, ok := result.(*DeleteProductNoContent)
 	if ok {
 		return success, nil
 	}

@@ -8,8 +8,9 @@ definitions:
       GenericError GenericError GenericError GenericError GenericError GenericError
       GenericError GenericError GenericError GenericError GenericError GenericError
       GenericError GenericError GenericError GenericError GenericError GenericError
-      GenericError GenericError GenericError is a generic error message returned by
-      a server
+      GenericError GenericError GenericError GenericError GenericError GenericError
+      GenericError GenericError GenericError GenericError GenericError GenericError
+      GenericError is a generic error message returned by a server
     properties:
       message:
         description: message
@@ -18,7 +19,7 @@ definitions:
     type: object
     x-go-package: github.com/oleksiivelychko/go-microservice/sdk/models
   Product:
-    description: Product Product defines the structure for an API product
+    description: Product Product Product defines the structure for an API product
     properties:
       description:
         description: description
@@ -64,6 +65,8 @@ definitions:
     x-go-package: github.com/oleksiivelychko/go-microservice/sdk/models
   ValidationError:
     description: ValidationError ValidationError ValidationError ValidationError ValidationError
+      ValidationError ValidationError ValidationError ValidationError ValidationError
+      ValidationError ValidationError ValidationError ValidationError ValidationError
       ValidationError ValidationError ValidationError ValidationError ValidationError
       ValidationError ValidationError ValidationError ValidationError ValidationError
       ValidationError ValidationError ValidationError ValidationError ValidationError
@@ -202,7 +205,7 @@ paths:
         type: integer
         x-go-name: ID
       responses:
-        "201":
+        "204":
           $ref: '#/responses/noContentResponse'
         "404":
           $ref: '#/responses/errorResponse'

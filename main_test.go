@@ -125,7 +125,18 @@ func TestHttpClientUpdateProduct(t *testing.T) {
 }
 
 func TestHttpClientDeleteProduct(t *testing.T) {
+	params := products.NewDeleteProductParams()
+	params.ID = 3
 
+	_, err := client.Products.DeleteProduct(params)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	productOne, err := fetchProduct(3)
+	if productOne != nil {
+		t.Fatal("Product has not been deleted")
+	}
 }
 
 func createHttpClient() *httpClient.GoMicroservice {

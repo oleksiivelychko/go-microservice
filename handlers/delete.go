@@ -10,7 +10,7 @@ import (
 // Delete a product
 //
 // responses:
-//	201: noContentResponse
+//	204: noContentResponse
 //  404: errorResponse
 //  501: errorResponse
 func (p *ProductHandler) DeleteProduct(rw http.ResponseWriter, r *http.Request) {

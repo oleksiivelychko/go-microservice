@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/oleksiivelychko/go-helper/env_addr"
-	"github.com/oleksiivelychko/go-helper/pretty_bytes"
+	"github.com/oleksiivelychko/go-helper/echo"
+	"github.com/oleksiivelychko/go-helper/env"
 	httpClient "github.com/oleksiivelychko/go-microservice/sdk/client"
 	"github.com/oleksiivelychko/go-microservice/sdk/client/products"
 	"github.com/oleksiivelychko/go-microservice/sdk/models"
@@ -26,7 +26,7 @@ func TestHttpClientGetProducts(t *testing.T) {
 
 	for _, productItem := range productsList.GetPayload() {
 		p, _ := productItem.MarshalBinary()
-		out := pretty_bytes.PrettyBytes(p, "	")
+		out := echo.FmtBytes(p, "	")
 		fmt.Printf("%s\n", out)
 	}
 }
@@ -39,7 +39,7 @@ func TestHttpClientGetProduct(t *testing.T) {
 	}
 
 	p, _ := productOne.GetPayload().MarshalBinary()
-	out := pretty_bytes.PrettyBytes(p, "	")
+	out := echo.FmtBytes(p, "	")
 	fmt.Printf("%s\n", out)
 }
 
@@ -140,7 +140,7 @@ func TestHttpClientDeleteProduct(t *testing.T) {
 }
 
 func createHttpClient() *httpClient.GoMicroservice {
-	addr := env_addr.GetAddr()
+	addr := env.GetAddr()
 	cfg := httpClient.DefaultTransportConfig().WithHost(addr)
 	return httpClient.NewHTTPClientWithConfig(nil, cfg)
 }

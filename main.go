@@ -5,7 +5,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/oleksiivelychko/go-helper/env_addr"
+	"github.com/oleksiivelychko/go-helper/env"
 	"github.com/oleksiivelychko/go-microservice/handlers"
 	"github.com/oleksiivelychko/go-microservice/utils"
 	"log"
@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	addr := env_addr.GetAddr()
+	addr := env.GetAddr()
 	var origins = []string{
 		"http://" + addr,
 	}

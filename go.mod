@@ -13,6 +13,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/oleksiivelychko/go-helper v0.0.0-20220403045951-f3fd40772938
 	github.com/stretchr/testify v1.7.0
+	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
 )
 
 require (

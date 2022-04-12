@@ -26,7 +26,7 @@ func NewLocal(basePath string, maxSize int) (*Local, error) {
 		return nil, err
 	}
 
-	return &Local{basePath: path}, nil
+	return &Local{basePath: path, maxFileSize: maxSize}, nil
 }
 
 /*

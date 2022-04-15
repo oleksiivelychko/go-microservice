@@ -1,11 +1,13 @@
 package backends
 
 import (
+	"bytes"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
+	"unsafe"
 )
 
 const savePath = "/1/test.png"
@@ -32,8 +34,10 @@ func TestLocal_Save(t *testing.T) {
 	local, cleanup := setup(t)
 	defer cleanup()
 
-	err := local.Save(savePath, []byte(fileContent))
+	content := bytes.NewBuffer([]byte(fileContent))
+	writtenBytes, err := local.Save(savePath, content)
 	assert.NoError(t, err)
+	assert.GreaterOrEqual(t, writtenBytes, int64(unsafe.Sizeof(content)))
 
 	file, err := os.Open(filepath.Join(local.basePath, savePath))
 	assert.NoError(t, err)
@@ -47,7 +51,8 @@ func TestLocal_Get(t *testing.T) {
 	local, cleanup := setup(t)
 	defer cleanup()
 
-	err := local.Save(savePath, []byte(fileContent))
+	content := bytes.NewBuffer([]byte(fileContent))
+	_, err := local.Save(savePath, content)
 	assert.NoError(t, err)
 
 	file, err := local.Get(savePath)

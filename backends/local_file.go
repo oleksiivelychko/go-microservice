@@ -2,16 +2,16 @@ package backends
 
 import (
 	"golang.org/x/xerrors"
-	"io"
 	"os"
 	"path/filepath"
+	"unsafe"
 )
 
 /*
 Local is an implementation of the Storage interface which works with the local disk.
 */
 type Local struct {
-	maxFileSize int // max number of bytes for files
+	maxFileSize uint64 // max number of bytes for files
 	basePath    string
 }
 
@@ -20,7 +20,7 @@ NewLocal creates a new Local filesystem with the given base path
 basePath: is the base directory to save files to
 maxSize: is the max number of bytes that a file can be
 */
-func NewLocal(basePath string, maxSize int) (*Local, error) {
+func NewLocal(basePath string, maxSize uint64) (*Local, error) {
 	path, err := filepath.Abs(basePath)
 	if err != nil {
 		return nil, err
@@ -37,20 +37,20 @@ func (l *Local) fullPath(path string) string {
 	return filepath.Join(l.basePath, path)
 }
 
-func (l *Local) Save(path string, contents io.Reader) error {
+func (l *Local) Save(path string, content []byte) error {
 	fullPath := l.fullPath(path)
 
 	// get the directory and make sure it exists
-	uploadDir := filepath.Dir(fullPath)
-	err := os.MkdirAll(uploadDir, os.ModePerm)
+	uploadPath := filepath.Dir(fullPath)
+	err := os.MkdirAll(uploadPath, os.ModePerm)
 	if err != nil {
 		return xerrors.Errorf("unable to create directory: %w", err)
 	}
 
 	// if the file exists delete it
-	_, err = os.Stat(uploadDir)
+	_, err = os.Stat(fullPath)
 	if err == nil {
-		err = os.Remove(uploadDir)
+		err = os.Remove(fullPath)
 		if err != nil {
 			return xerrors.Errorf("unable to delete file: %w", err)
 		}
@@ -58,16 +58,12 @@ func (l *Local) Save(path string, contents io.Reader) error {
 		return xerrors.Errorf("unable to get file info: %w", err)
 	}
 
-	f, err := os.Create(uploadDir)
-	if err != nil {
-		return xerrors.Errorf("unable to create file: %w", err)
+	bytes := unsafe.Sizeof(content)
+	if uint64(bytes) > l.maxFileSize {
+		return xerrors.Errorf("content size greater than max bytes allowed: %w", err)
 	}
 
-	defer f.Close()
-
-	// write the contents to the new file
-	// TODO: ensure that we are not writing greater than max bytes
-	_, err = io.Copy(f, contents)
+	err = os.WriteFile(fullPath, content, 0644)
 	if err != nil {
 		return xerrors.Errorf("unable to write to file: %w", err)
 	}

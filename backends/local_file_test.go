@@ -8,6 +8,9 @@ import (
 	"testing"
 )
 
+const savePath = "/1/test.png"
+const fileContent = "Hello World"
+
 func setup(t *testing.T) (*Local, func()) {
 	dir, err := os.MkdirTemp(os.TempDir(), "files")
 	if err != nil {
@@ -26,9 +29,6 @@ func setup(t *testing.T) (*Local, func()) {
 }
 
 func TestLocal_Save(t *testing.T) {
-	savePath := "/1/test.png"
-	fileContent := "Hello World"
-
 	local, cleanup := setup(t)
 	defer cleanup()
 
@@ -41,4 +41,19 @@ func TestLocal_Save(t *testing.T) {
 	data, err := ioutil.ReadAll(file)
 	assert.NoError(t, err)
 	assert.Equal(t, fileContent, string(data))
+}
+
+func TestLocal_Get(t *testing.T) {
+	local, cleanup := setup(t)
+	defer cleanup()
+
+	err := local.Save(savePath, []byte(fileContent))
+	assert.NoError(t, err)
+
+	file, err := local.Get(savePath)
+	assert.NoError(t, err)
+	defer file.Close()
+
+	d, err := ioutil.ReadAll(file)
+	assert.Equal(t, fileContent, string(d))
 }

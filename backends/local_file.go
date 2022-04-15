@@ -74,10 +74,10 @@ func (l *Local) Save(path string, content []byte) error {
 func (l *Local) Get(path string) (*os.File, error) {
 	fullPath := l.fullPath(path)
 
-	f, err := os.Open(fullPath)
+	file, err := os.Open(fullPath)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to open file: %w", err)
 	}
 
-	return f, err
+	return file, err
 }

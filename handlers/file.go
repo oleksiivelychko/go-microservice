@@ -35,7 +35,7 @@ func (file *File) saveFile(id, path string, rw http.ResponseWriter, r *http.Requ
 	file.log.Info("save file for the product", "id", id, "path", path)
 
 	filePath := filepath.Join(id, path)
-	err := file.store.Save(filePath, r.Body)
+	_, err := file.store.Save(filePath, r.Body)
 	if err != nil {
 		file.log.Error("unable to save file", "error", err)
 		http.Error(rw, "unable to save file", http.StatusInternalServerError)

@@ -24,6 +24,7 @@ func (file *File) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	filename := vars["filename"]
 
 	file.log.Info("handle POST", "id", productId, "filename", filename)
+	file.saveFile(productId, filename, rw, r)
 }
 
 func (file *File) invalidURI(uri string, rw http.ResponseWriter) {

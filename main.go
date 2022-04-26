@@ -5,15 +5,20 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/hashicorp/go-hclog"
 	"github.com/oleksiivelychko/go-helper/env"
+	"github.com/oleksiivelychko/go-microservice/backends"
 	"github.com/oleksiivelychko/go-microservice/handlers"
 	"github.com/oleksiivelychko/go-microservice/utils"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 )
+
+const fileStorePrefix = "/files/"
+const fileStoreBasePath = "./public" + fileStorePrefix
+const swaggerPath = "/swagger.yaml"
 
 func main() {
 	addr := env.GetAddr()
@@ -21,31 +26,50 @@ func main() {
 		"http://" + addr,
 	}
 
-	l := log.New(os.Stdout, "go-microservice", log.LstdFlags)
-	v := utils.NewValidation()
+	hcLogger := hclog.New(&hclog.LoggerOptions{
+		Name:  "go-microservice",
+		Level: hclog.LevelFromString("info"),
+	})
 
-	h := handlers.NewProductHandler(l, v)
+	stdLogger := hcLogger.StandardLogger(&hclog.StandardLoggerOptions{InferLevels: true})
+	validation := utils.NewValidation()
+
+	// max file size 5MB
+	storage, err := backends.NewLocal(fileStoreBasePath, 1024*1000*5)
+	if err != nil {
+		hcLogger.Error("unable to create storage", "error", err)
+		os.Exit(1)
+	}
+
+	productHandler := handlers.NewProductHandler(stdLogger, validation)
+	fileHandler := handlers.NewFile(storage, hcLogger)
 	serveMux := mux.NewRouter()
 
 	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/products", h.GetAll)
-	getRouter.HandleFunc("/products/{id:[0-9]+}", h.GetOne)
+	getRouter.HandleFunc("/products", productHandler.GetAll)
+	getRouter.HandleFunc("/products/{id:[0-9]+}", productHandler.GetOne)
 
 	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/products", h.CreateProduct)
-	postRouter.Use(h.MiddlewareProductValidation)
+	postRouter.HandleFunc("/products", productHandler.CreateProduct)
+	postRouter.Use(productHandler.MiddlewareProductValidation)
 
 	putRouter := serveMux.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc("/products", h.UpdateProduct)
-	putRouter.Use(h.MiddlewareProductValidation)
+	putRouter.HandleFunc("/products", productHandler.UpdateProduct)
+	putRouter.Use(productHandler.MiddlewareProductValidation)
 
 	deleteRouter := serveMux.Methods(http.MethodDelete).Subrouter()
-	deleteRouter.HandleFunc("/products/{id:[0-9]+}", h.DeleteProduct)
+	deleteRouter.HandleFunc("/products/{id:[0-9]+}", productHandler.DeleteProduct)
 
-	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
+	// GET/POST file handling
+	regex := fileStorePrefix + "{id:[0-9]+}/{filename:[a-zA-Z]+\\.(?:png|jpe?g)}"
+	postFileRouter := serveMux.Methods(http.MethodPost).Subrouter()
+	postFileRouter.HandleFunc(regex, fileHandler.ServeHTTP)
+	getRouter.Handle(regex, http.StripPrefix(fileStorePrefix, http.FileServer(http.Dir(fileStoreBasePath))))
+
+	opts := middleware.RedocOpts{SpecURL: swaggerPath}
 	apiHandler := middleware.Redoc(opts, nil)
 	getRouter.Handle("/docs", apiHandler)
-	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
+	getRouter.Handle(swaggerPath, http.FileServer(http.Dir("./")))
 
 	// Cross-Origin Resource Sharing
 	goHandler := gohandlers.CORS(gohandlers.AllowedOrigins(origins))
@@ -53,27 +77,32 @@ func main() {
 	server := &http.Server{
 		Addr:         addr,
 		Handler:      goHandler(serveMux),
-		IdleTimeout:  120 * time.Second,
-		ReadTimeout:  1 * time.Second,
-		WriteTimeout: 1 * time.Second,
+		ErrorLog:     stdLogger,         // the logger for the server
+		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
+		ReadTimeout:  1 * time.Second,   // max time to read request from the client
+		WriteTimeout: 1 * time.Second,   // max time to write response to the client
 	}
 
 	go func() {
-		l.Printf("Starting server on %s\n", addr)
+		hcLogger.Info("starting server on", "addr", addr)
 
-		err := server.ListenAndServe()
+		err = server.ListenAndServe()
 		if err != nil {
-			log.Fatal(err)
+			hcLogger.Error("unable to start server", "error", err)
+			os.Exit(1)
 		}
 	}()
 
+	// trap sigterm or interrupt and gracefully shutdown the server
 	signalChannel := make(chan os.Signal)
 	signal.Notify(signalChannel, os.Interrupt)
 	signal.Notify(signalChannel, os.Kill)
 
+	// block until a signal is received
 	sig := <-signalChannel
-	log.Println("Received terminate, graceful shutdown", sig)
+	hcLogger.Info("received terminate, graceful shutdown with", "signal", sig)
 
+	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 	_ = server.Shutdown(ctx)
 }

@@ -18,7 +18,7 @@ import (
 
 const fileStorePrefix = "/files/"
 const fileStoreBasePath = "./public" + fileStorePrefix
-const swaggerPath = "/swagger.yaml"
+const swaggerPath = "/sdk/swagger.yaml"
 
 func main() {
 	addr := env.GetAddr()

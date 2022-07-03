@@ -1,9 +1,10 @@
-generate-client: generate-swagger
-	$(info swagger generate client --help)
-	swagger generate client -A go-microservice -f swagger.yaml -t sdk
-
 generate-swagger:
-	swagger generate spec -o ./swagger.yaml --scan-models
+	rm -rf sdk/client && rm -rf sdk/models
+	swagger generate spec -o ./sdk/swagger.yaml --scan-models
+
+generate-client: generate-swagger
+	$(info 'swagger generate client --help')
+	swagger generate client -A go-microservice -f ./sdk/swagger.yaml -t ./sdk
 
 install-aws:
 	sudo -S rm /usr/local/bin/aws
@@ -19,5 +20,5 @@ install-swagger:
 install-redoc:
 	npm i -g redoc-cli
 
-start: generate-client
+start:
 	HOST=localhost PORT=9090 go run main.go

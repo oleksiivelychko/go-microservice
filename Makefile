@@ -20,5 +20,5 @@ install-swagger:
 install-redoc:
 	npm i -g redoc-cli
 
-start:
+start: generate-client
 	HOST=localhost PORT=9090 go run main.go

@@ -27,6 +27,18 @@ func (file *File) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	file.saveFile(productId, filename, rw, r)
 }
 
+func (file *File) UploadMultipart(rw http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(32 << 20) // 32Mb
+	if err != nil {
+		file.log.Error("Bad request", "error", err)
+		http.Error(rw, "Expected multipart form data", http.StatusBadRequest)
+		return
+	}
+
+	id := r.FormValue("id")
+	file.log.Info("Process multipart/form data for ID", "ID", id)
+}
+
 func (file *File) invalidURI(uri string, rw http.ResponseWriter) {
 	file.log.Error("invalid path", "path", uri)
 	http.Error(rw, "invalid file path: should be in the format: /[id]/[filename]", http.StatusBadRequest)

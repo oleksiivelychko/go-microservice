@@ -13,6 +13,7 @@ type File struct {
 	store contracts.Storage
 }
 
+// TODO: rename NewFile to NewFileHandler
 func NewFile(store contracts.Storage, log hclog.Logger) *File {
 	return &File{store: store, log: log}
 }
@@ -25,18 +26,6 @@ func (file *File) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 	file.log.Info("handle POST", "id", productId, "filename", filename)
 	file.saveFile(productId, filename, rw, r)
-}
-
-func (file *File) UploadMultipart(rw http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(32 << 20) // 32Mb
-	if err != nil {
-		file.log.Error("Bad request", "error", err)
-		http.Error(rw, "Expected multipart form data", http.StatusBadRequest)
-		return
-	}
-
-	id := r.FormValue("id")
-	file.log.Info("Process multipart/form data for ID", "ID", id)
 }
 
 func (file *File) invalidURI(uri string, rw http.ResponseWriter) {

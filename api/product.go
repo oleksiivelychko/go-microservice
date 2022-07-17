@@ -79,9 +79,7 @@ func UpdateProduct(p Product) error {
 }
 
 func AddProduct(p Product) {
-	// get the next id in sequence
-	maxID := productsList[len(productsList)-1].ID
-	p.ID = maxID + 1
+	p.ID = GetNextProductId()
 	productsList = append(productsList, &p)
 }
 
@@ -111,6 +109,14 @@ func findIndexByProductID(id int) int {
 
 func RemoveProductByIndex(s []*Product, index int) []*Product {
 	return append(s[:index], s[index+1:]...)
+}
+
+func GetNextProductId() int {
+	if len(productsList) == 0 {
+		return 1
+	}
+
+	return productsList[len(productsList)-1].ID + 1
 }
 
 var productsList = []*Product{

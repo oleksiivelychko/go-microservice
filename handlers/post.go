@@ -16,7 +16,7 @@ import (
 func (p *ProductHandler) CreateProduct(rw http.ResponseWriter, r *http.Request) {
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(*api.Product)
-	p.l.Printf("[DEBUG] inserting product: %#v\n", product)
+	p.l.Printf("[DEBUG] create a new product: %#v\n", product)
 
 	api.AddProduct(*product)
 }

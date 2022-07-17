@@ -42,7 +42,7 @@ func main() {
 	}
 
 	productHandler := handlers.NewProductHandler(stdLogger, validation)
-	fileHandler := handlers.NewFile(storage, hcLogger)
+	fileHandler := handlers.NewFileHandler(storage, hcLogger)
 	multipartHandler := handlers.NewMultipartHandler(hcLogger, validation, storage)
 	serveMux := mux.NewRouter()
 

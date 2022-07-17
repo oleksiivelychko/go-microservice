@@ -13,8 +13,7 @@ type File struct {
 	store contracts.Storage
 }
 
-// TODO: rename NewFile to NewFileHandler
-func NewFile(store contracts.Storage, log hclog.Logger) *File {
+func NewFileHandler(store contracts.Storage, log hclog.Logger) *File {
 	return &File{store: store, log: log}
 }
 

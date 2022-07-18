@@ -12,6 +12,8 @@ curl -v localhost:9090/products/3 -X DELETE
 curl -v localhost:9090/files/1/unsplash.jpeg --output -
 curl --request POST --data-binary "@public/files/unsplash.jpeg" localhost:9090/files/1/unsplash.jpeg
 
+curl -v localhost:9090/files/1/unsplash.jpeg --compressed -o public/files/1/file.jpg
+
 curl -v localhost:9090/products-form -X POST -F 'id=1' -F 'name=ice tea' -F 'description=The cup of tea' -F 'price=0.99' -F 'SKU=123-456-789' -F 'image=@public/files/unsplash.jpeg'
 ```
 

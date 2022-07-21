@@ -50,13 +50,12 @@ func (g *GzipHandler) MiddlewareGzip(next http.Handler) http.Handler {
 			wrw := NewGzipResponseWriter(rw)
 			wrw.Header().Set("Content-Encoding", "gzip")
 
-			next.ServeHTTP(rw, r)
+			next.ServeHTTP(wrw, r)
 			defer wrw.Flush()
 
 			return
-		} else {
-			next.ServeHTTP(rw, r)
-			return
 		}
+
+		next.ServeHTTP(rw, r)
 	})
 }

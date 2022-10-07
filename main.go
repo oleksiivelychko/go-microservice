@@ -6,7 +6,6 @@ import (
 	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/go-hclog"
-	"github.com/oleksiivelychko/go-helper/env"
 	"github.com/oleksiivelychko/go-microservice/backends"
 	"github.com/oleksiivelychko/go-microservice/handlers"
 	"github.com/oleksiivelychko/go-microservice/utils"
@@ -21,7 +20,7 @@ const fileStoreBasePath = "./public" + fileStorePrefix
 const swaggerPath = "/sdk/swagger.yaml"
 
 func main() {
-	addr := env.GetAddr()
+	var addr = "localhost:9090"
 	var origins = []string{
 		"http://" + addr,
 	}

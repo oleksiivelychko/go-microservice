@@ -2,16 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/oleksiivelychko/go-helper/echo"
-	"github.com/oleksiivelychko/go-helper/env"
 	httpClient "github.com/oleksiivelychko/go-microservice/sdk/client"
 	"github.com/oleksiivelychko/go-microservice/sdk/client/products"
 	"github.com/oleksiivelychko/go-microservice/sdk/models"
+	prettily "github.com/oleksiivelychko/go-microservice/utils/echo_bytes"
 	"testing"
 )
 
 /**
-main server must be running before
+Warning: main server must be running before.
 */
 
 var client = createHttpClient()
@@ -26,7 +25,7 @@ func TestHttpClientGetProducts(t *testing.T) {
 
 	for _, productItem := range productsList.GetPayload() {
 		p, _ := productItem.MarshalBinary()
-		out := echo.FmtBytes(p, "	")
+		out := prettily.EchoBytes(p, "	")
 		fmt.Printf("%s\n", out)
 	}
 }
@@ -39,7 +38,7 @@ func TestHttpClientGetProduct(t *testing.T) {
 	}
 
 	p, _ := productOne.GetPayload().MarshalBinary()
-	out := echo.FmtBytes(p, "	")
+	out := prettily.EchoBytes(p, "	")
 	fmt.Printf("%s\n", out)
 }
 
@@ -84,7 +83,8 @@ func TestHttpClientCreateProduct(t *testing.T) {
 	}
 }
 
-/**
+/*
+*
 TestHttpClientUpdateProduct
 https://github.com/go-swagger/go-swagger/discussions/2742
 */
@@ -140,7 +140,7 @@ func TestHttpClientDeleteProduct(t *testing.T) {
 }
 
 func createHttpClient() *httpClient.GoMicroservice {
-	addr := env.GetAddr()
+	addr := "http://localhost:9090"
 	cfg := httpClient.DefaultTransportConfig().WithHost(addr)
 	return httpClient.NewHTTPClientWithConfig(nil, cfg)
 }

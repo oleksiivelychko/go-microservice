@@ -1,6 +1,3 @@
-compile-protocol-buffers:
-	protoc -I=protos --go_out=protos protos/*.proto
-
 generate-swagger:
 	rm -rf sdk/client && rm -rf sdk/models
 	swagger generate spec -o ./sdk/swagger.yaml --scan-models
@@ -26,6 +23,10 @@ install-swagger:
 
 install-redoc:
 	npm i -g redoc-cli
+
+.PHONY: protos
+protos:
+	protoc -I=protos --go-grpc_out=protos protos/*.proto
 
 start: generate-client
 	HOST=localhost PORT=9090 go run main.go

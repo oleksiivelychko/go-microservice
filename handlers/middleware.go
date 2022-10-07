@@ -5,6 +5,7 @@ import (
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/utils"
 	"net/http"
+	"strings"
 )
 
 func (p *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Handler {
@@ -40,5 +41,22 @@ func (p *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Han
 
 		// call the next handler, which can be another middleware in the chain, or the final handler.
 		next.ServeHTTP(rw, r)
+	})
+}
+
+func (g *GzipHandler) MiddlewareGzip(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+			wrw := NewGzipResponseWriter(rw)
+			wrw.Header().Set("Content-Encoding", "gzip")
+
+			next.ServeHTTP(rw, r)
+			defer wrw.Flush()
+
+			return
+		} else {
+			next.ServeHTTP(rw, r)
+			return
+		}
 	})
 }

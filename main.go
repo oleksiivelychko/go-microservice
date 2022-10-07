@@ -44,6 +44,7 @@ func main() {
 	productHandler := handlers.NewProductHandler(stdLogger, validation)
 	fileHandler := handlers.NewFileHandler(storage, hcLogger)
 	multipartHandler := handlers.NewMultipartHandler(hcLogger, validation, storage)
+	gzipHandler := handlers.GzipHandler{}
 	serveMux := mux.NewRouter()
 
 	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
@@ -66,6 +67,7 @@ func main() {
 	postFileRouter := serveMux.Methods(http.MethodPost).Subrouter()
 	postFileRouter.HandleFunc(regex, fileHandler.ServeHTTP)
 	getRouter.Handle(regex, http.StripPrefix(fileStorePrefix, http.FileServer(http.Dir(fileStoreBasePath))))
+	getRouter.Use(gzipHandler.MiddlewareGzip)
 
 	// Multipart Form data processing
 	postMultipartFormRouter := serveMux.Methods(http.MethodPost).Subrouter()

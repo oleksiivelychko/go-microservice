@@ -1,3 +1,6 @@
+compile-protocol-buffers:
+	protoc -I=protos --go_out=protos protos/*.proto
+
 generate-swagger:
 	rm -rf sdk/client && rm -rf sdk/models
 	swagger generate spec -o ./sdk/swagger.yaml --scan-models
@@ -13,6 +16,10 @@ install-aws:
 	rm AWSCLIV2.pkg
 	which aws
 	aws --version
+
+install-protobuf:
+	brew install protobuf
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
 install-swagger:
 	which swagger || (brew tap go-swagger/go-swagger && brew install go-swagger)

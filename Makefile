@@ -14,19 +14,11 @@ install-aws:
 	which aws
 	aws --version
 
-install-protobuf:
-	brew install protobuf
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-
 install-swagger:
 	which swagger || (brew tap go-swagger/go-swagger && brew install go-swagger)
 
 install-redoc:
 	npm i -g redoc-cli
-
-.PHONY: protos
-protos:
-	protoc --go_out=protos --go-grpc_out=protos protos/*.proto
 
 start: generate-client
 	HOST=localhost PORT=9090 go run main.go

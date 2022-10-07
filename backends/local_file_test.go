@@ -3,7 +3,7 @@ package backends
 import (
 	"bytes"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -26,7 +26,7 @@ func setup(t *testing.T) (*Local, func()) {
 	}
 
 	return local, func() {
-		os.RemoveAll(dir)
+		_ = os.RemoveAll(dir)
 	}
 }
 
@@ -42,7 +42,7 @@ func TestLocal_Save(t *testing.T) {
 	file, err := os.Open(filepath.Join(local.basePath, savePath))
 	assert.NoError(t, err)
 
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	assert.NoError(t, err)
 	assert.Equal(t, fileContent, string(data))
 }
@@ -59,6 +59,6 @@ func TestLocal_Get(t *testing.T) {
 	assert.NoError(t, err)
 	defer file.Close()
 
-	d, err := ioutil.ReadAll(file)
+	d, err := io.ReadAll(file)
 	assert.Equal(t, fileContent, string(d))
 }

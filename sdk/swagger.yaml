@@ -3,85 +3,23 @@ consumes:
 - application/json
 definitions:
   GenericError:
-    description: GenericError GenericError GenericError GenericError GenericError
-      GenericError GenericError GenericError GenericError GenericError GenericError
-      GenericError GenericError GenericError GenericError GenericError GenericError
-      GenericError GenericError GenericError GenericError GenericError GenericError
-      GenericError GenericError GenericError GenericError GenericError GenericError
-      GenericError GenericError GenericError GenericError GenericError GenericError
-      GenericError GenericError GenericError GenericError GenericError GenericError
-      GenericError is a generic error message returned by a server
+    description: GenericError is a generic error message returned by a server
     properties:
       message:
-        description: message
         type: string
         x-go-name: Message
     type: object
-    x-go-package: github.com/oleksiivelychko/go-microservice/sdk/models
-  Product:
-    description: Product Product Product defines the structure for an API product
-    properties:
-      description:
-        description: description
-        maxLength: 10000
-        type: string
-        x-go-name: Description
-      id:
-        description: unique identifier
-        format: int64
-        minimum: 1
-        type: integer
-        x-go-name: ID
-      name:
-        description: name
-        maxLength: 255
-        type: string
-        x-go-name: Name
-      price:
-        description: price
-        format: float
-        minimum: 0.01
-        type: number
-        x-go-name: Price
-      sku:
-        description: |-
-          SKU - in the field of inventory management, a stock keeping unit is a distinct type of item for sale, purchased, or tracked in inventory,
-          such as a product or service, and all attributes associated with the item type that distinguish it from other item types.
-          For a product, these attributes can include manufacturer, description, material, size, color, packaging, and warranty terms.
-          When a business takes inventory of its stock, it counts the quantity it has of each SKU.
-          SKU can also refer to a unique identifier or code, sometimes represented via a barcode for scanning and tracking, that refers to the particular stock keeping unit.
-          These identifiers are not regulated or standardized.
-          When a company receives items from a vendor, it has a choice of maintaining the vendor's SKU or creating its own.
-
-          Original source: https://en.wikipedia.org/wiki/Stock_keeping_unit
-        pattern: '[a-z]+-[a-z]+-[a-z]+'
-        type: string
-        x-go-name: SKU
-    required:
-    - name
-    - price
-    - sku
-    type: object
-    x-go-package: github.com/oleksiivelychko/go-microservice/sdk/models
+    x-go-package: github.com/oleksiivelychko/go-microservice/handlers
   ValidationError:
-    description: ValidationError ValidationError ValidationError ValidationError ValidationError
-      ValidationError ValidationError ValidationError ValidationError ValidationError
-      ValidationError ValidationError ValidationError ValidationError ValidationError
-      ValidationError ValidationError ValidationError ValidationError ValidationError
-      ValidationError ValidationError ValidationError ValidationError ValidationError
-      ValidationError ValidationError ValidationError ValidationError ValidationError
-      ValidationError ValidationError ValidationError ValidationError ValidationError
-      ValidationError ValidationError ValidationError ValidationError ValidationError
-      ValidationError ValidationError is a collection of validation error messages
+    description: ValidationError is a collection of validation error messages
     properties:
       messages:
-        description: messages
         items:
           type: string
         type: array
         x-go-name: Messages
     type: object
-    x-go-package: github.com/oleksiivelychko/go-microservice/sdk/models
+    x-go-package: github.com/oleksiivelychko/go-microservice/handlers
   product:
     description: Product defines the structure for an API product
     properties:

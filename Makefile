@@ -26,7 +26,7 @@ install-redoc:
 
 .PHONY: protos
 protos:
-	protoc -I=protos --go-grpc_out=protos protos/*.proto
+	protoc --go_out=protos --go-grpc_out=protos protos/*.proto
 
 start: generate-client
 	HOST=localhost PORT=9090 go run main.go

@@ -43,6 +43,7 @@ func main() {
 
 	productHandler := handlers.NewProductHandler(stdLogger, validation)
 	fileHandler := handlers.NewFile(storage, hcLogger)
+	multipartHandler := handlers.NewMultipartHandler(hcLogger, validation, storage)
 	serveMux := mux.NewRouter()
 
 	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
@@ -66,6 +67,10 @@ func main() {
 	postFileRouter.HandleFunc(regex, fileHandler.ServeHTTP)
 	getRouter.Handle(regex, http.StripPrefix(fileStorePrefix, http.FileServer(http.Dir(fileStoreBasePath))))
 
+	// Multipart Form data processing
+	postMultipartFormRouter := serveMux.Methods(http.MethodPost).Subrouter()
+	postMultipartFormRouter.HandleFunc("/products-form", multipartHandler.ProcessForm)
+
 	opts := middleware.RedocOpts{SpecURL: swaggerPath}
 	apiHandler := middleware.Redoc(opts, nil)
 	getRouter.Handle("/docs", apiHandler)
@@ -79,8 +84,8 @@ func main() {
 		Handler:      goHandler(serveMux),
 		ErrorLog:     stdLogger,         // the logger for the server
 		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
-		ReadTimeout:  1 * time.Second,   // max time to read request from the client
-		WriteTimeout: 1 * time.Second,   // max time to write response to the client
+		ReadTimeout:  10 * time.Second,  // max time to read request from the client
+		WriteTimeout: 10 * time.Second,  // max time to write response to the client
 	}
 
 	go func() {

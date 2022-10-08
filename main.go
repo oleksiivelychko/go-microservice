@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-openapi/runtime/middleware"
 	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -20,20 +21,20 @@ const fileStoreBasePath = "./public" + fileStorePrefix
 const swaggerPath = "/sdk/swagger.yaml"
 
 func main() {
-	var addr = "localhost:9090"
+	var addr = fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
 	var origins = []string{
 		"http://" + addr,
 	}
 
 	hcLogger := hclog.New(&hclog.LoggerOptions{
 		Name:  "go-microservice",
-		Level: hclog.LevelFromString("info"),
+		Level: hclog.LevelFromString("debug"),
 	})
 
 	stdLogger := hcLogger.StandardLogger(&hclog.StandardLoggerOptions{InferLevels: true})
 	validation := utils.NewValidation()
 
-	// max file size 5MB
+	// max file size is 5MB
 	storage, err := backends.NewLocal(fileStoreBasePath, 1024*1000*5)
 	if err != nil {
 		hcLogger.Error("unable to create storage", "error", err)
@@ -43,7 +44,7 @@ func main() {
 	productHandler := handlers.NewProductHandler(stdLogger, validation)
 	fileHandler := handlers.NewFileHandler(storage, hcLogger)
 	multipartHandler := handlers.NewMultipartHandler(hcLogger, validation, storage)
-	gzipHandler := handlers.GzipHandler{}
+	gzipHandler := handlers.NewGzipHandler(hcLogger)
 	serveMux := mux.NewRouter()
 
 	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
@@ -91,7 +92,6 @@ func main() {
 
 	go func() {
 		hcLogger.Info("starting server on", "addr", addr)
-
 		err = server.ListenAndServe()
 		if err != nil {
 			hcLogger.Error("unable to start server", "error", err)

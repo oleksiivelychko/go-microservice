@@ -17,9 +17,9 @@ type Local struct {
 }
 
 /*
-NewLocal creates a new Local filesystem with the given base path
-basePath: is the base directory to save files to
-maxSize: is the max number of bytes that a file can be
+NewLocal creates a new Local filesystem with the given base path.
+basePath: is the base directory to save files to.
+maxSize: is the max number of bytes that a file can be.
 */
 func NewLocal(basePath string, maxSize uint64) (*Local, error) {
 	path, err := filepath.Abs(basePath)
@@ -31,7 +31,7 @@ func NewLocal(basePath string, maxSize uint64) (*Local, error) {
 }
 
 /*
-fullPath returns the absolute path
+fullPath returns the absolute path.
 */
 func (l *Local) fullPath(path string) string {
 	// append the given path to the base path
@@ -48,7 +48,7 @@ func (l *Local) Save(path string, content io.Reader) (int64, error) {
 		return 0, xerrors.Errorf("unable to create directory: %w", err)
 	}
 
-	// if the file exists delete it
+	// if the file exists then delete it
 	_, err = os.Stat(fullPath)
 	if err == nil {
 		err = os.Remove(fullPath)
@@ -72,7 +72,7 @@ func (l *Local) Save(path string, content io.Reader) (int64, error) {
 
 	writtenBytes, err := io.Copy(newFile, content)
 	if err != nil {
-		return 0, xerrors.Errorf("Unable to write to file: %w", err)
+		return 0, xerrors.Errorf("unable to write into file: %w", err)
 	}
 
 	return writtenBytes, nil

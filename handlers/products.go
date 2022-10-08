@@ -27,9 +27,14 @@ type GenericError struct {
 	Message string `json:"message"`
 }
 
-// ValidationError is a collection of validation error messages
-type ValidationError struct {
+// ValidationErrors is a collection of validation error messages.
+type ValidationErrors struct {
 	Messages []string `json:"messages"`
+}
+
+// NotFound means that record not found inside collection.
+type NotFound struct {
+	Message string `json:"message"`
 }
 
 // getProductID returns the product ID from the URL

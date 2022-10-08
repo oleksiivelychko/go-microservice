@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// Product defines the structure for an API product
+// Product defines the structure for an API model.
 // swagger:model product
 type Product struct {
 	// unique identifier
@@ -20,7 +20,7 @@ type Product struct {
 	// max length: 255
 	Name string `json:"name" validate:"required"`
 
-	// description
+	// text description
 	//
 	// required: false
 	// max length: 10000
@@ -61,26 +61,26 @@ func GetProducts() Products {
 
 func GetProduct(id int) (*Product, error) {
 	i := findIndexByProductID(id)
-	if id == -1 {
+	if i == -1 {
 		return nil, ErrProductNotFound
 	}
 
 	return productsList[i], nil
 }
 
-func UpdateProduct(p Product) error {
+func UpdateProduct(p *Product) error {
 	i := findIndexByProductID(p.ID)
 	if i == -1 {
 		return ErrProductNotFound
 	}
 
-	productsList[i] = &p
+	productsList[i] = p
 	return nil
 }
 
-func AddProduct(p Product) {
+func AddProduct(p *Product) {
 	p.ID = GetNextProductId()
-	productsList = append(productsList, &p)
+	productsList = append(productsList, p)
 }
 
 func DeleteProduct(id int) error {
@@ -93,9 +93,10 @@ func DeleteProduct(id int) error {
 	return nil
 }
 
-/**
-findIndexByProductID finds the index of a product
-returns -1 when no product can be found
+/*
+*
+findIndexByProductID finds the index of a product.
+Returns -1 when no product not found.
 */
 func findIndexByProductID(id int) int {
 	for i, p := range productsList {

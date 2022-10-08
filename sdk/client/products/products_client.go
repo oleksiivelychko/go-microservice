@@ -30,7 +30,7 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	CreateProduct(params *CreateProductParams, opts ...ClientOption) (*CreateProductOK, error)
+	CreateProduct(params *CreateProductParams, opts ...ClientOption) (*CreateProductCreated, error)
 
 	DeleteProduct(params *DeleteProductParams, opts ...ClientOption) (*DeleteProductNoContent, error)
 
@@ -38,15 +38,15 @@ type ClientService interface {
 
 	GetProducts(params *GetProductsParams, opts ...ClientOption) (*GetProductsOK, error)
 
-	UpdateProduct(params *UpdateProductParams, opts ...ClientOption) (*UpdateProductCreated, error)
+	UpdateProduct(params *UpdateProductParams, opts ...ClientOption) (*UpdateProductOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
 
 /*
-  CreateProduct Create a new product
+CreateProduct creates a new product
 */
-func (a *Client) CreateProduct(params *CreateProductParams, opts ...ClientOption) (*CreateProductOK, error) {
+func (a *Client) CreateProduct(params *CreateProductParams, opts ...ClientOption) (*CreateProductCreated, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewCreateProductParams()
@@ -71,7 +71,7 @@ func (a *Client) CreateProduct(params *CreateProductParams, opts ...ClientOption
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*CreateProductOK)
+	success, ok := result.(*CreateProductCreated)
 	if ok {
 		return success, nil
 	}
@@ -82,7 +82,7 @@ func (a *Client) CreateProduct(params *CreateProductParams, opts ...ClientOption
 }
 
 /*
-  DeleteProduct Delete a product
+DeleteProduct deletes a product
 */
 func (a *Client) DeleteProduct(params *DeleteProductParams, opts ...ClientOption) (*DeleteProductNoContent, error) {
 	// TODO: Validate the params before sending
@@ -120,7 +120,7 @@ func (a *Client) DeleteProduct(params *DeleteProductParams, opts ...ClientOption
 }
 
 /*
-  GetProduct Returns a single product by ID
+GetProduct returns a product by ID
 */
 func (a *Client) GetProduct(params *GetProductParams, opts ...ClientOption) (*GetProductOK, error) {
 	// TODO: Validate the params before sending
@@ -158,7 +158,7 @@ func (a *Client) GetProduct(params *GetProductParams, opts ...ClientOption) (*Ge
 }
 
 /*
-  GetProducts Returns a list of products
+GetProducts returns a list of products
 */
 func (a *Client) GetProducts(params *GetProductsParams, opts ...ClientOption) (*GetProductsOK, error) {
 	// TODO: Validate the params before sending
@@ -196,9 +196,9 @@ func (a *Client) GetProducts(params *GetProductsParams, opts ...ClientOption) (*
 }
 
 /*
-  UpdateProduct Update a products details
+UpdateProduct updates a product details
 */
-func (a *Client) UpdateProduct(params *UpdateProductParams, opts ...ClientOption) (*UpdateProductCreated, error) {
+func (a *Client) UpdateProduct(params *UpdateProductParams, opts ...ClientOption) (*UpdateProductOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewUpdateProductParams()
@@ -206,7 +206,7 @@ func (a *Client) UpdateProduct(params *UpdateProductParams, opts ...ClientOption
 	op := &runtime.ClientOperation{
 		ID:                 "updateProduct",
 		Method:             "PUT",
-		PathPattern:        "/products",
+		PathPattern:        "/products/{id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -223,7 +223,7 @@ func (a *Client) UpdateProduct(params *UpdateProductParams, opts ...ClientOption
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*UpdateProductCreated)
+	success, ok := result.(*UpdateProductOK)
 	if ok {
 		return success, nil
 	}

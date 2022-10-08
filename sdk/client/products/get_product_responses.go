@@ -35,6 +35,12 @@ func (o *GetProductReader) ReadResponse(response runtime.ClientResponse, consume
 			return nil, err
 		}
 		return nil, result
+	case 500:
+		result := NewGetProductInternalServerError()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	default:
 		return nil, runtime.NewAPIError("response status code does not match any response statuses defined for this endpoint in the swagger spec", response, response.Code())
 	}
@@ -45,17 +51,48 @@ func NewGetProductOK() *GetProductOK {
 	return &GetProductOK{}
 }
 
-/* GetProductOK describes a response with status code 200, with default header values.
+/*
+GetProductOK describes a response with status code 200, with default header values.
 
-Data structure representing a single product
+Data structure representing a single product.
 */
 type GetProductOK struct {
 	Payload *models.Product
 }
 
+// IsSuccess returns true when this get product o k response has a 2xx status code
+func (o *GetProductOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this get product o k response has a 3xx status code
+func (o *GetProductOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this get product o k response has a 4xx status code
+func (o *GetProductOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this get product o k response has a 5xx status code
+func (o *GetProductOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this get product o k response a status code equal to that given
+func (o *GetProductOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *GetProductOK) Error() string {
 	return fmt.Sprintf("[GET /products/{id}][%d] getProductOK  %+v", 200, o.Payload)
 }
+
+func (o *GetProductOK) String() string {
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductOK  %+v", 200, o.Payload)
+}
+
 func (o *GetProductOK) GetPayload() *models.Product {
 	return o.Payload
 }
@@ -77,22 +114,116 @@ func NewGetProductNotFound() *GetProductNotFound {
 	return &GetProductNotFound{}
 }
 
-/* GetProductNotFound describes a response with status code 404, with default header values.
+/*
+GetProductNotFound describes a response with status code 404, with default header values.
 
-Generic error message returned as a string.
+Not found message.
 */
 type GetProductNotFound struct {
-	Payload *models.GenericError
+	Payload *models.NotFound
+}
+
+// IsSuccess returns true when this get product not found response has a 2xx status code
+func (o *GetProductNotFound) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this get product not found response has a 3xx status code
+func (o *GetProductNotFound) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this get product not found response has a 4xx status code
+func (o *GetProductNotFound) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this get product not found response has a 5xx status code
+func (o *GetProductNotFound) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this get product not found response a status code equal to that given
+func (o *GetProductNotFound) IsCode(code int) bool {
+	return code == 404
 }
 
 func (o *GetProductNotFound) Error() string {
 	return fmt.Sprintf("[GET /products/{id}][%d] getProductNotFound  %+v", 404, o.Payload)
 }
-func (o *GetProductNotFound) GetPayload() *models.GenericError {
+
+func (o *GetProductNotFound) String() string {
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductNotFound  %+v", 404, o.Payload)
+}
+
+func (o *GetProductNotFound) GetPayload() *models.NotFound {
 	return o.Payload
 }
 
 func (o *GetProductNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.NotFound)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewGetProductInternalServerError creates a GetProductInternalServerError with default headers values
+func NewGetProductInternalServerError() *GetProductInternalServerError {
+	return &GetProductInternalServerError{}
+}
+
+/*
+GetProductInternalServerError describes a response with status code 500, with default header values.
+
+Generic error message returned as a string.
+*/
+type GetProductInternalServerError struct {
+	Payload *models.GenericError
+}
+
+// IsSuccess returns true when this get product internal server error response has a 2xx status code
+func (o *GetProductInternalServerError) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this get product internal server error response has a 3xx status code
+func (o *GetProductInternalServerError) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this get product internal server error response has a 4xx status code
+func (o *GetProductInternalServerError) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this get product internal server error response has a 5xx status code
+func (o *GetProductInternalServerError) IsServerError() bool {
+	return true
+}
+
+// IsCode returns true when this get product internal server error response a status code equal to that given
+func (o *GetProductInternalServerError) IsCode(code int) bool {
+	return code == 500
+}
+
+func (o *GetProductInternalServerError) Error() string {
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductInternalServerError  %+v", 500, o.Payload)
+}
+
+func (o *GetProductInternalServerError) String() string {
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductInternalServerError  %+v", 500, o.Payload)
+}
+
+func (o *GetProductInternalServerError) GetPayload() *models.GenericError {
+	return o.Payload
+}
+
+func (o *GetProductInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.GenericError)
 

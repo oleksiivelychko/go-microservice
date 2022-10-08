@@ -54,18 +54,16 @@ func NewCreateProductParamsWithHTTPClient(client *http.Client) *CreateProductPar
 	}
 }
 
-/* CreateProductParams contains all the parameters to send to the API endpoint
-   for the create product operation.
+/*
+CreateProductParams contains all the parameters to send to the API endpoint
 
-   Typically these are written to a http.Request.
+	for the create product operation.
+
+	Typically these are written to a http.Request.
 */
 type CreateProductParams struct {
 
-	/* Body.
-
-	     Product data structure to Update or Create.
-	Note: the id field is ignored by update and create operations
-	*/
+	// Body.
 	Body *models.Product
 
 	timeout    time.Duration

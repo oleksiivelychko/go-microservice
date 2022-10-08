@@ -23,26 +23,14 @@ type CreateProductReader struct {
 // ReadResponse reads a server response into the received o.
 func (o *CreateProductReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
-	case 200:
-		result := NewCreateProductOK()
+	case 201:
+		result := NewCreateProductCreated()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
 		return result, nil
-	case 400:
-		result := NewCreateProductBadRequest()
-		if err := result.readResponse(response, consumer, o.formats); err != nil {
-			return nil, err
-		}
-		return nil, result
 	case 422:
 		result := NewCreateProductUnprocessableEntity()
-		if err := result.readResponse(response, consumer, o.formats); err != nil {
-			return nil, err
-		}
-		return nil, result
-	case 501:
-		result := NewCreateProductNotImplemented()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -52,61 +40,60 @@ func (o *CreateProductReader) ReadResponse(response runtime.ClientResponse, cons
 	}
 }
 
-// NewCreateProductOK creates a CreateProductOK with default headers values
-func NewCreateProductOK() *CreateProductOK {
-	return &CreateProductOK{}
+// NewCreateProductCreated creates a CreateProductCreated with default headers values
+func NewCreateProductCreated() *CreateProductCreated {
+	return &CreateProductCreated{}
 }
 
-/* CreateProductOK describes a response with status code 200, with default header values.
+/*
+CreateProductCreated describes a response with status code 201, with default header values.
 
-Data structure representing a single product
+Data structure representing a single product.
 */
-type CreateProductOK struct {
+type CreateProductCreated struct {
 	Payload *models.Product
 }
 
-func (o *CreateProductOK) Error() string {
-	return fmt.Sprintf("[POST /products][%d] createProductOK  %+v", 200, o.Payload)
+// IsSuccess returns true when this create product created response has a 2xx status code
+func (o *CreateProductCreated) IsSuccess() bool {
+	return true
 }
-func (o *CreateProductOK) GetPayload() *models.Product {
+
+// IsRedirect returns true when this create product created response has a 3xx status code
+func (o *CreateProductCreated) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this create product created response has a 4xx status code
+func (o *CreateProductCreated) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this create product created response has a 5xx status code
+func (o *CreateProductCreated) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this create product created response a status code equal to that given
+func (o *CreateProductCreated) IsCode(code int) bool {
+	return code == 201
+}
+
+func (o *CreateProductCreated) Error() string {
+	return fmt.Sprintf("[POST /products][%d] createProductCreated  %+v", 201, o.Payload)
+}
+
+func (o *CreateProductCreated) String() string {
+	return fmt.Sprintf("[POST /products][%d] createProductCreated  %+v", 201, o.Payload)
+}
+
+func (o *CreateProductCreated) GetPayload() *models.Product {
 	return o.Payload
 }
 
-func (o *CreateProductOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+func (o *CreateProductCreated) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Product)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
-
-	return nil
-}
-
-// NewCreateProductBadRequest creates a CreateProductBadRequest with default headers values
-func NewCreateProductBadRequest() *CreateProductBadRequest {
-	return &CreateProductBadRequest{}
-}
-
-/* CreateProductBadRequest describes a response with status code 400, with default header values.
-
-Validation errors defined as an array of strings.
-*/
-type CreateProductBadRequest struct {
-	Payload *models.ValidationError
-}
-
-func (o *CreateProductBadRequest) Error() string {
-	return fmt.Sprintf("[POST /products][%d] createProductBadRequest  %+v", 400, o.Payload)
-}
-func (o *CreateProductBadRequest) GetPayload() *models.ValidationError {
-	return o.Payload
-}
-
-func (o *CreateProductBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.ValidationError)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -121,56 +108,55 @@ func NewCreateProductUnprocessableEntity() *CreateProductUnprocessableEntity {
 	return &CreateProductUnprocessableEntity{}
 }
 
-/* CreateProductUnprocessableEntity describes a response with status code 422, with default header values.
+/*
+CreateProductUnprocessableEntity describes a response with status code 422, with default header values.
 
 Validation errors defined as an array of strings.
 */
 type CreateProductUnprocessableEntity struct {
-	Payload *models.ValidationError
+	Payload *models.ValidationErrors
+}
+
+// IsSuccess returns true when this create product unprocessable entity response has a 2xx status code
+func (o *CreateProductUnprocessableEntity) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this create product unprocessable entity response has a 3xx status code
+func (o *CreateProductUnprocessableEntity) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this create product unprocessable entity response has a 4xx status code
+func (o *CreateProductUnprocessableEntity) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this create product unprocessable entity response has a 5xx status code
+func (o *CreateProductUnprocessableEntity) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this create product unprocessable entity response a status code equal to that given
+func (o *CreateProductUnprocessableEntity) IsCode(code int) bool {
+	return code == 422
 }
 
 func (o *CreateProductUnprocessableEntity) Error() string {
 	return fmt.Sprintf("[POST /products][%d] createProductUnprocessableEntity  %+v", 422, o.Payload)
 }
-func (o *CreateProductUnprocessableEntity) GetPayload() *models.ValidationError {
+
+func (o *CreateProductUnprocessableEntity) String() string {
+	return fmt.Sprintf("[POST /products][%d] createProductUnprocessableEntity  %+v", 422, o.Payload)
+}
+
+func (o *CreateProductUnprocessableEntity) GetPayload() *models.ValidationErrors {
 	return o.Payload
 }
 
 func (o *CreateProductUnprocessableEntity) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.ValidationError)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
-
-	return nil
-}
-
-// NewCreateProductNotImplemented creates a CreateProductNotImplemented with default headers values
-func NewCreateProductNotImplemented() *CreateProductNotImplemented {
-	return &CreateProductNotImplemented{}
-}
-
-/* CreateProductNotImplemented describes a response with status code 501, with default header values.
-
-Generic error message returned as a string.
-*/
-type CreateProductNotImplemented struct {
-	Payload *models.GenericError
-}
-
-func (o *CreateProductNotImplemented) Error() string {
-	return fmt.Sprintf("[POST /products][%d] createProductNotImplemented  %+v", 501, o.Payload)
-}
-func (o *CreateProductNotImplemented) GetPayload() *models.GenericError {
-	return o.Payload
-}
-
-func (o *CreateProductNotImplemented) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.GenericError)
+	o.Payload = new(models.ValidationErrors)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

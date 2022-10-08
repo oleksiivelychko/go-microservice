@@ -53,19 +53,18 @@ func NewDeleteProductParamsWithHTTPClient(client *http.Client) *DeleteProductPar
 	}
 }
 
-/* DeleteProductParams contains all the parameters to send to the API endpoint
-   for the delete product operation.
+/*
+DeleteProductParams contains all the parameters to send to the API endpoint
 
-   Typically these are written to a http.Request.
+	for the delete product operation.
+
+	Typically these are written to a http.Request.
 */
 type DeleteProductParams struct {
 
-	/* ID.
-
-	   The id of the product for which the operation relates
-
-	   Format: int64
-	*/
+	// ID.
+	//
+	// Format: int64
 	ID int64
 
 	timeout    time.Duration

@@ -23,8 +23,8 @@ type UpdateProductReader struct {
 // ReadResponse reads a server response into the received o.
 func (o *UpdateProductReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
-	case 201:
-		result := NewUpdateProductCreated()
+	case 200:
+		result := NewUpdateProductOK()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -41,38 +41,63 @@ func (o *UpdateProductReader) ReadResponse(response runtime.ClientResponse, cons
 			return nil, err
 		}
 		return nil, result
-	case 501:
-		result := NewUpdateProductNotImplemented()
-		if err := result.readResponse(response, consumer, o.formats); err != nil {
-			return nil, err
-		}
-		return nil, result
 	default:
 		return nil, runtime.NewAPIError("response status code does not match any response statuses defined for this endpoint in the swagger spec", response, response.Code())
 	}
 }
 
-// NewUpdateProductCreated creates a UpdateProductCreated with default headers values
-func NewUpdateProductCreated() *UpdateProductCreated {
-	return &UpdateProductCreated{}
+// NewUpdateProductOK creates a UpdateProductOK with default headers values
+func NewUpdateProductOK() *UpdateProductOK {
+	return &UpdateProductOK{}
 }
 
-/* UpdateProductCreated describes a response with status code 201, with default header values.
+/*
+UpdateProductOK describes a response with status code 200, with default header values.
 
-Data structure representing a single product
+Data structure representing a single product.
 */
-type UpdateProductCreated struct {
+type UpdateProductOK struct {
 	Payload *models.Product
 }
 
-func (o *UpdateProductCreated) Error() string {
-	return fmt.Sprintf("[PUT /products][%d] updateProductCreated  %+v", 201, o.Payload)
+// IsSuccess returns true when this update product o k response has a 2xx status code
+func (o *UpdateProductOK) IsSuccess() bool {
+	return true
 }
-func (o *UpdateProductCreated) GetPayload() *models.Product {
+
+// IsRedirect returns true when this update product o k response has a 3xx status code
+func (o *UpdateProductOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this update product o k response has a 4xx status code
+func (o *UpdateProductOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this update product o k response has a 5xx status code
+func (o *UpdateProductOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this update product o k response a status code equal to that given
+func (o *UpdateProductOK) IsCode(code int) bool {
+	return code == 200
+}
+
+func (o *UpdateProductOK) Error() string {
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductOK  %+v", 200, o.Payload)
+}
+
+func (o *UpdateProductOK) String() string {
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductOK  %+v", 200, o.Payload)
+}
+
+func (o *UpdateProductOK) GetPayload() *models.Product {
 	return o.Payload
 }
 
-func (o *UpdateProductCreated) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+func (o *UpdateProductOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Product)
 
@@ -89,7 +114,8 @@ func NewUpdateProductNotFound() *UpdateProductNotFound {
 	return &UpdateProductNotFound{}
 }
 
-/* UpdateProductNotFound describes a response with status code 404, with default header values.
+/*
+UpdateProductNotFound describes a response with status code 404, with default header values.
 
 Generic error message returned as a string.
 */
@@ -97,9 +123,39 @@ type UpdateProductNotFound struct {
 	Payload *models.GenericError
 }
 
-func (o *UpdateProductNotFound) Error() string {
-	return fmt.Sprintf("[PUT /products][%d] updateProductNotFound  %+v", 404, o.Payload)
+// IsSuccess returns true when this update product not found response has a 2xx status code
+func (o *UpdateProductNotFound) IsSuccess() bool {
+	return false
 }
+
+// IsRedirect returns true when this update product not found response has a 3xx status code
+func (o *UpdateProductNotFound) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this update product not found response has a 4xx status code
+func (o *UpdateProductNotFound) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this update product not found response has a 5xx status code
+func (o *UpdateProductNotFound) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this update product not found response a status code equal to that given
+func (o *UpdateProductNotFound) IsCode(code int) bool {
+	return code == 404
+}
+
+func (o *UpdateProductNotFound) Error() string {
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductNotFound  %+v", 404, o.Payload)
+}
+
+func (o *UpdateProductNotFound) String() string {
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductNotFound  %+v", 404, o.Payload)
+}
+
 func (o *UpdateProductNotFound) GetPayload() *models.GenericError {
 	return o.Payload
 }
@@ -121,56 +177,55 @@ func NewUpdateProductUnprocessableEntity() *UpdateProductUnprocessableEntity {
 	return &UpdateProductUnprocessableEntity{}
 }
 
-/* UpdateProductUnprocessableEntity describes a response with status code 422, with default header values.
+/*
+UpdateProductUnprocessableEntity describes a response with status code 422, with default header values.
 
 Validation errors defined as an array of strings.
 */
 type UpdateProductUnprocessableEntity struct {
-	Payload *models.ValidationError
+	Payload *models.ValidationErrors
+}
+
+// IsSuccess returns true when this update product unprocessable entity response has a 2xx status code
+func (o *UpdateProductUnprocessableEntity) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this update product unprocessable entity response has a 3xx status code
+func (o *UpdateProductUnprocessableEntity) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this update product unprocessable entity response has a 4xx status code
+func (o *UpdateProductUnprocessableEntity) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this update product unprocessable entity response has a 5xx status code
+func (o *UpdateProductUnprocessableEntity) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this update product unprocessable entity response a status code equal to that given
+func (o *UpdateProductUnprocessableEntity) IsCode(code int) bool {
+	return code == 422
 }
 
 func (o *UpdateProductUnprocessableEntity) Error() string {
-	return fmt.Sprintf("[PUT /products][%d] updateProductUnprocessableEntity  %+v", 422, o.Payload)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductUnprocessableEntity  %+v", 422, o.Payload)
 }
-func (o *UpdateProductUnprocessableEntity) GetPayload() *models.ValidationError {
+
+func (o *UpdateProductUnprocessableEntity) String() string {
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductUnprocessableEntity  %+v", 422, o.Payload)
+}
+
+func (o *UpdateProductUnprocessableEntity) GetPayload() *models.ValidationErrors {
 	return o.Payload
 }
 
 func (o *UpdateProductUnprocessableEntity) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.ValidationError)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
-
-	return nil
-}
-
-// NewUpdateProductNotImplemented creates a UpdateProductNotImplemented with default headers values
-func NewUpdateProductNotImplemented() *UpdateProductNotImplemented {
-	return &UpdateProductNotImplemented{}
-}
-
-/* UpdateProductNotImplemented describes a response with status code 501, with default header values.
-
-Generic error message returned as a string.
-*/
-type UpdateProductNotImplemented struct {
-	Payload *models.GenericError
-}
-
-func (o *UpdateProductNotImplemented) Error() string {
-	return fmt.Sprintf("[PUT /products][%d] updateProductNotImplemented  %+v", 501, o.Payload)
-}
-func (o *UpdateProductNotImplemented) GetPayload() *models.GenericError {
-	return o.Payload
-}
-
-func (o *UpdateProductNotImplemented) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.GenericError)
+	o.Payload = new(models.ValidationErrors)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

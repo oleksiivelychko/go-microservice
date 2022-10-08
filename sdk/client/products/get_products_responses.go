@@ -39,17 +39,48 @@ func NewGetProductsOK() *GetProductsOK {
 	return &GetProductsOK{}
 }
 
-/* GetProductsOK describes a response with status code 200, with default header values.
+/*
+GetProductsOK describes a response with status code 200, with default header values.
 
-Data structure representing a list of product
+Data structure representing a list of product.
 */
 type GetProductsOK struct {
 	Payload []*models.Product
 }
 
+// IsSuccess returns true when this get products o k response has a 2xx status code
+func (o *GetProductsOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this get products o k response has a 3xx status code
+func (o *GetProductsOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this get products o k response has a 4xx status code
+func (o *GetProductsOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this get products o k response has a 5xx status code
+func (o *GetProductsOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this get products o k response a status code equal to that given
+func (o *GetProductsOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *GetProductsOK) Error() string {
 	return fmt.Sprintf("[GET /products][%d] getProductsOK  %+v", 200, o.Payload)
 }
+
+func (o *GetProductsOK) String() string {
+	return fmt.Sprintf("[GET /products][%d] getProductsOK  %+v", 200, o.Payload)
+}
+
 func (o *GetProductsOK) GetPayload() []*models.Product {
 	return o.Payload
 }

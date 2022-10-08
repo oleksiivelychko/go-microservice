@@ -35,12 +35,6 @@ func (o *DeleteProductReader) ReadResponse(response runtime.ClientResponse, cons
 			return nil, err
 		}
 		return nil, result
-	case 501:
-		result := NewDeleteProductNotImplemented()
-		if err := result.readResponse(response, consumer, o.formats); err != nil {
-			return nil, err
-		}
-		return nil, result
 	default:
 		return nil, runtime.NewAPIError("response status code does not match any response statuses defined for this endpoint in the swagger spec", response, response.Code())
 	}
@@ -51,14 +45,44 @@ func NewDeleteProductNoContent() *DeleteProductNoContent {
 	return &DeleteProductNoContent{}
 }
 
-/* DeleteProductNoContent describes a response with status code 204, with default header values.
+/*
+DeleteProductNoContent describes a response with status code 204, with default header values.
 
-No content is returned by this API endpoint
+Empty response has no data.
 */
 type DeleteProductNoContent struct {
 }
 
+// IsSuccess returns true when this delete product no content response has a 2xx status code
+func (o *DeleteProductNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this delete product no content response has a 3xx status code
+func (o *DeleteProductNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this delete product no content response has a 4xx status code
+func (o *DeleteProductNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this delete product no content response has a 5xx status code
+func (o *DeleteProductNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this delete product no content response a status code equal to that given
+func (o *DeleteProductNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DeleteProductNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNoContent ", 204)
+}
+
+func (o *DeleteProductNoContent) String() string {
 	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNoContent ", 204)
 }
 
@@ -72,56 +96,55 @@ func NewDeleteProductNotFound() *DeleteProductNotFound {
 	return &DeleteProductNotFound{}
 }
 
-/* DeleteProductNotFound describes a response with status code 404, with default header values.
+/*
+DeleteProductNotFound describes a response with status code 404, with default header values.
 
-Generic error message returned as a string.
+Not found message.
 */
 type DeleteProductNotFound struct {
-	Payload *models.GenericError
+	Payload *models.NotFound
+}
+
+// IsSuccess returns true when this delete product not found response has a 2xx status code
+func (o *DeleteProductNotFound) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this delete product not found response has a 3xx status code
+func (o *DeleteProductNotFound) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this delete product not found response has a 4xx status code
+func (o *DeleteProductNotFound) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this delete product not found response has a 5xx status code
+func (o *DeleteProductNotFound) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this delete product not found response a status code equal to that given
+func (o *DeleteProductNotFound) IsCode(code int) bool {
+	return code == 404
 }
 
 func (o *DeleteProductNotFound) Error() string {
 	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotFound  %+v", 404, o.Payload)
 }
-func (o *DeleteProductNotFound) GetPayload() *models.GenericError {
+
+func (o *DeleteProductNotFound) String() string {
+	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotFound  %+v", 404, o.Payload)
+}
+
+func (o *DeleteProductNotFound) GetPayload() *models.NotFound {
 	return o.Payload
 }
 
 func (o *DeleteProductNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.GenericError)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
-
-	return nil
-}
-
-// NewDeleteProductNotImplemented creates a DeleteProductNotImplemented with default headers values
-func NewDeleteProductNotImplemented() *DeleteProductNotImplemented {
-	return &DeleteProductNotImplemented{}
-}
-
-/* DeleteProductNotImplemented describes a response with status code 501, with default header values.
-
-Generic error message returned as a string.
-*/
-type DeleteProductNotImplemented struct {
-	Payload *models.GenericError
-}
-
-func (o *DeleteProductNotImplemented) Error() string {
-	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotImplemented  %+v", 501, o.Payload)
-}
-func (o *DeleteProductNotImplemented) GetPayload() *models.GenericError {
-	return o.Payload
-}
-
-func (o *DeleteProductNotImplemented) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.GenericError)
+	o.Payload = new(models.NotFound)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

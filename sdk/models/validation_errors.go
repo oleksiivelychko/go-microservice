@@ -12,27 +12,27 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// ValidationError ValidationError is a collection of validation error messages
+// ValidationErrors ValidationErrors is a collection of validation error messages.
 //
-// swagger:model ValidationError
-type ValidationError struct {
+// swagger:model ValidationErrors
+type ValidationErrors struct {
 
 	// messages
 	Messages []string `json:"messages"`
 }
 
-// Validate validates this validation error
-func (m *ValidationError) Validate(formats strfmt.Registry) error {
+// Validate validates this validation errors
+func (m *ValidationErrors) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this validation error based on context it is used
-func (m *ValidationError) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this validation errors based on context it is used
+func (m *ValidationErrors) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *ValidationError) MarshalBinary() ([]byte, error) {
+func (m *ValidationErrors) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -40,8 +40,8 @@ func (m *ValidationError) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *ValidationError) UnmarshalBinary(b []byte) error {
-	var res ValidationError
+func (m *ValidationErrors) UnmarshalBinary(b []byte) error {
+	var res ValidationErrors
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

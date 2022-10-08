@@ -52,10 +52,12 @@ func NewGetProductsParamsWithHTTPClient(client *http.Client) *GetProductsParams 
 	}
 }
 
-/* GetProductsParams contains all the parameters to send to the API endpoint
-   for the get products operation.
+/*
+GetProductsParams contains all the parameters to send to the API endpoint
 
-   Typically these are written to a http.Request.
+	for the get products operation.
+
+	Typically these are written to a http.Request.
 */
 type GetProductsParams struct {
 	timeout    time.Duration

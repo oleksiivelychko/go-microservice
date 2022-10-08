@@ -6,17 +6,20 @@ import (
 	"net/http"
 )
 
-// swagger:route PUT /products products updateProduct
-// Update a products details
+// swagger:route PUT /products/{id} products updateProduct
+// Update a products details.
 //
 // responses:
-//	201: productResponse
-//  404: errorResponse
-//  422: errorValidation
-//  501: errorResponse
+//
+//	200: productResponse
+//	404: errorResponse
+//	422: errorValidation
+//	501: errorResponse
 func (p *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(*api.Product)
+
+	product.ID = getProductID(r)
 	p.l.Println("[DEBUG] updating record id", product.ID)
 
 	err := api.UpdateProduct(*product)
@@ -28,5 +31,5 @@ func (p *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	rw.WriteHeader(http.StatusCreated)
+	rw.WriteHeader(http.StatusOK)
 }

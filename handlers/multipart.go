@@ -18,7 +18,7 @@ type MultipartHandler struct {
 	store contracts.Storage
 }
 
-// NewMultipartHandler returns a new multipart handler with the given logger and validation
+// NewMultipartHandler returns a new multipart handler with the given logger and validation.
 func NewMultipartHandler(l hclog.Logger, v *utils.Validation, s contracts.Storage) *MultipartHandler {
 	return &MultipartHandler{l, v, s}
 }
@@ -26,8 +26,8 @@ func NewMultipartHandler(l hclog.Logger, v *utils.Validation, s contracts.Storag
 func (mp *MultipartHandler) ProcessForm(rw http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(128 * 1024) // 32Mb
 	if err != nil {
-		mp.log.Error("Bad request", "error", err)
-		http.Error(rw, "Expected multipart form data", http.StatusBadRequest)
+		mp.log.Error("bad request", "error", err)
+		http.Error(rw, "expected multipart form data", http.StatusBadRequest)
 		return
 	}
 
@@ -48,8 +48,8 @@ func (mp *MultipartHandler) ProcessForm(rw http.ResponseWriter, r *http.Request)
 
 	mpFile, mpHandler, err := r.FormFile("image")
 	if err != nil {
-		mp.log.Error("Bad request", "error", err)
-		http.Error(rw, "Expected file", http.StatusBadRequest)
+		mp.log.Error("bad request", "error", err)
+		http.Error(rw, "expected file", http.StatusBadRequest)
 		return
 	}
 
@@ -61,14 +61,14 @@ func (mp *MultipartHandler) ProcessForm(rw http.ResponseWriter, r *http.Request)
 	}
 
 	if id == "" {
-		api.AddProduct(product)
+		api.AddProduct(&product)
 	} else {
-		_ = api.UpdateProduct(product)
+		_ = api.UpdateProduct(&product)
 	}
 }
 
 func (mp *MultipartHandler) saveFile(id, path string, r io.ReadCloser) error {
-	mp.log.Info("save file as part of multipart/form-data for the product", "id", id, "path", path)
+	mp.log.Info("save file from multipart/form-data", "productId", id, "filePath", path)
 
 	filePath := filepath.Join(id, path)
 	_, err := mp.store.Save(filePath, r)

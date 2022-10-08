@@ -17,25 +17,21 @@ func (p *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Han
 		err := utils.FromJSON(product, r.Body)
 		if err != nil {
 			p.l.Println("[ERROR] deserializing product", err)
-
 			rw.WriteHeader(http.StatusBadRequest)
 			_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)
-
 			return
 		}
 
 		errs := p.v.Validate(product)
 		if len(errs) != 0 {
 			p.l.Println("[ERROR] validating product", errs)
-
-			// return the validation messages as an array
 			rw.WriteHeader(http.StatusUnprocessableEntity)
-
-			_ = utils.ToJSON(&ValidationError{Messages: errs.Errors()}, rw)
+			// return the validation messages as an array
+			_ = utils.ToJSON(&ValidationErrors{Messages: errs.Errors()}, rw)
 			return
 		}
 
-		// add the product to the context
+		// add the product into the context
 		ctx := context.WithValue(r.Context(), KeyProduct{}, product)
 		r = r.WithContext(ctx)
 

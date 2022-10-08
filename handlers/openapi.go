@@ -20,56 +20,69 @@ import (
 	"github.com/oleksiivelychko/go-microservice/api"
 )
 
-// NOTE: Types defined here are purely for documentation purposes these types are not used by any of the handlers
+// NOTE: Types defined here are purely for documentation purposes, these types are not used by any of the handlers.
 
 // Generic error message returned as a string.
 // swagger:response errorResponse
-type errResponseWrapper struct {
-	// Description of the error
+type errorResponseWrapper struct {
 	// in: body
 	Body GenericError
 }
 
 // Validation errors defined as an array of strings.
-// swagger:response errorValidation
-type errValidationWrapper struct {
-	// Collection of the errors
+// swagger:response validationErrorsResponse
+type validationErrorsResponseWrapper struct {
 	// in: body
-	Body ValidationError
+	Body ValidationErrors
 }
 
-// Data structure representing a list of product
+// Not found message.
+// swagger:response notFoundResponse
+type notFoundResponseWrapper struct {
+	// in: body
+	Body NotFound
+}
+
+// Data structure representing a list of product.
 // swagger:response productsResponse
 type productsResponseWrapper struct {
-	// A list of all products
 	// in: body
 	Body []api.Product
 }
 
-// Data structure representing a single product
+// Data structure representing a single product.
 // swagger:response productResponse
 type productResponseWrapper struct {
-	// A single product
 	// in: body
 	Body api.Product
 }
 
-// No content is returned by this API endpoint
+// Empty response has no data.
 // swagger:response noContentResponse
 type noContentResponseWrapper struct{}
 
+// Send product data as part of HTTP request (ID field would be ignored).
 // swagger:parameters createProduct
-type productParamsWrapper struct {
-	// Product data structure to Update or Create.
-	// Note: the id field is ignored by update and create operations
+type productRequestBodyWrapper struct {
 	// in: body
 	// required: true
 	Body api.Product
 }
 
-// swagger:parameters getProduct updateProduct deleteProduct
-type productIDParamWrapper struct {
-	// The id of the product for which the operation relates
+// Request product by ID parameter in URL and send data in body.
+// swagger:parameters updateProduct
+type productRequestIdBodyWrapper struct {
+	// in: path
+	// required: true
+	ID int `json:"id"`
+	// in: body
+	// required: true
+	Body api.Product
+}
+
+// Request product by ID parameter.
+// swagger:parameters getProduct deleteProduct
+type productRequestIdWrapper struct {
 	// in: path
 	// required: true
 	ID int `json:"id"`

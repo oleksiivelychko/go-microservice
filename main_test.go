@@ -9,11 +9,11 @@ import (
 	"testing"
 )
 
-/**
+/*
+*
 Warning: main server must be running before.
 */
-
-var client = createHttpClient()
+var client = createHttpClient("localhost:9090")
 
 func TestHttpClientGetProducts(t *testing.T) {
 	params := products.NewGetProductsParams()
@@ -49,6 +49,7 @@ func TestHttpClientCreateProduct(t *testing.T) {
 	var pPrice float32 = 1.49
 	var pSKU = "000-000-000"
 	var pDescription = "Coffee with milk"
+
 	params.Body = &models.Product{
 		Name:        &pName,
 		Description: pDescription,
@@ -61,25 +62,25 @@ func TestHttpClientCreateProduct(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	productOne, err := fetchProduct(3)
+	product, err := fetchProduct(3)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if *productOne.GetPayload().Name != pName {
-		t.Fatal("Product name doesn't match")
+	if *product.GetPayload().Name != pName {
+		t.Fatal("product:name doesn't match")
 	}
 
-	if productOne.GetPayload().Description != pDescription {
-		t.Fatal("Product description doesn't match")
+	if product.GetPayload().Description != pDescription {
+		t.Fatal("product:description doesn't match")
 	}
 
-	if *productOne.GetPayload().Price != pPrice {
-		t.Fatal("Product price doesn't match")
+	if *product.GetPayload().Price != pPrice {
+		t.Fatal("product:price doesn't match")
 	}
 
-	if *productOne.GetPayload().SKU != pSKU {
-		t.Fatal("Product SKU doesn't match")
+	if *product.GetPayload().SKU != pSKU {
+		t.Fatal("product:SKU doesn't match")
 	}
 }
 
@@ -94,8 +95,9 @@ func TestHttpClientUpdateProduct(t *testing.T) {
 	var pName = "Coffee with milk"
 	var pPrice float32 = 1.99
 	var pSKU = "111-111-111"
+
+	params.ID = 3
 	params.Body = &models.Product{
-		ID:    3,
 		Name:  &pName,
 		Price: &pPrice,
 		SKU:   &pSKU,
@@ -106,21 +108,21 @@ func TestHttpClientUpdateProduct(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	productOne, err := fetchProduct(3)
+	product, err := fetchProduct(3)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if *productOne.GetPayload().Name != pName {
-		t.Fatal("Product name doesn't match")
+	if *product.GetPayload().Name != pName {
+		t.Fatal("product:name doesn't match")
 	}
 
-	if *productOne.GetPayload().Price != pPrice {
-		t.Fatal("Product price doesn't match")
+	if *product.GetPayload().Price != pPrice {
+		t.Fatal("product:price doesn't match")
 	}
 
-	if *productOne.GetPayload().SKU != pSKU {
-		t.Fatal("Product SKU doesn't match")
+	if *product.GetPayload().SKU != pSKU {
+		t.Fatal("product:SKU doesn't match")
 	}
 }
 
@@ -133,14 +135,13 @@ func TestHttpClientDeleteProduct(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	productOne, err := fetchProduct(3)
-	if productOne != nil {
-		t.Fatal("Product has not been deleted")
+	product, err := fetchProduct(3)
+	if product != nil {
+		t.Fatal(err)
 	}
 }
 
-func createHttpClient() *httpClient.GoMicroservice {
-	addr := "http://localhost:9090"
+func createHttpClient(addr string) *httpClient.GoMicroservice {
 	cfg := httpClient.DefaultTransportConfig().WithHost(addr)
 	return httpClient.NewHTTPClientWithConfig(nil, cfg)
 }

@@ -43,6 +43,8 @@ func (p *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Han
 func (g *GzipHandler) MiddlewareGzip(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+			g.log.Info("discovered `gzip` content-encoding")
+
 			wrw := NewGzipResponseWriter(rw)
 			wrw.Header().Set("Content-Encoding", "gzip")
 

@@ -2,10 +2,17 @@ package handlers
 
 import (
 	"compress/gzip"
+	"github.com/hashicorp/go-hclog"
 	"net/http"
 )
 
-type GzipHandler struct{}
+type GzipHandler struct {
+	log hclog.Logger
+}
+
+func NewGzipHandler(l hclog.Logger) *GzipHandler {
+	return &GzipHandler{l}
+}
 
 type GzipResponseWriter struct {
 	rw http.ResponseWriter

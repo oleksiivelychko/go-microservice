@@ -23,7 +23,6 @@ func (file *File) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	productId := vars["id"]
 	filename := vars["filename"]
 
-	file.log.Info("handle POST", "id", productId, "filename", filename)
 	file.saveFile(productId, filename, rw, r)
 }
 
@@ -32,13 +31,15 @@ func (file *File) invalidURI(uri string, rw http.ResponseWriter) {
 	http.Error(rw, "invalid file path: should be in the format: /[id]/[filename]", http.StatusBadRequest)
 }
 
-func (file *File) saveFile(id, path string, rw http.ResponseWriter, r *http.Request) {
-	file.log.Info("save file for the product", "id", id, "path", path)
+func (file *File) saveFile(id, filename string, rw http.ResponseWriter, r *http.Request) {
+	file.log.Info("trying to save file", "productId", id, "fileName", filename)
 
-	filePath := filepath.Join(id, path)
+	filePath := filepath.Join(id, filename)
 	_, err := file.store.Save(filePath, r.Body)
 	if err != nil {
 		file.log.Error("unable to save file", "error", err)
 		http.Error(rw, "unable to save file", http.StatusInternalServerError)
 	}
+
+	file.log.Info("file has been successfully uploaded to", "filePath", filePath)
 }

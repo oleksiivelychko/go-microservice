@@ -7,30 +7,23 @@ import (
 )
 
 // swagger:route DELETE /products/{id} products deleteProduct
-// Delete a product
+// Delete a product.
 //
 // responses:
-//	204: noContentResponse
-//  404: errorResponse
-//  501: errorResponse
+// 204: noContentResponse
+// 404: notFoundResponse
 func (p *ProductHandler) DeleteProduct(rw http.ResponseWriter, r *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
+
 	id := getProductID(r)
-	p.l.Println("[DEBUG] deleting record id", id)
+	p.l.Printf("[DEBUG] DELETE `/products/%d`", id)
 
 	err := api.DeleteProduct(id)
 	if err == api.ErrProductNotFound {
-		p.l.Println("[ERROR] deleting record id does not exist")
-
+		p.l.Printf("[ERROR] DELETE `/products/%d` got '%s'", id, err)
 		rw.WriteHeader(http.StatusNotFound)
-		_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)
-		return
-	}
 
-	if err != nil {
-		p.l.Println("[ERROR] deleting record", err)
-
-		rw.WriteHeader(http.StatusInternalServerError)
-		_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)
+		_ = utils.ToJSON(&NotFound{Message: err.Error()}, rw)
 		return
 	}
 

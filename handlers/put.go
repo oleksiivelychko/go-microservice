@@ -7,29 +7,27 @@ import (
 )
 
 // swagger:route PUT /products/{id} products updateProduct
-// Update a products details.
+// Update a product details.
 //
 // responses:
-//
-//	200: productResponse
-//	404: errorResponse
-//	422: errorValidation
-//	501: errorResponse
+// 200: productResponse
+// 404: errorResponse
+// 422: validationErrorsResponse
 func (p *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(*api.Product)
-
 	product.ID = getProductID(r)
-	p.l.Println("[DEBUG] updating record id", product.ID)
+	p.l.Printf("[DEBUG] PUT `/products/%d`", product.ID)
 
-	err := api.UpdateProduct(*product)
+	err := api.UpdateProduct(product)
 	if err == api.ErrProductNotFound {
-		p.l.Println("[ERROR] updating record id does not exist: ", err)
-
+		p.l.Printf("[ERROR] PUT `/products/%d` got '%s'", product.ID, err)
 		rw.WriteHeader(http.StatusNotFound)
-		_ = utils.ToJSON(&GenericError{Message: "product not found"}, rw)
+
+		_ = utils.ToJSON(&NotFound{Message: err.Error()}, rw)
 		return
 	}
 
 	rw.WriteHeader(http.StatusOK)
+	_ = utils.ToJSON(product, rw)
 }

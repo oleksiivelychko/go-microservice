@@ -1,7 +1,12 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -46,14 +51,33 @@ type Product struct {
 	// pattern: [a-z]+-[a-z]+-[a-z]+
 	SKU string `json:"sku" validate:"required,sku"`
 
-	CreatedAt string `json:"-"`
-	UpdatedAt string `json:"-"`
-	DeletedAt string `json:"-"`
+	UpdatedAt DateTime `json:"updatedAt,omitempty"`
+}
+
+type DateTime struct {
+	time.Time
+}
+
+func (t *DateTime) MarshalJSON() ([]byte, error) {
+	stamp := time.Now().Format(time.RFC3339)
+	return []byte("\"" + stamp + "\""), nil
+}
+
+func (t *DateTime) UnmarshalJSON(b []byte) (err error) {
+	s := strings.Trim(string(b), "\"")
+	date, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		return err
+	}
+	t.Time = date
+	return
 }
 
 type Products []*Product
 
 var ErrProductNotFound = fmt.Errorf("product not found")
+
+var productsList = LoadProductsFromJSON()
 
 func GetProducts() Products {
 	return productsList
@@ -68,6 +92,11 @@ func GetProduct(id int) (*Product, error) {
 	return productsList[i], nil
 }
 
+func AddProduct(p *Product) {
+	p.ID = GetNextProductId()
+	productsList = append(productsList, p)
+}
+
 func UpdateProduct(p *Product) error {
 	i := findIndexByProductID(p.ID)
 	if i == -1 {
@@ -76,11 +105,6 @@ func UpdateProduct(p *Product) error {
 
 	productsList[i] = p
 	return nil
-}
-
-func AddProduct(p *Product) {
-	p.ID = GetNextProductId()
-	productsList = append(productsList, p)
 }
 
 func DeleteProduct(id int) error {
@@ -120,23 +144,23 @@ func GetNextProductId() int {
 	return productsList[len(productsList)-1].ID + 1
 }
 
-var productsList = []*Product{
-	&Product{
-		ID:          1,
-		Name:        "Latte",
-		Description: "Frothy milky coffee",
-		Price:       1.49,
-		SKU:         "LATTE-01",
-		CreatedAt:   time.Now().UTC().String(),
-		UpdatedAt:   time.Now().UTC().String(),
-	},
-	&Product{
-		ID:          2,
-		Name:        "Espresso",
-		Description: "Short and strong coffee without milk",
-		Price:       0.99,
-		SKU:         "ESPRESSO-01",
-		CreatedAt:   time.Now().UTC().String(),
-		UpdatedAt:   time.Now().UTC().String(),
-	},
+func LoadProductsFromJSON() []*Product {
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	jsonFile, err := os.Open(filepath.Join(wd, "./public/products.json"))
+	if err != nil {
+		panic(err)
+	}
+
+	defer jsonFile.Close()
+
+	byteValue, _ := io.ReadAll(jsonFile)
+
+	var products Products
+	_ = json.Unmarshal(byteValue, &products)
+
+	return products
 }

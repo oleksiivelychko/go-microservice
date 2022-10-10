@@ -66,6 +66,9 @@ definitions:
                 pattern: '[a-z]+-[a-z]+-[a-z]+'
                 type: string
                 x-go-name: SKU
+            updatedAt:
+                type: string
+                x-go-name: UpdatedAt
         required:
             - name
             - price

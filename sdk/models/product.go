@@ -49,6 +49,9 @@ type Product struct {
 	// Required: true
 	// Pattern: [a-z]+-[a-z]+-[a-z]+
 	SKU *string `json:"sku"`
+
+	// updated at
+	UpdatedAt string `json:"updatedAt,omitempty"`
 }
 
 // Validate validates this product

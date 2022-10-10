@@ -39,11 +39,10 @@ func (mp *MultipartHandler) ProcessForm(rw http.ResponseWriter, r *http.Request)
 
 	price, _ := strconv.ParseFloat(r.FormValue("price"), 32)
 	product := api.Product{
-		ID:          productId,
-		Name:        r.FormValue("name"),
-		Description: r.FormValue("description"),
-		Price:       float32(price),
-		SKU:         r.FormValue("SKU"),
+		ID:    productId,
+		Name:  r.FormValue("name"),
+		Price: float32(price),
+		SKU:   r.FormValue("SKU"),
 	}
 
 	mpFile, mpHandler, err := r.FormFile("image")

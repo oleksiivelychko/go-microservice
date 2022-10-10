@@ -25,12 +25,6 @@ type Product struct {
 	// max length: 255
 	Name string `json:"name" validate:"required"`
 
-	// text description
-	//
-	// required: false
-	// max length: 10000
-	Description string `json:"description"`
-
 	// price
 	//
 	// required: true

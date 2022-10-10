@@ -48,13 +48,11 @@ func TestHttpClientCreateProduct(t *testing.T) {
 	var pName = "Coffee"
 	var pPrice float32 = 1.49
 	var pSKU = "000-000-000"
-	var pDescription = "Coffee with milk"
 
 	params.Body = &models.Product{
-		Name:        &pName,
-		Description: pDescription,
-		Price:       &pPrice,
-		SKU:         &pSKU,
+		Name:  &pName,
+		Price: &pPrice,
+		SKU:   &pSKU,
 	}
 
 	_, err := client.Products.CreateProduct(params)
@@ -69,10 +67,6 @@ func TestHttpClientCreateProduct(t *testing.T) {
 
 	if *product.GetPayload().Name != pName {
 		t.Fatal("product:name doesn't match")
-	}
-
-	if product.GetPayload().Description != pDescription {
-		t.Fatal("product:description doesn't match")
 	}
 
 	if *product.GetPayload().Price != pPrice {

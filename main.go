@@ -7,9 +7,12 @@ import (
 	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/go-hclog"
+	gService "github.com/oleksiivelychko/go-grpc-protobuf/proto/grpc_service"
 	"github.com/oleksiivelychko/go-microservice/backends"
 	"github.com/oleksiivelychko/go-microservice/handlers"
 	"github.com/oleksiivelychko/go-microservice/utils"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"net/http"
 	"os"
 	"os/signal"
@@ -22,6 +25,8 @@ const swaggerPath = "/sdk/swagger.yaml"
 
 func main() {
 	var addr = fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
+	var grpcAddr = fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("GRPC_PORT"))
+
 	var origins = []string{
 		"http://" + addr,
 	}
@@ -41,7 +46,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	productHandler := handlers.NewProductHandler(stdLogger, validation)
+	grpcConnection, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		hcLogger.Error("unable to connect to gRPC server", "error", err)
+	}
+	defer grpcConnection.Close()
+	currencyClient := gService.NewCurrencyClient(grpcConnection)
+
+	productHandler := handlers.NewProductHandler(stdLogger, validation, currencyClient)
 	fileHandler := handlers.NewFileHandler(storage, hcLogger)
 	multipartHandler := handlers.NewMultipartHandler(hcLogger, validation, storage)
 	gzipHandler := handlers.NewGzipHandler(hcLogger)

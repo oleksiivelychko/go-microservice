@@ -21,4 +21,4 @@ install-redoc:
 	npm i -g redoc-cli
 
 start: generate-client
-	HOST=localhost PORT=9090 go run main.go
+	HOST=localhost PORT=9090 GRPC_PORT=9091 go run main.go

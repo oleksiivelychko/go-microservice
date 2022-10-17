@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"context"
+	gService "github.com/oleksiivelychko/go-grpc-protobuf/proto/grpc_service"
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/utils"
 	"net/http"
@@ -52,6 +54,18 @@ func (p *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 		rw.WriteHeader(http.StatusInternalServerError)
 		_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)
 		return
+	}
+
+	er := &gService.ExchangeRequest{
+		From: gService.Currencies_USD.String(),
+		To:   gService.Currencies_EUR.String(),
+	}
+	rateResponse, err := p.cc.MakeExchange(context.Background(), er)
+	if err == nil {
+		p.l.Printf("[INFO] GET `grpc_service.Currency.MakeExchange` got rate=%f", rateResponse.Rate)
+		product.Price *= rateResponse.Rate
+	} else {
+		p.l.Printf("[ERROR] GET `grpc_service.Currency.MakeExchange` got '%s'", err)
 	}
 
 	err = utils.ToJSON(product, rw)

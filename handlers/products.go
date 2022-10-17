@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gorilla/mux"
+	gService "github.com/oleksiivelychko/go-grpc-protobuf/proto/grpc_service"
 	"github.com/oleksiivelychko/go-microservice/utils"
 	"log"
 	"net/http"
@@ -10,16 +11,17 @@ import (
 
 // ProductHandler for getting and updating products
 type ProductHandler struct {
-	l *log.Logger
-	v *utils.Validation
+	l  *log.Logger
+	v  *utils.Validation
+	cc gService.CurrencyClient
 }
 
 // KeyProduct is a key used for the Product object in the context
 type KeyProduct struct{}
 
-// NewProductHandler returns a new product handler with the given logger and validation
-func NewProductHandler(l *log.Logger, v *utils.Validation) *ProductHandler {
-	return &ProductHandler{l, v}
+// NewProductHandler returns a new product handler injected with logger, validation and gRPC client
+func NewProductHandler(l *log.Logger, v *utils.Validation, cc gService.CurrencyClient) *ProductHandler {
+	return &ProductHandler{l, v, cc}
 }
 
 // GenericError is a generic error message returned by a server

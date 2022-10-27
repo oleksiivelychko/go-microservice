@@ -43,6 +43,13 @@ type notFoundResponseWrapper struct {
 	Body NotFound
 }
 
+// gRPC service request error message.
+// swagger:response grpcResponseWrapper
+type grpcResponseWrapper struct {
+	// in: body
+	Body GrpcError
+}
+
 // Data structure representing a list of product.
 // swagger:response productsResponse
 type productsResponseWrapper struct {

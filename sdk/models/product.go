@@ -31,7 +31,7 @@ type Product struct {
 	// price
 	// Required: true
 	// Minimum: 0.01
-	Price *float32 `json:"price"`
+	Price *float64 `json:"price"`
 
 	// SKU - in the field of inventory management, a stock keeping unit is a distinct type of item for sale, purchased, or tracked in inventory,
 	// such as a product or service, and all attributes associated with the item type that distinguish it from other item types.
@@ -107,7 +107,7 @@ func (m *Product) validatePrice(formats strfmt.Registry) error {
 		return err
 	}
 
-	if err := validate.Minimum("price", "body", float64(*m.Price), 0.01, false); err != nil {
+	if err := validate.Minimum("price", "body", *m.Price, 0.01, false); err != nil {
 		return err
 	}
 

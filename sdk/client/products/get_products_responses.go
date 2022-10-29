@@ -29,6 +29,12 @@ func (o *GetProductsReader) ReadResponse(response runtime.ClientResponse, consum
 			return nil, err
 		}
 		return result, nil
+	case 400:
+		result := NewGetProductsBadRequest()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	default:
 		return nil, runtime.NewAPIError("response status code does not match any response statuses defined for this endpoint in the swagger spec", response, response.Code())
 	}
@@ -89,6 +95,69 @@ func (o *GetProductsOK) readResponse(response runtime.ClientResponse, consumer r
 
 	// response payload
 	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewGetProductsBadRequest creates a GetProductsBadRequest with default headers values
+func NewGetProductsBadRequest() *GetProductsBadRequest {
+	return &GetProductsBadRequest{}
+}
+
+/*
+GetProductsBadRequest describes a response with status code 400, with default header values.
+
+gRPC service request error message.
+*/
+type GetProductsBadRequest struct {
+	Payload *models.GrpcError
+}
+
+// IsSuccess returns true when this get products bad request response has a 2xx status code
+func (o *GetProductsBadRequest) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this get products bad request response has a 3xx status code
+func (o *GetProductsBadRequest) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this get products bad request response has a 4xx status code
+func (o *GetProductsBadRequest) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this get products bad request response has a 5xx status code
+func (o *GetProductsBadRequest) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this get products bad request response a status code equal to that given
+func (o *GetProductsBadRequest) IsCode(code int) bool {
+	return code == 400
+}
+
+func (o *GetProductsBadRequest) Error() string {
+	return fmt.Sprintf("[GET /products][%d] getProductsBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *GetProductsBadRequest) String() string {
+	return fmt.Sprintf("[GET /products][%d] getProductsBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *GetProductsBadRequest) GetPayload() *models.GrpcError {
+	return o.Payload
+}
+
+func (o *GetProductsBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.GrpcError)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
 		return err
 	}
 

@@ -29,6 +29,12 @@ func (o *UpdateProductReader) ReadResponse(response runtime.ClientResponse, cons
 			return nil, err
 		}
 		return result, nil
+	case 400:
+		result := NewUpdateProductBadRequest()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 404:
 		result := NewUpdateProductNotFound()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -100,6 +106,69 @@ func (o *UpdateProductOK) GetPayload() *models.Product {
 func (o *UpdateProductOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Product)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewUpdateProductBadRequest creates a UpdateProductBadRequest with default headers values
+func NewUpdateProductBadRequest() *UpdateProductBadRequest {
+	return &UpdateProductBadRequest{}
+}
+
+/*
+UpdateProductBadRequest describes a response with status code 400, with default header values.
+
+gRPC service request error message.
+*/
+type UpdateProductBadRequest struct {
+	Payload *models.GrpcError
+}
+
+// IsSuccess returns true when this update product bad request response has a 2xx status code
+func (o *UpdateProductBadRequest) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this update product bad request response has a 3xx status code
+func (o *UpdateProductBadRequest) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this update product bad request response has a 4xx status code
+func (o *UpdateProductBadRequest) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this update product bad request response has a 5xx status code
+func (o *UpdateProductBadRequest) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this update product bad request response a status code equal to that given
+func (o *UpdateProductBadRequest) IsCode(code int) bool {
+	return code == 400
+}
+
+func (o *UpdateProductBadRequest) Error() string {
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *UpdateProductBadRequest) String() string {
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *UpdateProductBadRequest) GetPayload() *models.GrpcError {
+	return o.Payload
+}
+
+func (o *UpdateProductBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.GrpcError)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

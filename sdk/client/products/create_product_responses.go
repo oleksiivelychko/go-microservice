@@ -29,6 +29,12 @@ func (o *CreateProductReader) ReadResponse(response runtime.ClientResponse, cons
 			return nil, err
 		}
 		return result, nil
+	case 400:
+		result := NewCreateProductBadRequest()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 422:
 		result := NewCreateProductUnprocessableEntity()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -94,6 +100,69 @@ func (o *CreateProductCreated) GetPayload() *models.Product {
 func (o *CreateProductCreated) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Product)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewCreateProductBadRequest creates a CreateProductBadRequest with default headers values
+func NewCreateProductBadRequest() *CreateProductBadRequest {
+	return &CreateProductBadRequest{}
+}
+
+/*
+CreateProductBadRequest describes a response with status code 400, with default header values.
+
+gRPC service request error message.
+*/
+type CreateProductBadRequest struct {
+	Payload *models.GrpcError
+}
+
+// IsSuccess returns true when this create product bad request response has a 2xx status code
+func (o *CreateProductBadRequest) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this create product bad request response has a 3xx status code
+func (o *CreateProductBadRequest) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this create product bad request response has a 4xx status code
+func (o *CreateProductBadRequest) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this create product bad request response has a 5xx status code
+func (o *CreateProductBadRequest) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this create product bad request response a status code equal to that given
+func (o *CreateProductBadRequest) IsCode(code int) bool {
+	return code == 400
+}
+
+func (o *CreateProductBadRequest) Error() string {
+	return fmt.Sprintf("[POST /products][%d] createProductBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *CreateProductBadRequest) String() string {
+	return fmt.Sprintf("[POST /products][%d] createProductBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *CreateProductBadRequest) GetPayload() *models.GrpcError {
+	return o.Payload
+}
+
+func (o *CreateProductBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.GrpcError)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

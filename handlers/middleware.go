@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (p *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Handler {
+func (ph *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Add("Content-Type", "application/json")
 
@@ -16,15 +16,15 @@ func (p *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Han
 
 		err := utils.FromJSON(product, r.Body)
 		if err != nil {
-			p.l.Println("[ERROR] deserializing product", err)
-			rw.WriteHeader(http.StatusBadRequest)
+			ph.l.Error("deserialization", "error", err)
+			rw.WriteHeader(http.StatusUnprocessableEntity)
 			_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)
 			return
 		}
 
-		errs := p.v.Validate(product)
+		errs := ph.v.Validate(product)
 		if len(errs) != 0 {
-			p.l.Println("[ERROR] validating product", errs)
+			ph.l.Error("validation", "error", err)
 			rw.WriteHeader(http.StatusUnprocessableEntity)
 			// return the validation messages as an array
 			_ = utils.ToJSON(&ValidationErrors{Messages: errs.Errors()}, rw)

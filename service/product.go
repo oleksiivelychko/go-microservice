@@ -51,7 +51,7 @@ func (ps *ProductService) GetProduct(id int) (*api.Product, error) {
 }
 
 func (ps *ProductService) AddProduct(p *api.Product) error {
-	p.ID = ps.getNextProductId()
+	p.ID = ps.GetNextProductId()
 
 	rate, err := ps.currency.GetRate()
 	if err != nil {
@@ -91,7 +91,7 @@ func (ps *ProductService) DeleteProduct(id int) error {
 	return nil
 }
 
-func (ps *ProductService) getNextProductId() int {
+func (ps *ProductService) GetNextProductId() int {
 	if len(ps.data) == 0 {
 		return 1
 	}

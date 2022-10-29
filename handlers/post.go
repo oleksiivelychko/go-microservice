@@ -11,15 +11,22 @@ import (
 //
 // responses:
 // 201: productResponse
+// 400: grpcResponseWrapper
 // 422: validationErrorsResponse
-func (p *ProductHandler) CreateProduct(rw http.ResponseWriter, r *http.Request) {
-	p.l.Printf("[DEBUG] POST `/products`")
+func (ph *ProductHandler) CreateProduct(rw http.ResponseWriter, r *http.Request) {
+	ph.l.Debug("CreateProduct")
 
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(*api.Product)
 
-	api.AddProduct(product)
-	rw.WriteHeader(http.StatusCreated)
+	err := ph.ps.AddProduct(product)
+	if err != nil {
+		ph.l.Error("grpc_service.Currency.MakeExchange", "error", err)
+		rw.WriteHeader(http.StatusBadRequest)
+		_ = utils.ToJSON(&GrpcError{Message: err.Error()}, rw)
+		return
+	}
 
+	rw.WriteHeader(http.StatusCreated)
 	_ = utils.ToJSON(product, rw)
 }

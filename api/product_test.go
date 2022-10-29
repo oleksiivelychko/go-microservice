@@ -17,7 +17,7 @@ func TestProductName(t *testing.T) {
 	err := v.Validate(p)
 
 	if err == nil {
-		t.Fatal("product:name:validation didn't pass test")
+		t.Fatal("validation of product.Name didn't pass test")
 	}
 
 	fmt.Println(err.Errors())
@@ -33,7 +33,7 @@ func TestProductPrice(t *testing.T) {
 	err := v.Validate(p)
 
 	if err == nil {
-		t.Fatal("product:price:validation didn't pass test")
+		t.Fatal("validation of product.Price didn't pass test")
 	}
 
 	fmt.Println(err.Errors())
@@ -50,7 +50,7 @@ func TestProductSKU(t *testing.T) {
 	err := v.Validate(p)
 
 	if err == nil {
-		t.Fatal("product:sku:validation didn't pass test")
+		t.Fatal("validation of product.SKU didn't pass test")
 	}
 
 	fmt.Println(err.Errors())
@@ -72,13 +72,13 @@ func TestValidProduct(t *testing.T) {
 }
 
 func TestProductsToJSON(t *testing.T) {
-	ps := []*Product{
-		&Product{
+	productList := []*Product{
+		{
 			Name: "abc",
 		},
 	}
 
 	b := bytes.NewBufferString("")
-	err := utils.ToJSON(ps, b)
+	err := utils.ToJSON(productList, b)
 	assert.NoError(t, err)
 }

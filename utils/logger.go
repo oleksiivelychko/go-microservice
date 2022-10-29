@@ -2,10 +2,10 @@ package utils
 
 import "github.com/hashicorp/go-hclog"
 
-func NewLogger(name string) hclog.Logger {
+func NewLogger() hclog.Logger {
 	return hclog.New(&hclog.LoggerOptions{
-		Name:       name,
-		Level:      hclog.LevelFromString("debug"),
+		Name:       "go-microservice",
+		Level:      hclog.LevelFromString("DEBUG"),
 		Color:      1,
 		TimeFormat: "15:04:05",
 	})

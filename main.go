@@ -32,7 +32,7 @@ func main() {
 		"http://" + addr,
 	}
 
-	hcLogger := utils.NewLogger("go-microservice")
+	hcLogger := utils.NewLogger()
 	validation := utils.NewValidation()
 
 	// max file size is 5MB

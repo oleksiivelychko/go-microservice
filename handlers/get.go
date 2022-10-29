@@ -1,9 +1,6 @@
 package handlers
 
 import (
-	"context"
-	gService "github.com/oleksiivelychko/go-grpc-protobuf/proto/grpc_service"
-	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/utils"
 	"net/http"
 )
@@ -13,15 +10,22 @@ import (
 //
 // responses:
 // 200: productsResponse
-func (p *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
+// 400: grpcResponseWrapper
+func (ph *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
-	p.l.Printf("[DEBUG] GET `/products`")
+	ph.l.Debug("GetAll /products")
 
-	list := api.GetProducts()
-
-	err := utils.ToJSON(list, rw)
+	list, err := ph.ps.GetProducts()
 	if err != nil {
-		p.l.Printf("[ERROR] GET `/products` during serialization got '%s'", err)
+		ph.l.Error("grpc_service.Currency.MakeExchange", "error", err)
+		rw.WriteHeader(http.StatusBadRequest)
+		_ = utils.ToJSON(&GrpcError{Message: err.Error()}, rw)
+		return
+	}
+
+	err = utils.ToJSON(list, rw)
+	if err != nil {
+		ph.l.Error("serialization", "error", err)
 	}
 }
 
@@ -30,46 +34,32 @@ func (p *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 //
 // responses:
 // 200: productResponse
+// 400: grpcResponseWrapper
 // 404: notFoundResponse
 // 500: errorResponse
-func (p *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
+func (ph *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 
 	id := getProductID(r)
-	p.l.Printf("[DEBUG] GET `/products/%d`", id)
+	ph.l.Debug("GetOne /products", "id", id)
 
-	product, err := api.GetProduct(id)
+	product, err := ph.ps.GetProduct(id)
 
-	switch err {
-	case nil:
-	case api.ErrProductNotFound:
-		p.l.Printf("[ERROR] GET `/products/%d` got '%s'", id, err)
-
+	switch e := err.(type) {
+	case *utils.GrpcServiceRequestErr:
+		ph.l.Error("grpc_service.Currency.MakeExchange", "error", err)
+		rw.WriteHeader(http.StatusBadRequest)
+		_ = utils.ToJSON(&GrpcError{Message: e.Error()}, rw)
+		return
+	case *utils.ProductNotFoundErr:
+		ph.l.Debug("product not found", "id", id)
 		rw.WriteHeader(http.StatusNotFound)
-		_ = utils.ToJSON(&NotFound{Message: err.Error()}, rw)
+		_ = utils.ToJSON(&NotFound{Message: e.Error()}, rw)
 		return
-	default:
-		p.l.Printf("[ERROR] GET `/products/%d` got internal server error '%s'", id, err)
-
-		rw.WriteHeader(http.StatusInternalServerError)
-		_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)
-		return
-	}
-
-	er := &gService.ExchangeRequest{
-		From: gService.Currencies_USD.String(),
-		To:   gService.Currencies_EUR.String(),
-	}
-	rateResponse, err := p.cc.MakeExchange(context.Background(), er)
-	if err == nil {
-		p.l.Printf("[INFO] GET `grpc_service.Currency.MakeExchange` got rate=%f", rateResponse.Rate)
-		product.Price *= rateResponse.Rate
-	} else {
-		p.l.Printf("[ERROR] GET `grpc_service.Currency.MakeExchange` got '%s'", err)
 	}
 
 	err = utils.ToJSON(product, rw)
 	if err != nil {
-		p.l.Printf("[ERROR] GET `/products/%d` during serialization got '%s'", id, err)
+		ph.l.Error("serialization", "error", err)
 	}
 }

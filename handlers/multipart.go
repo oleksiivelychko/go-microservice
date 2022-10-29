@@ -79,10 +79,11 @@ func (mp *MultipartHandler) ProcessForm(rw http.ResponseWriter, r *http.Request)
 }
 
 func (mp *MultipartHandler) saveFile(id, path string, r io.ReadCloser) error {
-	mp.l.Info("save file from multipart/form-data", "productId", id, "filePath", path)
-
 	filePath := filepath.Join(id, path)
 	_, err := mp.store.Save(filePath, r)
+	if err != nil {
+		mp.l.Info("file from multipart/form-data has been successfully uploaded to", "filePath", filePath)
+	}
 
 	return err
 }

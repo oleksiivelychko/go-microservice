@@ -15,5 +15,5 @@ func (e *ProductNotFoundErr) Error() string {
 }
 
 func (e *GrpcServiceRequestErr) Error() string {
-	return fmt.Sprintf("unable to make request to gRPC service.\n%s", e.Err)
+	return fmt.Sprintf("unable to make request to gRPC service. %s", e.Err)
 }

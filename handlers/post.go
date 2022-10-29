@@ -14,7 +14,7 @@ import (
 // 400: grpcResponseWrapper
 // 422: validationErrorsResponse
 func (ph *ProductHandler) CreateProduct(rw http.ResponseWriter, r *http.Request) {
-	ph.l.Debug("CreateProduct")
+	ph.l.Debug("POST CreateProduct /products")
 
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(*api.Product)

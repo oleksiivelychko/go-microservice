@@ -32,7 +32,7 @@ func main() {
 		"http://" + addr,
 	}
 
-	hcLogger := utils.NewLogger()
+	hcLogger := utils.NewLogger("go-microservice")
 	validation := utils.NewValidation()
 
 	// max file size is 5MB
@@ -103,7 +103,7 @@ func main() {
 	}
 
 	go func() {
-		hcLogger.Info("starting server", "address", addr)
+		hcLogger.Info("starting server", "listening", addr)
 		err = server.ListenAndServe()
 		if err != nil {
 			hcLogger.Error("unable to start server", "error", err)

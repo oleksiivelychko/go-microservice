@@ -32,8 +32,6 @@ func (file *File) invalidURI(uri string, rw http.ResponseWriter) {
 }
 
 func (file *File) saveFile(id, filename string, rw http.ResponseWriter, r *http.Request) {
-	file.log.Info("trying to save file", "productId", id, "fileName", filename)
-
 	filePath := filepath.Join(id, filename)
 	_, err := file.store.Save(filePath, r.Body)
 	if err != nil {

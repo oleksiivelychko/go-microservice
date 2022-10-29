@@ -15,7 +15,7 @@ import (
 // 404: errorResponse
 // 422: validationErrorsResponse
 func (ph *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
-	ph.l.Debug("UpdateProduct")
+	ph.l.Debug("PUT UpdateProduct /products")
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(*api.Product)
 	product.ID = getProductID(r)
@@ -29,7 +29,7 @@ func (ph *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request)
 		_ = utils.ToJSON(&GrpcError{Message: err.Error()}, rw)
 		return
 	case *utils.ProductNotFoundErr:
-		ph.l.Debug("product not found", "id", product.ID)
+		ph.l.Error("product not found", "id", product.ID)
 		rw.WriteHeader(http.StatusNotFound)
 		_ = utils.ToJSON(&NotFound{Message: e.Error()}, rw)
 		return

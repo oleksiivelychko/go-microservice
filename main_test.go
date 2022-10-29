@@ -11,7 +11,7 @@ import (
 
 /*
 *
-Warning: main server must be running before.
+Warning: main and gRPC servers must be running before.
 */
 var client = createHttpClient("localhost:9090")
 
@@ -31,13 +31,13 @@ func TestHttpClientGetProducts(t *testing.T) {
 }
 
 func TestHttpClientGetProduct(t *testing.T) {
-	productOne, err := fetchProduct(1)
+	product, err := fetchProduct(1)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	p, _ := productOne.GetPayload().MarshalBinary()
+	p, _ := product.GetPayload().MarshalBinary()
 	out := prettily.EchoBytes(p, "	")
 	fmt.Printf("%s\n", out)
 }
@@ -46,7 +46,7 @@ func TestHttpClientCreateProduct(t *testing.T) {
 	params := products.NewCreateProductParams()
 
 	var pName = "Coffee"
-	var pPrice float32 = 1.49
+	var pPrice = 1.49
 	var pSKU = "000-000-000"
 
 	params.Body = &models.Product{
@@ -66,15 +66,15 @@ func TestHttpClientCreateProduct(t *testing.T) {
 	}
 
 	if *product.GetPayload().Name != pName {
-		t.Fatal("product:name doesn't match")
-	}
-
-	if *product.GetPayload().Price != pPrice {
-		t.Fatal("product:price doesn't match")
+		t.Fatalf("product.Name `%s` doesn't match `%s`", *product.GetPayload().Name, pName)
 	}
 
 	if *product.GetPayload().SKU != pSKU {
-		t.Fatal("product:SKU doesn't match")
+		t.Fatalf("product.SKU `%s` doesn't match `%s`", *product.GetPayload().SKU, pSKU)
+	}
+
+	if *product.GetPayload().Price < pPrice {
+		t.Fatalf("product.Price `%f` didn't update `%f`", *product.GetPayload().Price, pPrice)
 	}
 }
 
@@ -87,7 +87,7 @@ func TestHttpClientUpdateProduct(t *testing.T) {
 	params := products.NewUpdateProductParams()
 
 	var pName = "Coffee with milk"
-	var pPrice float32 = 1.99
+	var pPrice = 1.99
 	var pSKU = "111-111-111"
 
 	params.ID = 3
@@ -108,15 +108,15 @@ func TestHttpClientUpdateProduct(t *testing.T) {
 	}
 
 	if *product.GetPayload().Name != pName {
-		t.Fatal("product:name doesn't match")
-	}
-
-	if *product.GetPayload().Price != pPrice {
-		t.Fatal("product:price doesn't match")
+		t.Fatalf("product.Name `%s` doesn't match `%s`", *product.GetPayload().Name, pName)
 	}
 
 	if *product.GetPayload().SKU != pSKU {
-		t.Fatal("product:SKU doesn't match")
+		t.Fatalf("product.SKU `%s` doesn't match `%s`", *product.GetPayload().SKU, pSKU)
+	}
+
+	if *product.GetPayload().Price < pPrice {
+		t.Fatalf("product.Price `%f` didn't update `%f`", *product.GetPayload().Price, pPrice)
 	}
 }
 

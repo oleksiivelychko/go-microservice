@@ -12,8 +12,8 @@ import (
 // 200: productsResponse
 // 400: grpcResponseWrapper
 func (ph *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
+	ph.l.Debug("GetAll")
 	rw.Header().Add("Content-Type", "application/json")
-	ph.l.Debug("GetAll /products")
 
 	list, err := ph.ps.GetProducts()
 	if err != nil {
@@ -38,11 +38,10 @@ func (ph *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 // 404: notFoundResponse
 // 500: errorResponse
 func (ph *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
+	ph.l.Debug("GetOne")
 	rw.Header().Add("Content-Type", "application/json")
 
 	id := getProductID(r)
-	ph.l.Debug("GetOne /products", "id", id)
-
 	product, err := ph.ps.GetProduct(id)
 
 	switch e := err.(type) {

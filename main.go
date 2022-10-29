@@ -10,6 +10,7 @@ import (
 	gService "github.com/oleksiivelychko/go-grpc-protobuf/proto/grpc_service"
 	"github.com/oleksiivelychko/go-microservice/backends"
 	"github.com/oleksiivelychko/go-microservice/handlers"
+	"github.com/oleksiivelychko/go-microservice/service"
 	"github.com/oleksiivelychko/go-microservice/utils"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -31,12 +32,7 @@ func main() {
 		"http://" + addr,
 	}
 
-	hcLogger := hclog.New(&hclog.LoggerOptions{
-		Name:  "go-microservice",
-		Level: hclog.LevelFromString("debug"),
-	})
-
-	stdLogger := hcLogger.StandardLogger(&hclog.StandardLoggerOptions{InferLevels: true})
+	hcLogger := utils.NewLogger()
 	validation := utils.NewValidation()
 
 	// max file size is 5MB
@@ -51,12 +47,16 @@ func main() {
 		hcLogger.Error("unable to connect to gRPC server", "error", err)
 	}
 	defer grpcConnection.Close()
-	currencyClient := gService.NewCurrencyClient(grpcConnection)
 
-	productHandler := handlers.NewProductHandler(stdLogger, validation, currencyClient)
+	currencyClient := gService.NewCurrencyClient(grpcConnection)
+	currencyService := service.NewCurrencyService(currencyClient, "USD")
+	productService := service.NewProductService(currencyService)
+
+	productHandler := handlers.NewProductHandler(hcLogger, validation, productService)
 	fileHandler := handlers.NewFileHandler(storage, hcLogger)
-	multipartHandler := handlers.NewMultipartHandler(hcLogger, validation, storage)
+	multipartHandler := handlers.NewMultipartHandler(hcLogger, validation, storage, productService)
 	gzipHandler := handlers.NewGzipHandler(hcLogger)
+
 	serveMux := mux.NewRouter()
 
 	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
@@ -96,14 +96,14 @@ func main() {
 	server := &http.Server{
 		Addr:         addr,
 		Handler:      goHandler(serveMux),
-		ErrorLog:     stdLogger,         // the logger for the server
+		ErrorLog:     hcLogger.StandardLogger(&hclog.StandardLoggerOptions{InferLevels: true}),
 		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
 		ReadTimeout:  10 * time.Second,  // max time to read request from the client
 		WriteTimeout: 10 * time.Second,  // max time to write response to the client
 	}
 
 	go func() {
-		hcLogger.Info("starting server on", "addr", addr)
+		hcLogger.Info("starting server", "address", addr)
 		err = server.ListenAndServe()
 		if err != nil {
 			hcLogger.Error("unable to start server", "error", err)
@@ -118,7 +118,7 @@ func main() {
 
 	// block until a signal is received
 	sig := <-signalChannel
-	hcLogger.Info("received terminate, graceful shutdown with", "signal", sig)
+	hcLogger.Info("received terminate, graceful shutdown", "signal", sig)
 
 	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)

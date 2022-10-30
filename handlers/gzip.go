@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"github.com/hashicorp/go-hclog"
 	"net/http"
+	"strings"
 )
 
 type GzipHandler struct {
@@ -39,4 +40,22 @@ func (grw *GzipResponseWriter) WriteHeader(statuscode int) {
 func (grw *GzipResponseWriter) Flush() {
 	_ = grw.gw.Flush()
 	_ = grw.gw.Close()
+}
+
+func (g *GzipHandler) MiddlewareGzip(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+			g.log.Info("discovered `gzip` content-encoding")
+
+			wrw := NewGzipResponseWriter(rw)
+			wrw.Header().Set("Content-Encoding", "gzip")
+
+			next.ServeHTTP(wrw, r)
+			defer wrw.Flush()
+
+			return
+		}
+
+		next.ServeHTTP(rw, r)
+	})
 }

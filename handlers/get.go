@@ -30,7 +30,7 @@ func (ph *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 }
 
 // swagger:route GET /products/{id} products getProduct
-// Returns a product by ID.
+// Returns a single product.
 //
 // responses:
 // 200: productResponse
@@ -40,7 +40,7 @@ func (ph *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 func (ph *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 
-	id := getProductID(r)
+	id := ph.getProductID(r)
 	ph.l.Debug("GET GetOne /products")
 
 	product, err := ph.ps.GetProduct(id)

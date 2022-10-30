@@ -8,7 +8,7 @@ import (
 )
 
 type ProductService struct {
-	currency *CurrencyService
+	Currency *CurrencyService
 	data     []*api.Product
 }
 
@@ -18,7 +18,7 @@ func NewProductService(currency *CurrencyService) *ProductService {
 }
 
 func (ps *ProductService) GetProducts() (api.Products, error) {
-	rate, err := ps.currency.GetRate()
+	rate, err := ps.Currency.GetRate()
 	if err != nil {
 		return ps.data, &utils.GrpcServiceRequestErr{Err: err.Error()}
 	}
@@ -39,7 +39,7 @@ func (ps *ProductService) GetProduct(id int) (*api.Product, error) {
 		return nil, &utils.ProductNotFoundErr{Err: fmt.Sprintf("id=%d", id)}
 	}
 
-	rate, err := ps.currency.GetRate()
+	rate, err := ps.Currency.GetRate()
 	if err != nil {
 		return ps.data[i], &utils.GrpcServiceRequestErr{Err: err.Error()}
 	}
@@ -53,7 +53,7 @@ func (ps *ProductService) GetProduct(id int) (*api.Product, error) {
 func (ps *ProductService) AddProduct(p *api.Product) error {
 	p.ID = ps.GetNextProductId()
 
-	rate, err := ps.currency.GetRate()
+	rate, err := ps.Currency.GetRate()
 	if err != nil {
 		err = &utils.GrpcServiceRequestErr{Err: err.Error()}
 	} else {
@@ -70,7 +70,7 @@ func (ps *ProductService) UpdateProduct(p *api.Product) error {
 		return &utils.ProductNotFoundErr{Err: fmt.Sprintf("id=%d", p.ID)}
 	}
 
-	rate, err := ps.currency.GetRate()
+	rate, err := ps.Currency.GetRate()
 	if err != nil {
 		err = &utils.GrpcServiceRequestErr{Err: err.Error()}
 	} else {

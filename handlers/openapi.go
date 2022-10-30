@@ -94,3 +94,11 @@ type productRequestIdWrapper struct {
 	// required: true
 	ID int `json:"id"`
 }
+
+// Hand over currency optional parameter.
+// swagger:parameters getProducts getProduct
+type productQueryCurrencyWrapper struct {
+	// in: query
+	// required: false
+	Currency string
+}

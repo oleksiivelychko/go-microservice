@@ -6,8 +6,8 @@ import (
 )
 
 type CurrencyService struct {
-	client          grpc_service.CurrencyClient
-	defaultCurrency string
+	client   grpc_service.CurrencyClient
+	currency string
 }
 
 func NewCurrencyService(client grpc_service.CurrencyClient, currency string) *CurrencyService {
@@ -17,7 +17,7 @@ func NewCurrencyService(client grpc_service.CurrencyClient, currency string) *Cu
 func (cs *CurrencyService) GetRate() (float64, error) {
 	er := &grpc_service.ExchangeRequest{
 		From: grpc_service.Currencies_EUR.String(),
-		To:   cs.defaultCurrency,
+		To:   cs.currency,
 	}
 
 	response, err := cs.client.MakeExchange(context.Background(), er)
@@ -26,4 +26,8 @@ func (cs *CurrencyService) GetRate() (float64, error) {
 	}
 
 	return response.Rate, nil
+}
+
+func (cs *CurrencyService) SetCurrency(currency string) {
+	cs.currency = currency
 }

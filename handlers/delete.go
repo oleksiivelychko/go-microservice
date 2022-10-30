@@ -15,7 +15,7 @@ func (ph *ProductHandler) DeleteProduct(rw http.ResponseWriter, r *http.Request)
 	ph.l.Debug("DELETE DeleteProduct /products")
 	rw.Header().Add("Content-Type", "application/json")
 
-	id := getProductID(r)
+	id := ph.getProductID(r)
 
 	err := ph.ps.DeleteProduct(id)
 	if err != nil {

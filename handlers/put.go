@@ -18,7 +18,7 @@ func (ph *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request)
 	ph.l.Debug("PUT UpdateProduct /products")
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(*api.Product)
-	product.ID = getProductID(r)
+	product.ID = ph.getProductID(r)
 
 	err := ph.ps.UpdateProduct(product)
 

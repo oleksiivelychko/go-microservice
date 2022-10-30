@@ -45,7 +45,7 @@ type GrpcError struct {
 }
 
 // getProductID returns the product ID from the URL.
-func getProductID(r *http.Request) int {
+func (ph *ProductHandler) getProductID(r *http.Request) int {
 	// parse the product id from the url
 	vars := mux.Vars(r)
 	// convert the id into an integer and return
@@ -56,4 +56,12 @@ func getProductID(r *http.Request) int {
 	}
 
 	return id
+}
+
+// setCurrency returns the product ID from the URL.
+func (ph *ProductHandler) setCurrency(r *http.Request) {
+	currency := r.URL.Query().Get("currency")
+	if currency != "" {
+		ph.ps.Currency.SetCurrency(currency)
+	}
 }

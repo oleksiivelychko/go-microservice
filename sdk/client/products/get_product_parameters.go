@@ -62,6 +62,9 @@ GetProductParams contains all the parameters to send to the API endpoint
 */
 type GetProductParams struct {
 
+	// Currency.
+	Currency *string
+
 	// ID.
 	//
 	// Format: int64
@@ -120,6 +123,17 @@ func (o *GetProductParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithCurrency adds the currency to the get product params
+func (o *GetProductParams) WithCurrency(currency *string) *GetProductParams {
+	o.SetCurrency(currency)
+	return o
+}
+
+// SetCurrency adds the currency to the get product params
+func (o *GetProductParams) SetCurrency(currency *string) {
+	o.Currency = currency
+}
+
 // WithID adds the id to the get product params
 func (o *GetProductParams) WithID(id int64) *GetProductParams {
 	o.SetID(id)
@@ -138,6 +152,23 @@ func (o *GetProductParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Re
 		return err
 	}
 	var res []error
+
+	if o.Currency != nil {
+
+		// query param Currency
+		var qrCurrency string
+
+		if o.Currency != nil {
+			qrCurrency = *o.Currency
+		}
+		qCurrency := qrCurrency
+		if qCurrency != "" {
+
+			if err := r.SetQueryParam("Currency", qCurrency); err != nil {
+				return err
+			}
+		}
+	}
 
 	// path param id
 	if err := r.SetPathParam("id", swag.FormatInt64(o.ID)); err != nil {

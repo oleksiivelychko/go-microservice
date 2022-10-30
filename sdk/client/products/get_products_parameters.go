@@ -60,6 +60,10 @@ GetProductsParams contains all the parameters to send to the API endpoint
 	Typically these are written to a http.Request.
 */
 type GetProductsParams struct {
+
+	// Currency.
+	Currency *string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -113,6 +117,17 @@ func (o *GetProductsParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithCurrency adds the currency to the get products params
+func (o *GetProductsParams) WithCurrency(currency *string) *GetProductsParams {
+	o.SetCurrency(currency)
+	return o
+}
+
+// SetCurrency adds the currency to the get products params
+func (o *GetProductsParams) SetCurrency(currency *string) {
+	o.Currency = currency
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *GetProductsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -120,6 +135,23 @@ func (o *GetProductsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.R
 		return err
 	}
 	var res []error
+
+	if o.Currency != nil {
+
+		// query param Currency
+		var qrCurrency string
+
+		if o.Currency != nil {
+			qrCurrency = *o.Currency
+		}
+		qCurrency := qrCurrency
+		if qCurrency != "" {
+
+			if err := r.SetQueryParam("Currency", qCurrency); err != nil {
+				return err
+			}
+		}
+	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)

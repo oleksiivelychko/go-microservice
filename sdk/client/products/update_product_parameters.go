@@ -67,9 +67,6 @@ type UpdateProductParams struct {
 	// Body.
 	Body *models.Product
 
-	// Currency.
-	Currency *string
-
 	// ID.
 	//
 	// Format: int64
@@ -139,17 +136,6 @@ func (o *UpdateProductParams) SetBody(body *models.Product) {
 	o.Body = body
 }
 
-// WithCurrency adds the currency to the update product params
-func (o *UpdateProductParams) WithCurrency(currency *string) *UpdateProductParams {
-	o.SetCurrency(currency)
-	return o
-}
-
-// SetCurrency adds the currency to the update product params
-func (o *UpdateProductParams) SetCurrency(currency *string) {
-	o.Currency = currency
-}
-
 // WithID adds the id to the update product params
 func (o *UpdateProductParams) WithID(id int64) *UpdateProductParams {
 	o.SetID(id)
@@ -171,23 +157,6 @@ func (o *UpdateProductParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 	if o.Body != nil {
 		if err := r.SetBodyParam(o.Body); err != nil {
 			return err
-		}
-	}
-
-	if o.Currency != nil {
-
-		// query param Currency
-		var qrCurrency string
-
-		if o.Currency != nil {
-			qrCurrency = *o.Currency
-		}
-		qCurrency := qrCurrency
-		if qCurrency != "" {
-
-			if err := r.SetQueryParam("Currency", qCurrency); err != nil {
-				return err
-			}
 		}
 	}
 

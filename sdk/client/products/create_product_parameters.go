@@ -66,9 +66,6 @@ type CreateProductParams struct {
 	// Body.
 	Body *models.Product
 
-	// Currency.
-	Currency *string
-
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -133,17 +130,6 @@ func (o *CreateProductParams) SetBody(body *models.Product) {
 	o.Body = body
 }
 
-// WithCurrency adds the currency to the create product params
-func (o *CreateProductParams) WithCurrency(currency *string) *CreateProductParams {
-	o.SetCurrency(currency)
-	return o
-}
-
-// SetCurrency adds the currency to the create product params
-func (o *CreateProductParams) SetCurrency(currency *string) {
-	o.Currency = currency
-}
-
 // WriteToRequest writes these params to a swagger request
 func (o *CreateProductParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -154,23 +140,6 @@ func (o *CreateProductParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 	if o.Body != nil {
 		if err := r.SetBodyParam(o.Body); err != nil {
 			return err
-		}
-	}
-
-	if o.Currency != nil {
-
-		// query param Currency
-		var qrCurrency string
-
-		if o.Currency != nil {
-			qrCurrency = *o.Currency
-		}
-		qCurrency := qrCurrency
-		if qCurrency != "" {
-
-			if err := r.SetQueryParam("Currency", qCurrency); err != nil {
-				return err
-			}
 		}
 	}
 

@@ -112,9 +112,6 @@ paths:
                   required: true
                   schema:
                     $ref: '#/definitions/product'
-                - in: query
-                  name: Currency
-                  type: string
             responses:
                 "201":
                     $ref: '#/responses/productResponse'
@@ -164,7 +161,7 @@ paths:
                     $ref: '#/responses/notFoundResponse'
                 "500":
                     $ref: '#/responses/errorResponse'
-            summary: Returns a product by ID.
+            summary: Returns a single product.
             tags:
                 - products
         put:
@@ -181,9 +178,6 @@ paths:
                   required: true
                   schema:
                     $ref: '#/definitions/product'
-                - in: query
-                  name: Currency
-                  type: string
             responses:
                 "200":
                     $ref: '#/responses/productResponse'

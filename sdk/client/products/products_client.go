@@ -120,7 +120,7 @@ func (a *Client) DeleteProduct(params *DeleteProductParams, opts ...ClientOption
 }
 
 /*
-GetProduct returns a product by ID
+GetProduct returns a single product
 */
 func (a *Client) GetProduct(params *GetProductParams, opts ...ClientOption) (*GetProductOK, error) {
 	// TODO: Validate the params before sending

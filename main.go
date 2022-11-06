@@ -49,7 +49,7 @@ func main() {
 	defer grpcConnection.Close()
 
 	currencyClient := gService.NewCurrencyClient(grpcConnection)
-	currencyService := service.NewCurrencyService(currencyClient, "USD")
+	currencyService := service.NewCurrencyService(hcLogger, currencyClient, "USD")
 	productService := service.NewProductService(currencyService)
 
 	productHandler := handlers.NewProductHandler(hcLogger, validation, productService)

@@ -46,7 +46,7 @@ func (ph *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 	product, err := ph.ps.GetProduct(id)
 
 	switch e := err.(type) {
-	case *utils.GrpcServiceRequestErr:
+	case *utils.GrpcServiceErr:
 		ph.l.Error("grpc_service.Currency.MakeExchange", "error", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		_ = utils.ToJSON(&GrpcError{Message: e.Error()}, rw)

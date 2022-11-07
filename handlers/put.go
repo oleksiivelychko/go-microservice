@@ -23,7 +23,7 @@ func (ph *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request)
 	err := ph.ps.UpdateProduct(product)
 
 	switch e := err.(type) {
-	case *utils.GrpcServiceRequestErr:
+	case *utils.GrpcServiceErr:
 		ph.l.Error("grpc_service.Currency.MakeExchange", "error", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		_ = utils.ToJSON(&GrpcError{Message: err.Error()}, rw)

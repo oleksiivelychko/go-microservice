@@ -20,7 +20,7 @@ func NewProductService(currency *CurrencyService) *ProductService {
 func (ps *ProductService) GetProducts() (api.Products, error) {
 	rate, err := ps.Currency.GetRate()
 	if err != nil {
-		return ps.data, &utils.GrpcServiceRequestErr{Err: err.Error()}
+		return ps.data, &utils.GrpcServiceErr{Err: err.Error()}
 	}
 
 	ratedProductsList := api.Products{}
@@ -41,7 +41,7 @@ func (ps *ProductService) GetProduct(id int) (*api.Product, error) {
 
 	rate, err := ps.Currency.GetRate()
 	if err != nil {
-		return ps.data[i], &utils.GrpcServiceRequestErr{Err: err.Error()}
+		return ps.data[i], &utils.GrpcServiceErr{Err: err.Error()}
 	}
 
 	ratedProduct := *ps.data[i]
@@ -55,7 +55,7 @@ func (ps *ProductService) AddProduct(p *api.Product) error {
 
 	rate, err := ps.Currency.GetRate()
 	if err != nil {
-		err = &utils.GrpcServiceRequestErr{Err: err.Error()}
+		err = &utils.GrpcServiceErr{Err: err.Error()}
 	} else {
 		p.Price *= rate
 	}
@@ -72,7 +72,7 @@ func (ps *ProductService) UpdateProduct(p *api.Product) error {
 
 	rate, err := ps.Currency.GetRate()
 	if err != nil {
-		err = &utils.GrpcServiceRequestErr{Err: err.Error()}
+		err = &utils.GrpcServiceErr{Err: err.Error()}
 	} else {
 		p.Price *= rate
 	}

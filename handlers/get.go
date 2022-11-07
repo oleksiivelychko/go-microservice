@@ -12,19 +12,18 @@ import (
 // 200: productsResponse
 // 400: grpcResponseWrapper
 func (ph *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
+	ph.log.Debug("GET /products GetAll")
 	rw.Header().Add("Content-Type", "application/json")
-	ph.log.Debug("GET GetAll /products")
 
 	list, err := ph.srv.GetProducts()
 	if err != nil {
-		ph.log.Error("grpc_service.Currency.MakeExchange", "error", err)
+		ph.log.Error("request to gRPC service", "error", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		_ = utils.ToJSON(&GrpcError{Message: err.Error()}, rw)
 		return
 	}
 
-	err = utils.ToJSON(list, rw)
-	if err != nil {
+	if err = utils.ToJSON(list, rw); err != nil {
 		ph.log.Error("serialization", "error", err)
 	}
 }
@@ -38,16 +37,15 @@ func (ph *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 // 404: notFoundResponse
 // 500: errorResponse
 func (ph *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
+	ph.log.Debug("GET /products GetOne")
 	rw.Header().Add("Content-Type", "application/json")
 
 	id := ph.getProductID(r)
-	ph.log.Debug("GET GetOne /products")
-
 	product, err := ph.srv.GetProduct(id)
 
 	switch e := err.(type) {
 	case *utils.GrpcServiceErr:
-		ph.log.Error("grpc_service.Currency.MakeExchange", "error", err)
+		ph.log.Error("request to gRPC service", "error", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		_ = utils.ToJSON(&GrpcError{Message: e.Error()}, rw)
 		return
@@ -58,8 +56,7 @@ func (ph *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = utils.ToJSON(product, rw)
-	if err != nil {
+	if err = utils.ToJSON(product, rw); err != nil {
 		ph.log.Error("serialization", "error", err)
 	}
 }

@@ -15,7 +15,8 @@ import (
 // 404: errorResponse
 // 422: validationErrorsResponse
 func (ph *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
-	ph.log.Debug("PUT UpdateProduct /products")
+	ph.log.Debug("PUT /products UpdateProduct")
+
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(*api.Product)
 	product.ID = ph.getProductID(r)
@@ -24,7 +25,7 @@ func (ph *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request)
 
 	switch e := err.(type) {
 	case *utils.GrpcServiceErr:
-		ph.log.Error("grpc_service.Currency.MakeExchange", "error", err)
+		ph.log.Error("request to gRPC service", "error", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		_ = utils.ToJSON(&GrpcError{Message: err.Error()}, rw)
 		return
@@ -36,5 +37,5 @@ func (ph *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request)
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	_ = utils.ToJSON(product, rw)
+	utils.ToJSON(product, rw)
 }

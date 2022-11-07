@@ -12,7 +12,7 @@ import (
 // 204: noContentResponse
 // 404: notFoundResponse
 func (ph *ProductHandler) DeleteProduct(rw http.ResponseWriter, r *http.Request) {
-	ph.log.Debug("DELETE DeleteProduct /products")
+	ph.log.Debug("DELETE /products DeleteProduct")
 	rw.Header().Add("Content-Type", "application/json")
 
 	id := ph.getProductID(r)

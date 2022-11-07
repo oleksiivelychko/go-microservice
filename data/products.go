@@ -8,13 +8,13 @@ import (
 	"path/filepath"
 )
 
-func LoadProductsFromJSON() []*api.Product {
+func LoadProductsFromJSON(localJson string) []*api.Product {
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
 
-	jsonFile, err := os.Open(filepath.Join(wd, "./public/products.json"))
+	jsonFile, err := os.Open(filepath.Join(wd, localJson))
 	if err != nil {
 		panic(err)
 	}

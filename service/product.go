@@ -13,7 +13,7 @@ type ProductService struct {
 }
 
 func NewProductService(currency *CurrencyService) *ProductService {
-	var productsList = data.LoadProductsFromJSON()
+	var productsList = data.LoadProductsFromJSON("./public/products.json")
 	return &ProductService{currency, productsList}
 }
 

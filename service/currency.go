@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/hashicorp/go-hclog"
-	"github.com/oleksiivelychko/go-grpc-protobuf/proto/grpc_service"
+	"github.com/oleksiivelychko/go-grpc-service/proto/grpc_service"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -26,10 +26,6 @@ func NewCurrencyService(logger hclog.Logger, client grpc_service.CurrencyClient,
 }
 
 func (cs *CurrencyService) GetRate() (float64, error) {
-	if rate, ok := cs.cachedRates[cs.currency]; ok {
-		return rate, nil
-	}
-
 	exchangeRequest := &grpc_service.ExchangeRequest{
 		From: grpc_service.Currencies_EUR,
 		To:   grpc_service.Currencies(grpc_service.Currencies_value[cs.currency]),
@@ -38,25 +34,24 @@ func (cs *CurrencyService) GetRate() (float64, error) {
 	// get initial rate
 	response, err := cs.client.MakeExchange(context.Background(), exchangeRequest)
 	if err != nil {
-		if grpcStatus, ok := status.FromError(err); ok {
-			details := grpcStatus.Details()[0].(*grpc_service.ExchangeRequest)
-			if grpcStatus.Code() == codes.InvalidArgument {
-				return -1, fmt.Errorf(
-					"unable to get exchange request from gRPC server, base '%s' and destination '%s' cannot be the same",
-					details.GetFrom().String(),
-					details.GetTo().String(),
-				)
-			}
+		// convert the gRPC error message
+		grpcErr, ok := status.FromError(err)
+		if !ok {
+			return -1, err
 		}
 
-		return -1, err
+		if grpcErr.Code() == codes.InvalidArgument {
+			return -1, fmt.Errorf("unable to retrive exchange request from gRPC server: '%s'", grpcErr.Message())
+		}
 	}
 
-	cs.logger.Info("got gRPC response", "rate", response.Rate, "createdAt", response.CreatedAt)
+	cs.logger.Info("got gRPC response", "rate", response.Rate, "createdAt", response.CreatedAt.AsTime().Format("2006-01-02"))
 	cs.cachedRates[cs.currency] = response.Rate
 
 	// subscribe for updates
-	cs.subscriber.Send(exchangeRequest)
+	if err = cs.subscriber.Send(exchangeRequest); err != nil {
+		cs.logger.Error("unable to send exchange request", "error", err)
+	}
 
 	return response.Rate, nil
 }
@@ -74,19 +69,26 @@ func (cs *CurrencyService) handleUpdates() {
 	cs.subscriber = subscribedClient
 
 	for {
-		exchangeResponse, recvErr := subscribedClient.Recv()
-		if recvErr != nil {
-			cs.logger.Error("unable to receive the message", "error", recvErr)
-			return
+		streamExchangeResponse, recvErr := subscribedClient.Recv()
+		if grpcErr := streamExchangeResponse.GetError(); grpcErr != nil {
+			cs.logger.Error("internal subscriber error", "error", grpcErr)
+			continue
 		}
 
-		cs.logger.Info("received the update from server",
-			"from", exchangeResponse.GetFrom(),
-			"to", exchangeResponse.GetTo(),
-			"rate", exchangeResponse.GetRate(),
-			"createdAt", exchangeResponse.GetCreatedAt().AsTime().Format("2006-01-02"),
-		)
+		if exchangeResponse := streamExchangeResponse.GetExchangeResponse(); exchangeResponse != nil {
+			if recvErr != nil {
+				cs.logger.Error("unable to receive the message", "error", recvErr)
+				return
+			}
 
-		cs.cachedRates[exchangeResponse.GetTo().String()] = exchangeResponse.GetRate()
+			cs.logger.Info("received the update from server",
+				"from", exchangeResponse.GetFrom(),
+				"to", exchangeResponse.GetTo(),
+				"rate", exchangeResponse.GetRate(),
+				"createdAt", exchangeResponse.GetCreatedAt().AsTime().Format("2006-01-02"),
+			)
+
+			cs.cachedRates[exchangeResponse.GetTo().String()] = exchangeResponse.GetRate()
+		}
 	}
 }

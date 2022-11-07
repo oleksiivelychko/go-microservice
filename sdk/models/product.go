@@ -14,12 +14,12 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// Product Product defines the structure for an API model.
+// Product Product structure for an API model.
 //
 // swagger:model Product
 type Product struct {
 
-	// unique identifier
+	// ID
 	// Minimum: 1
 	ID int64 `json:"id,omitempty"`
 

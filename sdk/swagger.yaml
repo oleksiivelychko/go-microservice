@@ -39,18 +39,15 @@ definitions:
     product:
         properties:
             id:
-                description: unique identifier
                 format: int64
                 minimum: 1
                 type: integer
                 x-go-name: ID
             name:
-                description: name
                 maxLength: 255
                 type: string
                 x-go-name: Name
             price:
-                description: price
                 format: double
                 minimum: 0.01
                 type: number
@@ -76,7 +73,7 @@ definitions:
             - name
             - price
             - sku
-        title: Product defines the structure for an API model.
+        title: Product structure for an API model.
         type: object
         x-go-name: Product
         x-go-package: github.com/oleksiivelychko/go-microservice/api

@@ -4,23 +4,17 @@ import (
 	"github.com/oleksiivelychko/go-microservice/utils"
 )
 
-// Product defines the structure for an API model.
+// Product structure for an API model.
 // swagger:model product
 type Product struct {
-	// unique identifier
-	//
 	// required: false
 	// min: 1
 	ID int `json:"id"`
 
-	// name
-	//
 	// required: true
 	// max length: 255
 	Name string `json:"name" validate:"required"`
 
-	// price
-	//
 	// required: true
 	// min: 0.01
 	Price float64 `json:"price" validate:"gt=0"`
@@ -39,6 +33,7 @@ type Product struct {
 	// pattern: [a-z]+-[a-z]+-[a-z]+
 	SKU string `json:"sku" validate:"required,sku"`
 
+	// required: false
 	UpdatedAt utils.DateTime `json:"updatedAt,omitempty"`
 }
 

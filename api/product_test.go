@@ -17,7 +17,7 @@ func TestProductName(t *testing.T) {
 	err := v.Validate(p)
 
 	if err == nil {
-		t.Fatal("validation of product.Name didn't pass test")
+		t.Fatal("product.Name validation failed")
 	}
 
 	fmt.Println(err.Errors())
@@ -33,7 +33,7 @@ func TestProductPrice(t *testing.T) {
 	err := v.Validate(p)
 
 	if err == nil {
-		t.Fatal("validation of product.Price didn't pass test")
+		t.Fatal("product.Price validation failed")
 	}
 
 	fmt.Println(err.Errors())
@@ -50,7 +50,7 @@ func TestProductSKU(t *testing.T) {
 	err := v.Validate(p)
 
 	if err == nil {
-		t.Fatal("validation of product.SKU didn't pass test")
+		t.Fatal("product.SKU validation failed")
 	}
 
 	fmt.Println(err.Errors())

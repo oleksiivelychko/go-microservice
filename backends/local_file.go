@@ -1,7 +1,7 @@
 package backends
 
 import (
-	"golang.org/x/xerrors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -45,7 +45,7 @@ func (l *Local) Save(path string, content io.Reader) (int64, error) {
 	uploadPath := filepath.Dir(fullPath)
 	err := os.MkdirAll(uploadPath, os.ModePerm)
 	if err != nil {
-		return 0, xerrors.Errorf("unable to create directory: %w", err)
+		return 0, fmt.Errorf("unable to create directory: %w", err)
 	}
 
 	// if the file exists then delete it
@@ -53,26 +53,26 @@ func (l *Local) Save(path string, content io.Reader) (int64, error) {
 	if err == nil {
 		err = os.Remove(fullPath)
 		if err != nil {
-			return 0, xerrors.Errorf("unable to delete file: %w", err)
+			return 0, fmt.Errorf("unable to delete file: %w", err)
 		}
 	} else if !os.IsNotExist(err) {
-		return 0, xerrors.Errorf("unable to get file info: %w", err)
+		return 0, fmt.Errorf("unable to get file info: %w", err)
 	}
 
 	bytes := unsafe.Sizeof(content)
 	if uint64(bytes) > l.maxFileSize {
-		return 0, xerrors.Errorf("content size greater than max bytes allowed: %w", err)
+		return 0, fmt.Errorf("content size greater than max bytes allowed: %w", err)
 	}
 
 	newFile, err := os.Create(fullPath)
 	if err != nil {
-		return 0, xerrors.Errorf("unable to create file: %w", err)
+		return 0, fmt.Errorf("unable to create file: %w", err)
 	}
 	defer newFile.Close()
 
 	writtenBytes, err := io.Copy(newFile, content)
 	if err != nil {
-		return 0, xerrors.Errorf("unable to write into file: %w", err)
+		return 0, fmt.Errorf("unable to write into file: %w", err)
 	}
 
 	return writtenBytes, nil
@@ -83,7 +83,7 @@ func (l *Local) Get(path string) (*os.File, error) {
 
 	file, err := os.Open(fullPath)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to open file: %w", err)
+		return nil, fmt.Errorf("unable to open file: %w", err)
 	}
 
 	return file, err

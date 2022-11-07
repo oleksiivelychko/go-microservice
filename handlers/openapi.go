@@ -36,7 +36,6 @@ type validationErrorsResponseWrapper struct {
 	Body ValidationErrors
 }
 
-// Not found message.
 // swagger:response notFoundResponse
 type notFoundResponseWrapper struct {
 	// in: body

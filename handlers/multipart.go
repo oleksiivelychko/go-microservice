@@ -12,28 +12,22 @@ import (
 	"strconv"
 )
 
-// MultipartHandler for creating and updating products as multipart/form-data.
+// MultipartHandler for CRUD actions regarding api.Product objects as multipart/form-data.
 type MultipartHandler struct {
-	l     hclog.Logger
-	v     *utils.Validation
-	store contracts.Storage
-	ps    *service.ProductService
+	log hclog.Logger
+	val *utils.Validation
+	stg contracts.Storage
+	srv *service.ProductService
 }
 
-// NewMultipartHandler returns a new multipart handler with the given logger and validation.
-func NewMultipartHandler(
-	l hclog.Logger,
-	v *utils.Validation,
-	s contracts.Storage,
-	ps *service.ProductService,
-) *MultipartHandler {
+func NewMultipartHandler(l hclog.Logger, v *utils.Validation, s contracts.Storage, ps *service.ProductService) *MultipartHandler {
 	return &MultipartHandler{l, v, s, ps}
 }
 
 func (mp *MultipartHandler) ProcessForm(rw http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(128 * 1024) // 32Mb
 	if err != nil {
-		mp.l.Error("expected multipart form data", "error", err)
+		mp.log.Error("expected multipart form data", "error", err)
 		http.Error(rw, "expected multipart form data", http.StatusUnprocessableEntity)
 		return
 	}
@@ -41,10 +35,16 @@ func (mp *MultipartHandler) ProcessForm(rw http.ResponseWriter, r *http.Request)
 	id := r.FormValue("id")
 	productId, err := strconv.Atoi(id)
 	if err != nil {
-		productId = mp.ps.GetNextProductId()
+		productId = mp.srv.GetNextProductId()
 	}
 
-	price, _ := strconv.ParseFloat(r.FormValue("price"), 64)
+	price, err := strconv.ParseFloat(r.FormValue("price"), 64)
+	if err != nil {
+		mp.log.Error("unable to parse price value to float type", "error", err)
+		http.Error(rw, "unable to parse price value to float type", http.StatusUnprocessableEntity)
+		return
+	}
+
 	product := api.Product{
 		ID:    productId,
 		Name:  r.FormValue("name"),
@@ -52,37 +52,38 @@ func (mp *MultipartHandler) ProcessForm(rw http.ResponseWriter, r *http.Request)
 		SKU:   r.FormValue("SKU"),
 	}
 
-	mpFile, mpHandler, err := r.FormFile("image")
+	imageFile, fileHeader, err := r.FormFile("image")
 	if err != nil {
-		mp.l.Error("expected file", "error", err)
+		mp.log.Error("expected file", "error", err)
 		http.Error(rw, "expected file", http.StatusUnprocessableEntity)
 		return
 	}
 
-	err = mp.saveFile(strconv.Itoa(productId), mpHandler.Filename, mpFile)
+	err = mp.saveFile(strconv.Itoa(productId), fileHeader.Filename, imageFile)
 	if err != nil {
-		mp.l.Error("unable to save file", "error", err)
+		mp.log.Error("unable to save file", "error", err)
 		http.Error(rw, "unable to save file", http.StatusInternalServerError)
 		return
 	}
 
 	if id == "" {
-		err = mp.ps.AddProduct(&product)
+		err = mp.srv.AddProduct(&product)
 	} else {
-		err = mp.ps.UpdateProduct(&product)
+		err = mp.srv.UpdateProduct(&product)
 	}
 
 	if err != nil {
-		mp.l.Error("unable to make request to gRPC service", "error", err)
-		http.Error(rw, "unable to make request to gRPC service", http.StatusBadRequest)
+		mp.log.Error("request to gRPC service", "error", err)
+		http.Error(rw, "request to gRPC service", http.StatusBadRequest)
 	}
 }
 
 func (mp *MultipartHandler) saveFile(id, path string, r io.ReadCloser) error {
 	filePath := filepath.Join(id, path)
-	_, err := mp.store.Save(filePath, r)
+
+	_, err := mp.stg.Save(filePath, r)
 	if err != nil {
-		mp.l.Info("file from multipart/form-data has been successfully uploaded to", "filePath", filePath)
+		mp.log.Info("file from multipart/form-data has been successfully uploaded to", "filePath", filePath)
 	}
 
 	return err

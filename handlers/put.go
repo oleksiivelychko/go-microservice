@@ -15,21 +15,21 @@ import (
 // 404: errorResponse
 // 422: validationErrorsResponse
 func (ph *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
-	ph.l.Debug("PUT UpdateProduct /products")
+	ph.log.Debug("PUT UpdateProduct /products")
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(*api.Product)
 	product.ID = ph.getProductID(r)
 
-	err := ph.ps.UpdateProduct(product)
+	err := ph.srv.UpdateProduct(product)
 
 	switch e := err.(type) {
 	case *utils.GrpcServiceErr:
-		ph.l.Error("grpc_service.Currency.MakeExchange", "error", err)
+		ph.log.Error("grpc_service.Currency.MakeExchange", "error", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		_ = utils.ToJSON(&GrpcError{Message: err.Error()}, rw)
 		return
 	case *utils.ProductNotFoundErr:
-		ph.l.Error("product not found", "id", product.ID)
+		ph.log.Error("product not found", "id", product.ID)
 		rw.WriteHeader(http.StatusNotFound)
 		_ = utils.ToJSON(&NotFound{Message: e.Error()}, rw)
 		return

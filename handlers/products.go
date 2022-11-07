@@ -9,17 +9,16 @@ import (
 	"strconv"
 )
 
-// ProductHandler for getting and updating products.
+// ProductHandler for CRUD actions regarding api.Product objects.
 type ProductHandler struct {
-	l  hclog.Logger
-	v  *utils.Validation
-	ps *service.ProductService
+	log hclog.Logger
+	val *utils.Validation
+	srv *service.ProductService
 }
 
-// KeyProduct is a key used for the Product object in the context.
+// KeyProduct is a key used for the api.Product object in the context.
 type KeyProduct struct{}
 
-// NewProductHandler returns a new product handler injected with logger, validation and gRPC client.
 func NewProductHandler(l hclog.Logger, v *utils.Validation, ps *service.ProductService) *ProductHandler {
 	return &ProductHandler{l, v, ps}
 }
@@ -34,17 +33,16 @@ type ValidationErrors struct {
 	Messages []string `json:"messages"`
 }
 
-// NotFound means that record not found inside collection.
 type NotFound struct {
 	Message string `json:"message"`
 }
 
-// GrpcError means that request to gRPC service is failed.
+// GrpcError means that request to gRPC service failed.
 type GrpcError struct {
 	Message string `json:"message"`
 }
 
-// getProductID returns the product ID from the URL.
+// getProductID returns ID parameter from URL.
 func (ph *ProductHandler) getProductID(r *http.Request) int {
 	// parse the product id from the url
 	vars := mux.Vars(r)
@@ -58,10 +56,10 @@ func (ph *ProductHandler) getProductID(r *http.Request) int {
 	return id
 }
 
-// setCurrency returns the product ID from the URL.
+// setCurrency get Currency parameter from URL and (if it exists) make setter.
 func (ph *ProductHandler) setCurrency(r *http.Request) {
 	currency := r.URL.Query().Get("currency")
 	if currency != "" {
-		ph.ps.Currency.SetCurrency(currency)
+		ph.srv.Currency.SetCurrency(currency)
 	}
 }

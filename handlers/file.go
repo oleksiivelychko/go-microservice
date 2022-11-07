@@ -9,12 +9,12 @@ import (
 )
 
 type File struct {
-	log   hclog.Logger
-	store contracts.Storage
+	logger  hclog.Logger
+	storage contracts.Storage
 }
 
 func NewFileHandler(store contracts.Storage, log hclog.Logger) *File {
-	return &File{store: store, log: log}
+	return &File{storage: store, logger: log}
 }
 
 func (file *File) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
@@ -27,17 +27,17 @@ func (file *File) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (file *File) invalidURI(uri string, rw http.ResponseWriter) {
-	file.log.Error("invalid path", "path", uri)
+	file.logger.Error("invalid path", "path", uri)
 	http.Error(rw, "invalid file path: should be in the format: /[id]/[filename]", http.StatusBadRequest)
 }
 
 func (file *File) saveFile(id, filename string, rw http.ResponseWriter, r *http.Request) {
 	filePath := filepath.Join(id, filename)
-	_, err := file.store.Save(filePath, r.Body)
+	_, err := file.storage.Save(filePath, r.Body)
 	if err != nil {
-		file.log.Error("unable to save file", "error", err)
+		file.logger.Error("unable to save file", "error", err)
 		http.Error(rw, "unable to save file", http.StatusInternalServerError)
 	}
 
-	file.log.Info("file has been successfully uploaded to", "filePath", filePath)
+	file.logger.Info("file has been successfully uploaded to", "filePath", filePath)
 }

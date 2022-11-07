@@ -7,7 +7,7 @@ import (
 	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/go-hclog"
-	gService "github.com/oleksiivelychko/go-grpc-protobuf/proto/grpc_service"
+	gService "github.com/oleksiivelychko/go-grpc-service/proto/grpc_service"
 	"github.com/oleksiivelychko/go-microservice/backends"
 	"github.com/oleksiivelychko/go-microservice/handlers"
 	"github.com/oleksiivelychko/go-microservice/service"

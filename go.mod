@@ -12,7 +12,7 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/go-hclog v1.3.1
-	github.com/oleksiivelychko/go-grpc-protobuf v0.0.0-20221105152956-39d577d39691
+	github.com/oleksiivelychko/go-grpc-service v1.0.0
 	github.com/stretchr/testify v1.8.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/grpc v1.50.1

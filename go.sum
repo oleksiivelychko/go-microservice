@@ -142,8 +142,8 @@ github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe/go.mod h1:wL8QJ
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=
 github.com/oklog/ulid v1.3.1/go.mod h1:CirwcVhetQ6Lv90oh/F+FBtV6XMibvdAFo93nm5qn4U=
-github.com/oleksiivelychko/go-grpc-protobuf v0.0.0-20221105152956-39d577d39691 h1:PigtqvKx2IZiYGUceVFf1ffcFAlXUm1YovymINIKZaE=
-github.com/oleksiivelychko/go-grpc-protobuf v0.0.0-20221105152956-39d577d39691/go.mod h1:Jdr+4I3Pyx0zfP4Mx2qFcjRukq5tW9MEXwmiV2igiEQ=
+github.com/oleksiivelychko/go-grpc-service v1.0.0 h1:NRwXVg618nmEBEhAfCH1nA4SndRdfVGN5vwwuNE8eHg=
+github.com/oleksiivelychko/go-grpc-service v1.0.0/go.mod h1:NlDUderP6ud1GhnfGDbl8ens6JPyQJ6vd2plcEVrj1w=
 github.com/opentracing/opentracing-go v1.2.0 h1:uEJPy/1a5RIPAJ0Ov+OIO8OxWu77jEv+1B0VhjKrZUs=
 github.com/opentracing/opentracing-go v1.2.0/go.mod h1:GxEUsuufX4nBwe+T+Wl9TAgYrxe9dPLANfrWvHYVTgc=
 github.com/pelletier/go-toml v1.7.0/go.mod h1:vwGMzjaWMwyfHwgIBhI2YUM4fB6nL6lVAvS1LBMMhTE=

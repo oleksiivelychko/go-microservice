@@ -55,11 +55,3 @@ func (ph *ProductHandler) getProductID(r *http.Request) int {
 
 	return id
 }
-
-// setCurrency get parameter from URL and (if it exists) make setter.
-func (ph *ProductHandler) setCurrency(r *http.Request) {
-	currency := r.URL.Query().Get("currency")
-	if currency != "" {
-		ph.srv.Currency.SetCurrency(currency)
-	}
-}

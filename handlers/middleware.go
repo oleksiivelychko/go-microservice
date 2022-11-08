@@ -34,9 +34,6 @@ func (ph *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Ha
 		ctx := context.WithValue(r.Context(), KeyProduct{}, product)
 		r = r.WithContext(ctx)
 
-		// hand over currency into service
-		ph.setCurrency(r)
-
 		// call the next handler, which can be another middleware in the chain, or the final handler.
 		next.ServeHTTP(rw, r)
 	})
@@ -44,8 +41,10 @@ func (ph *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Ha
 
 func (ph *ProductHandler) MiddlewareProductCurrency(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		// hand over currency into service
-		ph.setCurrency(r)
+		currency := r.URL.Query().Get("currency")
+		if currency != "" {
+			ph.srv.Currency.SetCurrency(currency)
+		}
 		next.ServeHTTP(rw, r)
 	})
 }

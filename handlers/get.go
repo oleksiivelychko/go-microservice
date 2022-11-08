@@ -24,7 +24,7 @@ func (ph *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = utils.ToJSON(list, rw); err != nil {
-		ph.log.Error("serialization", "error", err)
+		ph.log.Error("JSON encode", "error", err)
 	}
 }
 
@@ -57,6 +57,6 @@ func (ph *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = utils.ToJSON(product, rw); err != nil {
-		ph.log.Error("serialization", "error", err)
+		ph.log.Error("JSON encode", "error", err)
 	}
 }

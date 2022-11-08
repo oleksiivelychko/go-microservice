@@ -15,7 +15,7 @@ func (ph *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Ha
 
 		err := utils.FromJSON(product, r.Body)
 		if err != nil {
-			ph.log.Error("deserialization", "error", err)
+			ph.log.Error("JSON decode", "error", err)
 			rw.WriteHeader(http.StatusUnprocessableEntity)
 			_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)
 			return

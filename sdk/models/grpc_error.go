@@ -12,7 +12,7 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// GrpcError GrpcError means that request to gRPC service is failed.
+// GrpcError GrpcError means that request to gRPC service failed.
 //
 // swagger:model GrpcError
 type GrpcError struct {

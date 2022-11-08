@@ -12,7 +12,7 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// NotFound NotFound means that record not found inside collection.
+// NotFound not found
 //
 // swagger:model NotFound
 type NotFound struct {

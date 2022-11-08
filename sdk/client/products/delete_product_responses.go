@@ -99,7 +99,7 @@ func NewDeleteProductNotFound() *DeleteProductNotFound {
 /*
 DeleteProductNotFound describes a response with status code 404, with default header values.
 
-Not found message.
+DeleteProductNotFound delete product not found
 */
 type DeleteProductNotFound struct {
 	Payload *models.NotFound

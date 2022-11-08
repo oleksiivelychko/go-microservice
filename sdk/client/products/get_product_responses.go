@@ -186,7 +186,7 @@ func NewGetProductNotFound() *GetProductNotFound {
 /*
 GetProductNotFound describes a response with status code 404, with default header values.
 
-Not found message.
+GetProductNotFound get product not found
 */
 type GetProductNotFound struct {
 	Payload *models.NotFound

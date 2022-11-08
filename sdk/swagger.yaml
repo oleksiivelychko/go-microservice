@@ -15,7 +15,7 @@ definitions:
             message:
                 type: string
                 x-go-name: Message
-        title: GrpcError means that request to gRPC service is failed.
+        title: GrpcError means that request to gRPC service failed.
         type: object
         x-go-package: github.com/oleksiivelychko/go-microservice/handlers
     NotFound:
@@ -23,7 +23,6 @@ definitions:
             message:
                 type: string
                 x-go-name: Message
-        title: NotFound means that record not found inside collection.
         type: object
         x-go-package: github.com/oleksiivelychko/go-microservice/handlers
     ValidationErrors:
@@ -201,7 +200,7 @@ responses:
     noContentResponse:
         description: Empty response has no data.
     notFoundResponse:
-        description: Not found message.
+        description: ""
         schema:
             $ref: '#/definitions/NotFound'
     productResponse:

@@ -22,7 +22,6 @@ import (
 
 const fileStorePrefix = "/files/"
 const fileStoreBasePath = "./public" + fileStorePrefix
-const swaggerPath = "/sdk/swagger.yaml"
 
 func main() {
 	var addr = fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
@@ -35,8 +34,7 @@ func main() {
 	hcLogger := utils.NewLogger()
 	validation := utils.NewValidation()
 
-	// max file size is 5MB
-	storage, err := backends.NewLocal(fileStoreBasePath, 1024*1000*5)
+	storage, err := backends.NewLocal(fileStoreBasePath, 1024*1000*5) // max file size is 5Mb
 	if err != nil {
 		hcLogger.Error("unable to create storage", "error", err)
 		os.Exit(1)
@@ -78,16 +76,17 @@ func main() {
 	deleteRouter.HandleFunc("/products/{id:[0-9]+}", productHandler.DeleteProduct)
 
 	// GET/POST file handling
-	regex := fileStorePrefix + "{id:[0-9]+}/{filename:[a-zA-Z]+\\.(?:png|jpe?g)}"
+	var fileNameRegex = fileStorePrefix + "{id:[0-9]+}/{filename:[a-zA-Z]+\\.(?:png|jpe?g)}"
 	postFileRouter := serveMux.Methods(http.MethodPost).Subrouter()
-	postFileRouter.HandleFunc(regex, fileHandler.ServeHTTP)
-	getRouter.Handle(regex, http.StripPrefix(fileStorePrefix, http.FileServer(http.Dir(fileStoreBasePath))))
+	postFileRouter.HandleFunc(fileNameRegex, fileHandler.ServeHTTP)
+	getRouter.Handle(fileNameRegex, http.StripPrefix(fileStorePrefix, http.FileServer(http.Dir(fileStoreBasePath))))
 	getRouter.Use(gzipHandler.MiddlewareGzip)
 
-	// Multipart Form data processing
+	// multipart/form-data processing
 	postMultipartFormRouter := serveMux.Methods(http.MethodPost).Subrouter()
 	postMultipartFormRouter.HandleFunc("/products-form", multipartHandler.ProcessForm)
 
+	var swaggerPath = "/sdk/swagger.yaml"
 	opts := middleware.RedocOpts{SpecURL: swaggerPath}
 	apiHandler := middleware.Redoc(opts, nil)
 	getRouter.Handle("/docs", apiHandler)
@@ -123,7 +122,9 @@ func main() {
 	sig := <-signalChannel
 	hcLogger.Info("received terminate, graceful shutdown", "signal", sig)
 
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
 	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	_ = server.Shutdown(ctx)
+	server.Shutdown(ctx)
 }

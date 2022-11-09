@@ -17,11 +17,9 @@ type CurrencyService struct {
 	subscriber  grpc_service.Currency_SubscriberClient
 }
 
-func NewCurrencyService(logger hclog.Logger, client grpc_service.CurrencyClient, currency string) *CurrencyService {
-	cs := &CurrencyService{logger, client, currency, make(map[string]float64), nil}
-
+func NewCurrencyService(l hclog.Logger, cc grpc_service.CurrencyClient, c string) *CurrencyService {
+	cs := &CurrencyService{l, cc, c, make(map[string]float64), nil}
 	go cs.handleUpdates()
-
 	return cs
 }
 
@@ -31,8 +29,7 @@ func (cs *CurrencyService) GetRate() (float64, error) {
 		To:   grpc_service.Currencies(grpc_service.Currencies_value[cs.currency]),
 	}
 
-	// get initial rate
-	response, err := cs.client.MakeExchange(context.Background(), exchangeRequest)
+	exchangeResponse, err := cs.client.MakeExchange(context.Background(), exchangeRequest)
 	if err != nil {
 		// convert the gRPC error message
 		grpcErr, ok := status.FromError(err)
@@ -45,15 +42,15 @@ func (cs *CurrencyService) GetRate() (float64, error) {
 		}
 	}
 
-	cs.logger.Info("got gRPC response", "rate", response.Rate, "createdAt", response.CreatedAt.AsTime().Format("2006-01-02"))
-	cs.cachedRates[cs.currency] = response.Rate
+	cs.logResponse(exchangeResponse)
+	cs.cachedRates[cs.currency] = exchangeResponse.GetRate()
 
 	// subscribe for updates
 	if err = cs.subscriber.Send(exchangeRequest); err != nil {
 		cs.logger.Error("unable to send exchange request", "error", err)
 	}
 
-	return response.Rate, nil
+	return exchangeResponse.GetRate(), nil
 }
 
 func (cs *CurrencyService) SetCurrency(currency string) {
@@ -71,7 +68,7 @@ func (cs *CurrencyService) handleUpdates() {
 	for {
 		streamExchangeResponse, recvErr := subscribedClient.Recv()
 		if grpcErr := streamExchangeResponse.GetError(); grpcErr != nil {
-			cs.logger.Error("internal subscriber error", "error", grpcErr)
+			cs.logger.Error("subscriber", "error", grpcErr)
 			continue
 		}
 
@@ -81,14 +78,17 @@ func (cs *CurrencyService) handleUpdates() {
 				return
 			}
 
-			cs.logger.Info("received the update from server",
-				"from", exchangeResponse.GetFrom(),
-				"to", exchangeResponse.GetTo(),
-				"rate", exchangeResponse.GetRate(),
-				"createdAt", exchangeResponse.GetCreatedAt().AsTime().Format("2006-01-02"),
-			)
-
+			cs.logResponse(exchangeResponse)
 			cs.cachedRates[exchangeResponse.GetTo().String()] = exchangeResponse.GetRate()
 		}
 	}
+}
+
+func (cs *CurrencyService) logResponse(response *grpc_service.ExchangeResponse) {
+	cs.logger.Info("got gRPC response",
+		"from", response.GetFrom(),
+		"to", response.GetTo(),
+		"rate", response.GetRate(),
+		"createdAt", response.GetCreatedAt().AsTime().Format("2006-01-02"),
+	)
 }

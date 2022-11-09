@@ -19,6 +19,6 @@ func TestEchoBytes(t *testing.T) {
 	}
 
 	if buffer.String() != string(b) {
-		t.Errorf("[FmtBytes(b []byte, indent string) []byte] -> `%s` != `%s`", buffer.String(), b)
+		t.Errorf("[EchoBytes(b []byte, indent string) []byte] -> `%s` != `%s`", buffer.String(), b)
 	}
 }

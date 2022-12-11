@@ -61,11 +61,6 @@ func (v *Validation) Validate(i interface{}) ValidationErrors {
 }
 
 func validateSKU(fl validator.FieldLevel) bool {
-	re := regexp.MustCompile(`[0-9]+-[0-9]+-[0-9]+`)
-	matches := re.FindAllString(fl.Field().String(), -1)
-	if len(matches) == 1 {
-		return true
-	}
-
-	return false
+	re := regexp.MustCompile(`^([0-9]{3})+-([0-9]{3})+-([0-9]{3})$`)
+	return re.MatchString(fl.Field().String())
 }

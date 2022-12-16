@@ -6,7 +6,7 @@ generate-client: generate-swagger
 	$(info 'swagger generate client --help')
 	swagger generate client -A go-microservice -f ./sdk/swagger.yaml -t ./sdk
 
-install:
+install-aws-cli:
 	sudo -S rm /usr/local/bin/aws
 	curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
 	sudo -S installer -pkg AWSCLIV2.pkg -target /

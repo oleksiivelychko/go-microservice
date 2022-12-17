@@ -6,13 +6,18 @@ generate-client: generate-swagger
 	$(info 'swagger generate client --help')
 	swagger generate client -A go-microservice -f ./sdk/swagger.yaml -t ./sdk
 
-install-aws-cli:
-	sudo -S rm /usr/local/bin/aws
+install-aws-cli: uninstall-aws-cli
 	curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
 	sudo -S installer -pkg AWSCLIV2.pkg -target /
+	aws --version
+
+uninstall-aws-cli:
 	rm AWSCLIV2.pkg
 	which aws
-	aws --version
+	ls -l /usr/local/bin/aws
+	sudo -S rm /usr/local/bin/aws
+	sudo -S rm /usr/local/bin/aws_completer
+	sudo -S rm -rf /usr/local/aws-cli
 
 install-swagger:
 	which swagger || (brew tap go-swagger/go-swagger && brew install go-swagger)

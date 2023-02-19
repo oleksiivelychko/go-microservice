@@ -6,12 +6,6 @@ generate-client: generate-swagger
 	$(info 'swagger generate client --help')
 	swagger generate client -A go-microservice -f ./sdk/swagger.yaml -t ./sdk
 
-install-swagger:
-	which swagger || (brew tap go-swagger/go-swagger && brew install go-swagger)
-
-install-redoc:
-	npm i -g redoc-cli
-
 start: generate-client
 	HOST=localhost PORT=9090 GRPC_PORT=9091 go run main.go
 
@@ -26,7 +20,7 @@ mysql-client-run: docker-network
 
 mysql-server-run: docker-network docker-volume
 	docker run --name mysql-server \
-		--network gonet \
+		--network go-network \
 		-v mysql-data:/var/lib/mysql \
 		-p 3306:3306 \
 		-e MYSQL_ROOT_PASSWORD=secret \

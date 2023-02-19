@@ -7,12 +7,9 @@ package products
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-
-	"github.com/oleksiivelychko/go-microservice/sdk/models"
 )
 
 // GetProductReader is a Reader for the GetProduct structure.
@@ -63,7 +60,6 @@ GetProductOK describes a response with status code 200, with default header valu
 Data structure representing a single product.
 */
 type GetProductOK struct {
-	Payload *models.Product
 }
 
 // IsSuccess returns true when this get product o k response has a 2xx status code
@@ -92,25 +88,14 @@ func (o *GetProductOK) IsCode(code int) bool {
 }
 
 func (o *GetProductOK) Error() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] getProductOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductOK ", 200)
 }
 
 func (o *GetProductOK) String() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] getProductOK  %+v", 200, o.Payload)
-}
-
-func (o *GetProductOK) GetPayload() *models.Product {
-	return o.Payload
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductOK ", 200)
 }
 
 func (o *GetProductOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.Product)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }
@@ -126,7 +111,6 @@ GetProductBadRequest describes a response with status code 400, with default hea
 gRPC service request error message.
 */
 type GetProductBadRequest struct {
-	Payload *models.GrpcError
 }
 
 // IsSuccess returns true when this get product bad request response has a 2xx status code
@@ -155,25 +139,14 @@ func (o *GetProductBadRequest) IsCode(code int) bool {
 }
 
 func (o *GetProductBadRequest) Error() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] getProductBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductBadRequest ", 400)
 }
 
 func (o *GetProductBadRequest) String() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] getProductBadRequest  %+v", 400, o.Payload)
-}
-
-func (o *GetProductBadRequest) GetPayload() *models.GrpcError {
-	return o.Payload
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductBadRequest ", 400)
 }
 
 func (o *GetProductBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.GrpcError)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }
@@ -189,7 +162,6 @@ GetProductNotFound describes a response with status code 404, with default heade
 GetProductNotFound get product not found
 */
 type GetProductNotFound struct {
-	Payload *models.NotFound
 }
 
 // IsSuccess returns true when this get product not found response has a 2xx status code
@@ -218,25 +190,14 @@ func (o *GetProductNotFound) IsCode(code int) bool {
 }
 
 func (o *GetProductNotFound) Error() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] getProductNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductNotFound ", 404)
 }
 
 func (o *GetProductNotFound) String() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] getProductNotFound  %+v", 404, o.Payload)
-}
-
-func (o *GetProductNotFound) GetPayload() *models.NotFound {
-	return o.Payload
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductNotFound ", 404)
 }
 
 func (o *GetProductNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.NotFound)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }
@@ -252,7 +213,6 @@ GetProductInternalServerError describes a response with status code 500, with de
 Generic error message returned as a string.
 */
 type GetProductInternalServerError struct {
-	Payload *models.GenericError
 }
 
 // IsSuccess returns true when this get product internal server error response has a 2xx status code
@@ -281,25 +241,14 @@ func (o *GetProductInternalServerError) IsCode(code int) bool {
 }
 
 func (o *GetProductInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] getProductInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductInternalServerError ", 500)
 }
 
 func (o *GetProductInternalServerError) String() string {
-	return fmt.Sprintf("[GET /products/{id}][%d] getProductInternalServerError  %+v", 500, o.Payload)
-}
-
-func (o *GetProductInternalServerError) GetPayload() *models.GenericError {
-	return o.Payload
+	return fmt.Sprintf("[GET /products/{id}][%d] getProductInternalServerError ", 500)
 }
 
 func (o *GetProductInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.GenericError)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }

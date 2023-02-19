@@ -11,8 +11,6 @@ import (
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-
-	"github.com/oleksiivelychko/go-microservice/sdk/models"
 )
 
 // GetProductsReader is a Reader for the GetProducts structure.
@@ -51,7 +49,7 @@ GetProductsOK describes a response with status code 200, with default header val
 Data structure representing a list of product.
 */
 type GetProductsOK struct {
-	Payload []*models.Product
+	Payload []interface{}
 }
 
 // IsSuccess returns true when this get products o k response has a 2xx status code
@@ -87,7 +85,7 @@ func (o *GetProductsOK) String() string {
 	return fmt.Sprintf("[GET /products][%d] getProductsOK  %+v", 200, o.Payload)
 }
 
-func (o *GetProductsOK) GetPayload() []*models.Product {
+func (o *GetProductsOK) GetPayload() []interface{} {
 	return o.Payload
 }
 
@@ -112,7 +110,6 @@ GetProductsBadRequest describes a response with status code 400, with default he
 gRPC service request error message.
 */
 type GetProductsBadRequest struct {
-	Payload *models.GrpcError
 }
 
 // IsSuccess returns true when this get products bad request response has a 2xx status code
@@ -141,25 +138,14 @@ func (o *GetProductsBadRequest) IsCode(code int) bool {
 }
 
 func (o *GetProductsBadRequest) Error() string {
-	return fmt.Sprintf("[GET /products][%d] getProductsBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[GET /products][%d] getProductsBadRequest ", 400)
 }
 
 func (o *GetProductsBadRequest) String() string {
-	return fmt.Sprintf("[GET /products][%d] getProductsBadRequest  %+v", 400, o.Payload)
-}
-
-func (o *GetProductsBadRequest) GetPayload() *models.GrpcError {
-	return o.Payload
+	return fmt.Sprintf("[GET /products][%d] getProductsBadRequest ", 400)
 }
 
 func (o *GetProductsBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.GrpcError)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }

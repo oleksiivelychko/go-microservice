@@ -15,13 +15,16 @@ install-redoc:
 start: generate-client
 	HOST=localhost PORT=9090 GRPC_PORT=9091 go run main.go
 
-create-docker-network:
-	docker network create -d bridge gonet
+docker-network:
+	docker network inspect go-network >/dev/null 2>&1 || docker network create --driver bridge go-network
 
-create-docker-volume:
-	docker volume create mysql-data
+docker-volume:
+	docker volume inspect mysql-data >/dev/null 2>&1 || docker volume create mysql-data
 
-run-mysql-server:
+mysql-client-run: docker-network
+	docker run -it --network go-network mysql:8.0.31 mysql -hmysql-server -uroot -p
+
+mysql-server-run: docker-network docker-volume
 	docker run --name mysql-server \
 		--network gonet \
 		-v mysql-data:/var/lib/mysql \
@@ -29,9 +32,7 @@ run-mysql-server:
 		-e MYSQL_ROOT_PASSWORD=secret \
 		mysql:8.0.31
 
-stop-mysql:
+mysql-hard-stop:
 	docker stop mysql-server
 	docker rm mysql-server
 
-run-mysql-client:
-	docker run -it --network gonet mysql:8.0.31 mysql -hmysql-server -uroot -p

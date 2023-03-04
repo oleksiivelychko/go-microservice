@@ -26,7 +26,6 @@ mysql-server-run: docker-network docker-volume
 		-e MYSQL_ROOT_PASSWORD=secret \
 		mysql:8.0.31
 
-mysql-hard-stop:
+mysql-stop-force:
 	docker stop mysql-server
 	docker rm mysql-server
-

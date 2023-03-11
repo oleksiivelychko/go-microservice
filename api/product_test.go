@@ -9,12 +9,10 @@ import (
 )
 
 func TestProductName(t *testing.T) {
-	p := Product{
+	validation := utils.NewValidation()
+	err := validation.Validate(Product{
 		Price: 1.2,
-	}
-
-	v := utils.NewValidation()
-	err := v.Validate(p)
+	})
 
 	if err == nil {
 		t.Fatal("product.Name validation failed")
@@ -24,13 +22,11 @@ func TestProductName(t *testing.T) {
 }
 
 func TestProductPrice(t *testing.T) {
-	p := Product{
+	validation := utils.NewValidation()
+	err := validation.Validate(Product{
 		Name:  "abc",
 		Price: -1,
-	}
-
-	v := utils.NewValidation()
-	err := v.Validate(p)
+	})
 
 	if err == nil {
 		t.Fatal("product.Price validation failed")
@@ -40,14 +36,12 @@ func TestProductPrice(t *testing.T) {
 }
 
 func TestProductSKU(t *testing.T) {
-	p := Product{
+	validation := utils.NewValidation()
+	err := validation.Validate(Product{
 		Name:  "abc",
 		Price: 1.2,
 		SKU:   "123-456-789",
-	}
-
-	v := utils.NewValidation()
-	err := v.Validate(p)
+	})
 
 	if err == nil {
 		t.Fatal("product.SKU validation failed")
@@ -57,14 +51,12 @@ func TestProductSKU(t *testing.T) {
 }
 
 func TestValidProduct(t *testing.T) {
-	p := Product{
+	validation := utils.NewValidation()
+	err := validation.Validate(Product{
 		Name:  "abc",
 		Price: 1.2,
 		SKU:   "123-456-789",
-	}
-
-	v := utils.NewValidation()
-	err := v.Validate(p)
+	})
 
 	if len(err) > 0 {
 		t.Fatal(err.Errors())

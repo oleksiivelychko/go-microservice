@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/oleksiivelychko/go-microservice/utils"
+	io "github.com/oleksiivelychko/go-utils/json_io"
 	"net/http"
 )
 
@@ -11,19 +12,19 @@ import (
 // responses:
 // 200: productsResponse
 // 400: grpcResponseWrapper
-func (handler *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
+func (handler *ProductHandler) GetAll(writer http.ResponseWriter, request *http.Request) {
 	handler.logger.Debug("GET /products GetAll")
-	rw.Header().Add("Content-Type", "application/json")
+	writer.Header().Add("Content-Type", "application/json")
 
 	list, err := handler.productService.GetProducts()
 	if err != nil {
 		handler.logger.Error("request to gRPC service", "error", err)
-		rw.WriteHeader(http.StatusBadRequest)
-		_ = utils.ToJSON(&GrpcError{Message: err.Error()}, rw)
+		writer.WriteHeader(http.StatusBadRequest)
+		_ = io.ToJSON(&GrpcError{Message: err.Error()}, writer)
 		return
 	}
 
-	if err = utils.ToJSON(list, rw); err != nil {
+	if err = io.ToJSON(list, writer); err != nil {
 		handler.logger.Error("JSON encode", "error", err)
 	}
 }
@@ -36,27 +37,27 @@ func (handler *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 // 400: grpcResponseWrapper
 // 404: notFoundResponse
 // 500: errorResponse
-func (handler *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
+func (handler *ProductHandler) GetOne(writer http.ResponseWriter, request *http.Request) {
 	handler.logger.Debug("GET /products GetOne")
-	rw.Header().Add("Content-Type", "application/json")
+	writer.Header().Add("Content-Type", "application/json")
 
-	id := handler.getProductID(r)
+	id := handler.getProductID(request)
 	product, err := handler.productService.GetProduct(id)
 
 	switch e := err.(type) {
 	case *utils.GrpcServiceErr:
 		handler.logger.Error("request to gRPC service", "error", err)
-		rw.WriteHeader(http.StatusBadRequest)
-		_ = utils.ToJSON(&GrpcError{Message: e.Error()}, rw)
+		writer.WriteHeader(http.StatusBadRequest)
+		_ = io.ToJSON(&GrpcError{Message: e.Error()}, writer)
 		return
 	case *utils.ProductNotFoundErr:
 		handler.logger.Error("product not found", "id", id)
-		rw.WriteHeader(http.StatusNotFound)
-		_ = utils.ToJSON(&NotFound{Message: e.Error()}, rw)
+		writer.WriteHeader(http.StatusNotFound)
+		_ = io.ToJSON(&NotFound{Message: e.Error()}, writer)
 		return
 	}
 
-	if err = utils.ToJSON(product, rw); err != nil {
+	if err = io.ToJSON(product, writer); err != nil {
 		handler.logger.Error("JSON encode", "error", err)
 	}
 }

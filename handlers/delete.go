@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/oleksiivelychko/go-microservice/utils"
+	io "github.com/oleksiivelychko/go-utils/json_io"
 	"net/http"
 )
 
@@ -11,19 +11,19 @@ import (
 // responses:
 // 204: noContentResponse
 // 404: notFoundResponse
-func (handler *ProductHandler) DeleteProduct(rw http.ResponseWriter, r *http.Request) {
+func (handler *ProductHandler) DeleteProduct(writer http.ResponseWriter, request *http.Request) {
 	handler.logger.Debug("DELETE /products DeleteProduct")
-	rw.Header().Add("Content-Type", "application/json")
+	writer.Header().Add("Content-Type", "application/json")
 
-	id := handler.getProductID(r)
+	id := handler.getProductID(request)
 
 	err := handler.productService.DeleteProduct(id)
 	if err != nil {
 		handler.logger.Error("product not found", "id", id)
-		rw.WriteHeader(http.StatusNotFound)
-		_ = utils.ToJSON(&NotFound{Message: err.Error()}, rw)
+		writer.WriteHeader(http.StatusNotFound)
+		_ = io.ToJSON(&NotFound{Message: err.Error()}, writer)
 		return
 	}
 
-	rw.WriteHeader(http.StatusNoContent)
+	writer.WriteHeader(http.StatusNoContent)
 }

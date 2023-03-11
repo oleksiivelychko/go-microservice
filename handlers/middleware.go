@@ -3,7 +3,7 @@ package handlers
 import (
 	"context"
 	"github.com/oleksiivelychko/go-microservice/api"
-	"github.com/oleksiivelychko/go-microservice/utils"
+	io "github.com/oleksiivelychko/go-utils/json_io"
 	"net/http"
 )
 
@@ -13,11 +13,11 @@ func (handler *ProductHandler) MiddlewareProductValidation(next http.Handler) ht
 
 		product := &api.Product{}
 
-		err := utils.FromJSON(product, r.Body)
+		err := io.FromJSON(product, r.Body)
 		if err != nil {
 			handler.logger.Error("JSON decode", "error", err)
 			writer.WriteHeader(http.StatusUnprocessableEntity)
-			_ = utils.ToJSON(&GenericError{Message: err.Error()}, writer)
+			_ = io.ToJSON(&GenericError{Message: err.Error()}, writer)
 			return
 		}
 
@@ -26,7 +26,7 @@ func (handler *ProductHandler) MiddlewareProductValidation(next http.Handler) ht
 			handler.logger.Error("validation", "error", err)
 			writer.WriteHeader(http.StatusUnprocessableEntity)
 			// return the validation messages as an array
-			_ = utils.ToJSON(&ValidationErrors{Messages: errs.Errors()}, writer)
+			_ = io.ToJSON(&ValidationErrors{Messages: errs.Errors()}, writer)
 			return
 		}
 

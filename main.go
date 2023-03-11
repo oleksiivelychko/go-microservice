@@ -12,6 +12,7 @@ import (
 	"github.com/oleksiivelychko/go-microservice/handlers"
 	"github.com/oleksiivelychko/go-microservice/service"
 	"github.com/oleksiivelychko/go-microservice/utils"
+	"github.com/oleksiivelychko/go-utils/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net/http"
@@ -31,7 +32,7 @@ func main() {
 		"http://" + addr,
 	}
 
-	hcLogger := utils.NewLogger()
+	hcLogger := logger.NewLogger("go-microservice")
 	validation := utils.NewValidation()
 
 	storage, err := backends.NewLocal(fileStoreBasePath, 1024*1000*5) // max file size is 5Mb

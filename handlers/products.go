@@ -4,22 +4,22 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/go-hclog"
 	"github.com/oleksiivelychko/go-microservice/service"
-	"github.com/oleksiivelychko/go-microservice/utils"
+	validatorHelper "github.com/oleksiivelychko/go-utils/validator_helper"
 	"net/http"
 	"strconv"
 )
 
 // ProductHandler for CRUD actions regarding api.Product objects.
 type ProductHandler struct {
-	log hclog.Logger
-	val *utils.Validation
-	srv *service.ProductService
+	logger         hclog.Logger
+	validation     *validatorHelper.Validation
+	productService *service.ProductService
 }
 
 // KeyProduct is a key used for the api.Product object in the context.
 type KeyProduct struct{}
 
-func NewProductHandler(l hclog.Logger, v *utils.Validation, ps *service.ProductService) *ProductHandler {
+func NewProductHandler(l hclog.Logger, v *validatorHelper.Validation, ps *service.ProductService) *ProductHandler {
 	return &ProductHandler{l, v, ps}
 }
 
@@ -43,7 +43,7 @@ type GrpcError struct {
 }
 
 // getProductID returns ID parameter from URL.
-func (ph *ProductHandler) getProductID(r *http.Request) int {
+func (handler *ProductHandler) getProductID(r *http.Request) int {
 	// parse the product id from the url
 	vars := mux.Vars(r)
 	// convert the id into an integer and return

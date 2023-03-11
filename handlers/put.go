@@ -14,23 +14,23 @@ import (
 // 400: grpcResponseWrapper
 // 404: errorResponse
 // 422: validationErrorsResponse
-func (ph *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
-	ph.log.Debug("PUT /products UpdateProduct")
+func (handler *ProductHandler) UpdateProduct(rw http.ResponseWriter, r *http.Request) {
+	handler.logger.Debug("PUT /products UpdateProduct")
 
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(*api.Product)
-	product.ID = ph.getProductID(r)
+	product.ID = handler.getProductID(r)
 
-	err := ph.srv.UpdateProduct(product)
+	err := handler.productService.UpdateProduct(product)
 
 	switch e := err.(type) {
 	case *utils.GrpcServiceErr:
-		ph.log.Error("request to gRPC service", "error", err)
+		handler.logger.Error("request to gRPC service", "error", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		_ = utils.ToJSON(&GrpcError{Message: err.Error()}, rw)
 		return
 	case *utils.ProductNotFoundErr:
-		ph.log.Error("product not found", "id", product.ID)
+		handler.logger.Error("product not found", "id", product.ID)
 		rw.WriteHeader(http.StatusNotFound)
 		_ = utils.ToJSON(&NotFound{Message: e.Error()}, rw)
 		return

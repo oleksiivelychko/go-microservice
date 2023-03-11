@@ -7,26 +7,26 @@ import (
 	"net/http"
 )
 
-func (ph *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		rw.Header().Add("Content-Type", "application/json")
+func (handler *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
+		writer.Header().Add("Content-Type", "application/json")
 
 		product := &api.Product{}
 
 		err := utils.FromJSON(product, r.Body)
 		if err != nil {
-			ph.log.Error("JSON decode", "error", err)
-			rw.WriteHeader(http.StatusUnprocessableEntity)
-			_ = utils.ToJSON(&GenericError{Message: err.Error()}, rw)
+			handler.logger.Error("JSON decode", "error", err)
+			writer.WriteHeader(http.StatusUnprocessableEntity)
+			_ = utils.ToJSON(&GenericError{Message: err.Error()}, writer)
 			return
 		}
 
-		errs := ph.val.Validate(product)
+		errs := handler.validation.Validate(product)
 		if len(errs) != 0 {
-			ph.log.Error("validation", "error", err)
-			rw.WriteHeader(http.StatusUnprocessableEntity)
+			handler.logger.Error("validation", "error", err)
+			writer.WriteHeader(http.StatusUnprocessableEntity)
 			// return the validation messages as an array
-			_ = utils.ToJSON(&ValidationErrors{Messages: errs.Errors()}, rw)
+			_ = utils.ToJSON(&ValidationErrors{Messages: errs.Errors()}, writer)
 			return
 		}
 
@@ -35,16 +35,16 @@ func (ph *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Ha
 		r = r.WithContext(ctx)
 
 		// call the next handler, which can be another middleware in the chain, or the final handler.
-		next.ServeHTTP(rw, r)
+		next.ServeHTTP(writer, r)
 	})
 }
 
-func (ph *ProductHandler) MiddlewareProductCurrency(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		currency := r.URL.Query().Get("currency")
+func (handler *ProductHandler) MiddlewareProductCurrency(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		currency := request.URL.Query().Get("currency")
 		if currency != "" {
-			ph.srv.Currency.SetCurrency(currency)
+			handler.productService.Currency.SetCurrency(currency)
 		}
-		next.ServeHTTP(rw, r)
+		next.ServeHTTP(writer, request)
 	})
 }

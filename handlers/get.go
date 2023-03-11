@@ -11,20 +11,20 @@ import (
 // responses:
 // 200: productsResponse
 // 400: grpcResponseWrapper
-func (ph *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
-	ph.log.Debug("GET /products GetAll")
+func (handler *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
+	handler.logger.Debug("GET /products GetAll")
 	rw.Header().Add("Content-Type", "application/json")
 
-	list, err := ph.srv.GetProducts()
+	list, err := handler.productService.GetProducts()
 	if err != nil {
-		ph.log.Error("request to gRPC service", "error", err)
+		handler.logger.Error("request to gRPC service", "error", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		_ = utils.ToJSON(&GrpcError{Message: err.Error()}, rw)
 		return
 	}
 
 	if err = utils.ToJSON(list, rw); err != nil {
-		ph.log.Error("JSON encode", "error", err)
+		handler.logger.Error("JSON encode", "error", err)
 	}
 }
 
@@ -36,27 +36,27 @@ func (ph *ProductHandler) GetAll(rw http.ResponseWriter, r *http.Request) {
 // 400: grpcResponseWrapper
 // 404: notFoundResponse
 // 500: errorResponse
-func (ph *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
-	ph.log.Debug("GET /products GetOne")
+func (handler *ProductHandler) GetOne(rw http.ResponseWriter, r *http.Request) {
+	handler.logger.Debug("GET /products GetOne")
 	rw.Header().Add("Content-Type", "application/json")
 
-	id := ph.getProductID(r)
-	product, err := ph.srv.GetProduct(id)
+	id := handler.getProductID(r)
+	product, err := handler.productService.GetProduct(id)
 
 	switch e := err.(type) {
 	case *utils.GrpcServiceErr:
-		ph.log.Error("request to gRPC service", "error", err)
+		handler.logger.Error("request to gRPC service", "error", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		_ = utils.ToJSON(&GrpcError{Message: e.Error()}, rw)
 		return
 	case *utils.ProductNotFoundErr:
-		ph.log.Error("product not found", "id", id)
+		handler.logger.Error("product not found", "id", id)
 		rw.WriteHeader(http.StatusNotFound)
 		_ = utils.ToJSON(&NotFound{Message: e.Error()}, rw)
 		return
 	}
 
 	if err = utils.ToJSON(product, rw); err != nil {
-		ph.log.Error("JSON encode", "error", err)
+		handler.logger.Error("JSON encode", "error", err)
 	}
 }

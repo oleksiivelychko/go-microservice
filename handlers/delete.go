@@ -11,15 +11,15 @@ import (
 // responses:
 // 204: noContentResponse
 // 404: notFoundResponse
-func (ph *ProductHandler) DeleteProduct(rw http.ResponseWriter, r *http.Request) {
-	ph.log.Debug("DELETE /products DeleteProduct")
+func (handler *ProductHandler) DeleteProduct(rw http.ResponseWriter, r *http.Request) {
+	handler.logger.Debug("DELETE /products DeleteProduct")
 	rw.Header().Add("Content-Type", "application/json")
 
-	id := ph.getProductID(r)
+	id := handler.getProductID(r)
 
-	err := ph.srv.DeleteProduct(id)
+	err := handler.productService.DeleteProduct(id)
 	if err != nil {
-		ph.log.Error("product not found", "id", id)
+		handler.logger.Error("product not found", "id", id)
 		rw.WriteHeader(http.StatusNotFound)
 		_ = utils.ToJSON(&NotFound{Message: err.Error()}, rw)
 		return

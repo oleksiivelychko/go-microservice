@@ -13,15 +13,15 @@ import (
 // 201: productResponse
 // 400: grpcResponseWrapper
 // 422: validationErrorsResponse
-func (ph *ProductHandler) CreateProduct(rw http.ResponseWriter, r *http.Request) {
-	ph.log.Debug("POST /products CreateProduct")
+func (handler *ProductHandler) CreateProduct(rw http.ResponseWriter, r *http.Request) {
+	handler.logger.Debug("POST /products CreateProduct")
 
 	// fetch the product from the context
 	product := r.Context().Value(KeyProduct{}).(*api.Product)
 
-	err := ph.srv.AddProduct(product)
+	err := handler.productService.AddProduct(product)
 	if err != nil {
-		ph.log.Error("request to gRPC service", "error", err)
+		handler.logger.Error("request to gRPC service", "error", err)
 		rw.WriteHeader(http.StatusBadRequest)
 		_ = utils.ToJSON(&GrpcError{Message: err.Error()}, rw)
 		return

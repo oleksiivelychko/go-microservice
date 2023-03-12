@@ -51,7 +51,7 @@ func TestProductSKU(t *testing.T) {
 	fmt.Println(err.Errors())
 }
 
-func TestValidProduct(t *testing.T) {
+func TestProductIsValid(t *testing.T) {
 	validation := utils.NewValidation()
 	err := validation.Validate(Product{
 		Name:  "abc",

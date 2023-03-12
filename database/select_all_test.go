@@ -1,14 +1,14 @@
 package database
 
 import (
-	"fmt"
 	"github.com/oleksiivelychko/go-microservice/api"
 	mysql "github.com/oleksiivelychko/go-utils/mysql_connection"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestSelectAllProductFromDb(t *testing.T) {
-	connection, err := mysql.NewMySQLConnection("root", "secret", "go_microservice")
+	connection, err := mysql.NewMySQLConnection("gouser", "secret", "go_microservice")
 	if err != nil {
 		t.Error(err)
 	}
@@ -31,13 +31,16 @@ func TestSelectAllProductFromDb(t *testing.T) {
 		products = append(products, &product)
 	}
 
-	for _, product := range products {
-		fmt.Println(product.ID)
-		fmt.Println(product.Name)
-		fmt.Println(product.Price)
-		fmt.Println(product.SKU)
-		fmt.Println(product.UpdatedAt)
-	}
+	assert.Equal(t, products[0].ID, 1)
+	assert.Equal(t, products[0].Name, "Latte")
+	assert.Equal(t, products[0].Price, 1.49)
+	assert.Equal(t, products[0].SKU, "123-456-789")
+	assert.NotEmpty(t, products[0].UpdatedAt)
+	assert.Equal(t, products[1].ID, 2)
+	assert.Equal(t, products[1].Name, "Espresso")
+	assert.Equal(t, products[1].Price, 0.99)
+	assert.Equal(t, products[1].SKU, "000-000-001")
+	assert.NotEmpty(t, products[1].UpdatedAt)
 
 	defer results.Close()
 	defer connection.Close()

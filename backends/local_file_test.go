@@ -30,7 +30,7 @@ func setup(t *testing.T) (*Local, func()) {
 	}
 }
 
-func TestLocal_Save(t *testing.T) {
+func TestLocalSave(t *testing.T) {
 	local, cleanup := setup(t)
 	defer cleanup()
 
@@ -47,7 +47,7 @@ func TestLocal_Save(t *testing.T) {
 	assert.Equal(t, fileContent, string(data))
 }
 
-func TestLocal_Get(t *testing.T) {
+func TestLocalGet(t *testing.T) {
 	local, cleanup := setup(t)
 	defer cleanup()
 

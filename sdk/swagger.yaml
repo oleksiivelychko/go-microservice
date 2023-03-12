@@ -2,8 +2,78 @@ basePath: /
 consumes:
     - application/json
 definitions:
+    GenericError:
+        properties:
+            message:
+                type: string
+                x-go-name: Message
+        title: GenericError is a generic error message returned by a server.
+        type: object
+        x-go-package: github.com/oleksiivelychko/go-microservice/handlers
+    GrpcError:
+        properties:
+            message:
+                type: string
+                x-go-name: Message
+        title: GrpcError means that request to gRPC service failed.
+        type: object
+        x-go-package: github.com/oleksiivelychko/go-microservice/handlers
+    NotFound:
+        properties:
+            message:
+                type: string
+                x-go-name: Message
+        type: object
+        x-go-package: github.com/oleksiivelychko/go-microservice/handlers
+    ValidationErrors:
+        properties:
+            messages:
+                items:
+                    type: string
+                type: array
+                x-go-name: Messages
+        title: ValidationErrors is a collection of validation error messages.
+        type: object
+        x-go-package: github.com/oleksiivelychko/go-microservice/handlers
     product:
+        properties:
+            id:
+                format: int64
+                minimum: 1
+                type: integer
+                x-go-name: ID
+            name:
+                maxLength: 255
+                type: string
+                x-go-name: Name
+            price:
+                format: double
+                minimum: 0.01
+                type: number
+                x-go-name: Price
+            sku:
+                description: |-
+                    SKU - in the field of inventory management, a stock keeping unit is a distinct type of item for sale, purchased, or tracked in inventory,
+                    such as a product or service, and all attributes associated with the item type that distinguish it from other item types.
+                    For a product, these attributes can include manufacturer, description, material, size, color, packaging, and warranty terms.
+                    When a business takes inventory of its stock, it counts the quantity it has of each SKU.
+                    SKU can also refer to a unique identifier or code, sometimes represented via a barcode for scanning and tracking, that refers to the particular stock keeping unit.
+                    These identifiers are not regulated or standardized.
+                    When a company receives items from a vendor, it has a choice of maintaining the vendor's SKU or creating its own.
+
+                    Original source: https://en.wikipedia.org/wiki/Stock_keeping_unit
+                pattern: '[a-z]+-[a-z]+-[a-z]+'
+                type: string
+                x-go-name: SKU
+            updatedAt:
+                type: string
+                x-go-name: UpdatedAt
+        required:
+            - name
+            - price
+            - sku
         title: Product structure for an API model.
+        type: object
         x-go-name: Product
         x-go-package: github.com/oleksiivelychko/go-microservice/api
 host: localhost
@@ -36,7 +106,8 @@ paths:
                 - in: body
                   name: Body
                   required: true
-                  schema: {}
+                  schema:
+                      $ref: '#/definitions/product'
             responses:
                 "201":
                     $ref: '#/responses/productResponse'
@@ -101,7 +172,8 @@ paths:
                 - in: body
                   name: Body
                   required: true
-                  schema: {}
+                  schema:
+                      $ref: '#/definitions/product'
             responses:
                 "200":
                     $ref: '#/responses/productResponse'
@@ -119,19 +191,30 @@ produces:
 responses:
     errorResponse:
         description: Generic error message returned as a string.
+        schema:
+            $ref: '#/definitions/GenericError'
     grpcResponseWrapper:
         description: gRPC service request error message.
+        schema:
+            $ref: '#/definitions/GrpcError'
     noContentResponse:
         description: Empty response has no data.
     notFoundResponse:
         description: ""
+        schema:
+            $ref: '#/definitions/NotFound'
     productResponse:
         description: Data structure representing a single product.
+        schema:
+            $ref: '#/definitions/product'
     productsResponse:
         description: Data structure representing a list of product.
         schema:
-            items: {}
+            items:
+                $ref: '#/definitions/product'
             type: array
     validationErrorsResponse:
         description: Validation errors defined as an array of strings.
+        schema:
+            $ref: '#/definitions/ValidationErrors'
 swagger: "2.0"

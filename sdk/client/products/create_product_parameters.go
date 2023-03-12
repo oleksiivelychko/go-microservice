@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/oleksiivelychko/go-microservice/sdk/models"
 )
 
 // NewCreateProductParams creates a new CreateProductParams object,
@@ -62,7 +64,7 @@ CreateProductParams contains all the parameters to send to the API endpoint
 type CreateProductParams struct {
 
 	// Body.
-	Body interface{}
+	Body *models.Product
 
 	timeout    time.Duration
 	Context    context.Context
@@ -118,13 +120,13 @@ func (o *CreateProductParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the create product params
-func (o *CreateProductParams) WithBody(body interface{}) *CreateProductParams {
+func (o *CreateProductParams) WithBody(body *models.Product) *CreateProductParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the create product params
-func (o *CreateProductParams) SetBody(body interface{}) {
+func (o *CreateProductParams) SetBody(body *models.Product) {
 	o.Body = body
 }
 

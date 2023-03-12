@@ -15,6 +15,8 @@ import (
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+
+	"github.com/oleksiivelychko/go-microservice/sdk/models"
 )
 
 // NewUpdateProductParams creates a new UpdateProductParams object,
@@ -63,7 +65,7 @@ UpdateProductParams contains all the parameters to send to the API endpoint
 type UpdateProductParams struct {
 
 	// Body.
-	Body interface{}
+	Body *models.Product
 
 	// ID.
 	//
@@ -124,13 +126,13 @@ func (o *UpdateProductParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the update product params
-func (o *UpdateProductParams) WithBody(body interface{}) *UpdateProductParams {
+func (o *UpdateProductParams) WithBody(body *models.Product) *UpdateProductParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the update product params
-func (o *UpdateProductParams) SetBody(body interface{}) {
+func (o *UpdateProductParams) SetBody(body *models.Product) {
 	o.Body = body
 }
 

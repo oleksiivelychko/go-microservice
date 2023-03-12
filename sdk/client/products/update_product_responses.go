@@ -7,9 +7,12 @@ package products
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/oleksiivelychko/go-microservice/sdk/models"
 )
 
 // UpdateProductReader is a Reader for the UpdateProduct structure.
@@ -60,6 +63,7 @@ UpdateProductOK describes a response with status code 200, with default header v
 Data structure representing a single product.
 */
 type UpdateProductOK struct {
+	Payload *models.Product
 }
 
 // IsSuccess returns true when this update product o k response has a 2xx status code
@@ -88,14 +92,25 @@ func (o *UpdateProductOK) IsCode(code int) bool {
 }
 
 func (o *UpdateProductOK) Error() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductOK ", 200)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductOK  %+v", 200, o.Payload)
 }
 
 func (o *UpdateProductOK) String() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductOK ", 200)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductOK  %+v", 200, o.Payload)
+}
+
+func (o *UpdateProductOK) GetPayload() *models.Product {
+	return o.Payload
 }
 
 func (o *UpdateProductOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Product)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -111,6 +126,7 @@ UpdateProductBadRequest describes a response with status code 400, with default 
 gRPC service request error message.
 */
 type UpdateProductBadRequest struct {
+	Payload *models.GrpcError
 }
 
 // IsSuccess returns true when this update product bad request response has a 2xx status code
@@ -139,14 +155,25 @@ func (o *UpdateProductBadRequest) IsCode(code int) bool {
 }
 
 func (o *UpdateProductBadRequest) Error() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductBadRequest ", 400)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *UpdateProductBadRequest) String() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductBadRequest ", 400)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *UpdateProductBadRequest) GetPayload() *models.GrpcError {
+	return o.Payload
 }
 
 func (o *UpdateProductBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.GrpcError)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -162,6 +189,7 @@ UpdateProductNotFound describes a response with status code 404, with default he
 Generic error message returned as a string.
 */
 type UpdateProductNotFound struct {
+	Payload *models.GenericError
 }
 
 // IsSuccess returns true when this update product not found response has a 2xx status code
@@ -190,14 +218,25 @@ func (o *UpdateProductNotFound) IsCode(code int) bool {
 }
 
 func (o *UpdateProductNotFound) Error() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductNotFound ", 404)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductNotFound  %+v", 404, o.Payload)
 }
 
 func (o *UpdateProductNotFound) String() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductNotFound ", 404)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductNotFound  %+v", 404, o.Payload)
+}
+
+func (o *UpdateProductNotFound) GetPayload() *models.GenericError {
+	return o.Payload
 }
 
 func (o *UpdateProductNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.GenericError)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -213,6 +252,7 @@ UpdateProductUnprocessableEntity describes a response with status code 422, with
 Validation errors defined as an array of strings.
 */
 type UpdateProductUnprocessableEntity struct {
+	Payload *models.ValidationErrors
 }
 
 // IsSuccess returns true when this update product unprocessable entity response has a 2xx status code
@@ -241,14 +281,25 @@ func (o *UpdateProductUnprocessableEntity) IsCode(code int) bool {
 }
 
 func (o *UpdateProductUnprocessableEntity) Error() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductUnprocessableEntity ", 422)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductUnprocessableEntity  %+v", 422, o.Payload)
 }
 
 func (o *UpdateProductUnprocessableEntity) String() string {
-	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductUnprocessableEntity ", 422)
+	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductUnprocessableEntity  %+v", 422, o.Payload)
+}
+
+func (o *UpdateProductUnprocessableEntity) GetPayload() *models.ValidationErrors {
+	return o.Payload
 }
 
 func (o *UpdateProductUnprocessableEntity) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.ValidationErrors)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

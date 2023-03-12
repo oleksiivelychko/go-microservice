@@ -7,9 +7,12 @@ package products
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
+
+	"github.com/oleksiivelychko/go-microservice/sdk/models"
 )
 
 // CreateProductReader is a Reader for the CreateProduct structure.
@@ -54,6 +57,7 @@ CreateProductCreated describes a response with status code 201, with default hea
 Data structure representing a single product.
 */
 type CreateProductCreated struct {
+	Payload *models.Product
 }
 
 // IsSuccess returns true when this create product created response has a 2xx status code
@@ -82,14 +86,25 @@ func (o *CreateProductCreated) IsCode(code int) bool {
 }
 
 func (o *CreateProductCreated) Error() string {
-	return fmt.Sprintf("[POST /products][%d] createProductCreated ", 201)
+	return fmt.Sprintf("[POST /products][%d] createProductCreated  %+v", 201, o.Payload)
 }
 
 func (o *CreateProductCreated) String() string {
-	return fmt.Sprintf("[POST /products][%d] createProductCreated ", 201)
+	return fmt.Sprintf("[POST /products][%d] createProductCreated  %+v", 201, o.Payload)
+}
+
+func (o *CreateProductCreated) GetPayload() *models.Product {
+	return o.Payload
 }
 
 func (o *CreateProductCreated) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Product)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -105,6 +120,7 @@ CreateProductBadRequest describes a response with status code 400, with default 
 gRPC service request error message.
 */
 type CreateProductBadRequest struct {
+	Payload *models.GrpcError
 }
 
 // IsSuccess returns true when this create product bad request response has a 2xx status code
@@ -133,14 +149,25 @@ func (o *CreateProductBadRequest) IsCode(code int) bool {
 }
 
 func (o *CreateProductBadRequest) Error() string {
-	return fmt.Sprintf("[POST /products][%d] createProductBadRequest ", 400)
+	return fmt.Sprintf("[POST /products][%d] createProductBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *CreateProductBadRequest) String() string {
-	return fmt.Sprintf("[POST /products][%d] createProductBadRequest ", 400)
+	return fmt.Sprintf("[POST /products][%d] createProductBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *CreateProductBadRequest) GetPayload() *models.GrpcError {
+	return o.Payload
 }
 
 func (o *CreateProductBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.GrpcError)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -156,6 +183,7 @@ CreateProductUnprocessableEntity describes a response with status code 422, with
 Validation errors defined as an array of strings.
 */
 type CreateProductUnprocessableEntity struct {
+	Payload *models.ValidationErrors
 }
 
 // IsSuccess returns true when this create product unprocessable entity response has a 2xx status code
@@ -184,14 +212,25 @@ func (o *CreateProductUnprocessableEntity) IsCode(code int) bool {
 }
 
 func (o *CreateProductUnprocessableEntity) Error() string {
-	return fmt.Sprintf("[POST /products][%d] createProductUnprocessableEntity ", 422)
+	return fmt.Sprintf("[POST /products][%d] createProductUnprocessableEntity  %+v", 422, o.Payload)
 }
 
 func (o *CreateProductUnprocessableEntity) String() string {
-	return fmt.Sprintf("[POST /products][%d] createProductUnprocessableEntity ", 422)
+	return fmt.Sprintf("[POST /products][%d] createProductUnprocessableEntity  %+v", 422, o.Payload)
+}
+
+func (o *CreateProductUnprocessableEntity) GetPayload() *models.ValidationErrors {
+	return o.Payload
 }
 
 func (o *CreateProductUnprocessableEntity) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.ValidationErrors)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

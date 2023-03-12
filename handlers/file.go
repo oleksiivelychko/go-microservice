@@ -13,30 +13,30 @@ type File struct {
 	storage contracts.Storage
 }
 
-func NewFileHandler(store contracts.Storage, log hclog.Logger) *File {
-	return &File{storage: store, logger: log}
+func NewFileHandler(storage contracts.Storage, logger hclog.Logger) *File {
+	return &File{storage: storage, logger: logger}
 }
 
-func (file *File) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (file *File) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	// mux already has checked parameters according to regex rules
-	vars := mux.Vars(r)
+	vars := mux.Vars(request)
 	productId := vars["id"]
 	filename := vars["filename"]
 
-	file.saveFile(productId, filename, rw, r)
+	file.saveFile(productId, filename, writer, request)
 }
 
-func (file *File) invalidURI(uri string, rw http.ResponseWriter) {
+func (file *File) invalidURI(uri string, writer http.ResponseWriter) {
 	file.logger.Error("invalid path", "path", uri)
-	http.Error(rw, "invalid file path: should be in the format: /[id]/[filename]", http.StatusBadRequest)
+	http.Error(writer, "invalid file path: should be in the format: /[id]/[filename]", http.StatusBadRequest)
 }
 
-func (file *File) saveFile(id, filename string, rw http.ResponseWriter, r *http.Request) {
+func (file *File) saveFile(id, filename string, writer http.ResponseWriter, request *http.Request) {
 	filePath := filepath.Join(id, filename)
-	_, err := file.storage.Save(filePath, r.Body)
+	_, err := file.storage.Save(filePath, request.Body)
 	if err != nil {
 		file.logger.Error("unable to save file", "error", err)
-		http.Error(rw, "unable to save file", http.StatusInternalServerError)
+		http.Error(writer, "unable to save file", http.StatusInternalServerError)
 	}
 
 	file.logger.Info("file has been successfully uploaded to", "filePath", filePath)

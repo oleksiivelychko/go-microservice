@@ -45,9 +45,9 @@ type GrpcError struct {
 // getProductID returns ID parameter from URL.
 func (handler *ProductHandler) getProductID(r *http.Request) int {
 	// parse the product id from the url
-	vars := mux.Vars(r)
+	muxVars := mux.Vars(r)
 	// convert the id into an integer and return
-	id, err := strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(muxVars["id"])
 	if err != nil {
 		// should never happen as the router ensures that this is a valid number
 		panic(err)

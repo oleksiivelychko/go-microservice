@@ -8,12 +8,12 @@ import (
 )
 
 func (handler *ProductHandler) MiddlewareProductValidation(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Add("Content-Type", "application/json")
 
 		product := &api.Product{}
 
-		err := io.FromJSON(product, r.Body)
+		err := io.FromJSON(product, request.Body)
 		if err != nil {
 			handler.logger.Error("JSON decode", "error", err)
 			writer.WriteHeader(http.StatusUnprocessableEntity)
@@ -31,11 +31,11 @@ func (handler *ProductHandler) MiddlewareProductValidation(next http.Handler) ht
 		}
 
 		// add the product into the context
-		ctx := context.WithValue(r.Context(), KeyProduct{}, product)
-		r = r.WithContext(ctx)
+		ctx := context.WithValue(request.Context(), KeyProduct{}, product)
+		request = request.WithContext(ctx)
 
 		// call the next handler, which can be another middleware in the chain, or the final handler.
-		next.ServeHTTP(writer, r)
+		next.ServeHTTP(writer, request)
 	})
 }
 

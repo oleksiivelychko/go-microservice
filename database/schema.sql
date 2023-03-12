@@ -1,17 +1,21 @@
-create database if not exists go_microservice;
+USE mysql;
 
-create user if not exists 'gouser'@'localhost';
-grant all privileges on go_microservice.* to 'gouser'@'localhost';
-alter user 'gouser'@'localhost' identified by 'secret';
+CREATE DATABASE IF NOT EXISTS go_microservice;
 
-use go_microservice;
+DROP USER IF EXISTS 'gouser'@'%';
+CREATE USER IF NOT EXISTS 'gouser'@'%';
+GRANT ALL PRIVILEGES ON go_microservice.* TO 'gouser'@'%';
+ALTER USER 'gouser'@'%' IDENTIFIED WITH mysql_native_password BY 'secret';
+FLUSH PRIVILEGES;
+
+USE go_microservice;
 
 CREATE TABLE products (
-                          id mediumint not null auto_increment,
-                          name varchar(255) not null,
-                          price float(3,2) default 0.00,
-                          sku char(11) not null,
-                          updatedAt datetime default now() not null on update now(),
+                          id MEDIUMINT NOT NULL AUTO_INCREMENT,
+                          name VARCHAR(255) NOT NULL,
+                          price FLOAT(3,2) DEFAULT 0.00,
+                          sku CHAR(11) NOT NULL,
+                          updatedAt DATETIME DEFAULT now() NOT NULL ON UPDATE now(),
                           PRIMARY KEY (id)
 );
 
@@ -26,7 +30,7 @@ BEGIN
 END$$
 DELIMITER;
 
-insert into products (id, name, price, sku, updatedAt)
-values
+INSERT INTO products (id, name, price, sku, updatedAt)
+VALUES
     (1, 'Latte', 1.49, '123-456-789', now()),
     (2, 'Espresso', 0.99, '000-000-001', now());

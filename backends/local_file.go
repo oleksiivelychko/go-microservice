@@ -9,7 +9,7 @@ import (
 )
 
 /*
-Local is an implementation of the Storage interface which works with the local disk.
+Local is an implementation of the Storage interface that works with the local disk.
 */
 type Local struct {
 	maxFileSize uint64 // max number of bytes for files
@@ -31,15 +31,14 @@ func NewLocal(basePath string, maxSize uint64) (*Local, error) {
 }
 
 /*
-fullPath returns the absolute path.
+fullPath returns the absolute path, appends the given path to the base path.
 */
-func (l *Local) fullPath(path string) string {
-	// append the given path to the base path
-	return filepath.Join(l.basePath, path)
+func (local *Local) fullPath(path string) string {
+	return filepath.Join(local.basePath, path)
 }
 
-func (l *Local) Save(path string, content io.Reader) (int64, error) {
-	fullPath := l.fullPath(path)
+func (local *Local) Save(path string, content io.Reader) (int64, error) {
+	fullPath := local.fullPath(path)
 
 	// get the directory and make sure it exists
 	uploadPath := filepath.Dir(fullPath)
@@ -60,7 +59,7 @@ func (l *Local) Save(path string, content io.Reader) (int64, error) {
 	}
 
 	bytes := unsafe.Sizeof(content)
-	if uint64(bytes) > l.maxFileSize {
+	if uint64(bytes) > local.maxFileSize {
 		return 0, fmt.Errorf("content size greater than max bytes allowed: %w", err)
 	}
 
@@ -78,8 +77,8 @@ func (l *Local) Save(path string, content io.Reader) (int64, error) {
 	return writtenBytes, nil
 }
 
-func (l *Local) Get(path string) (*os.File, error) {
-	fullPath := l.fullPath(path)
+func (local *Local) Get(path string) (*os.File, error) {
+	fullPath := local.fullPath(path)
 
 	file, err := os.Open(fullPath)
 	if err != nil {

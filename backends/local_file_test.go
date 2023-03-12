@@ -59,6 +59,6 @@ func TestLocalGet(t *testing.T) {
 	assert.NoError(t, err)
 	defer file.Close()
 
-	d, err := io.ReadAll(file)
-	assert.Equal(t, fileContent, string(d))
+	data, err := io.ReadAll(file)
+	assert.Equal(t, fileContent, string(data))
 }

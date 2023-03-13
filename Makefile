@@ -1,31 +1,14 @@
-generate-swagger:
-	rm -rf sdk/client && rm -rf sdk/models
-	swagger generate spec -o ./sdk/swagger.yaml --scan-models
+generate-spec:
+	$(info 'swagger generate spec --help')
+	swagger generate spec --scan-models --output=./sdk/swagger.yaml
 
-generate-client: generate-swagger
+generate-model:
+	$(info 'swagger generate model --help')
+	swagger generate model --spec=./sdk/swagger.yaml --target=./sdk
+
+generate-client:
 	$(info 'swagger generate client --help')
-	swagger generate client -A go-microservice -f ./sdk/swagger.yaml -t ./sdk
+	swagger generate client -A go-microservice --spec=./sdk/swagger.yaml --target=./sdk
 
-start: generate-client
+start:
 	HOST=localhost PORT=9090 GRPC_PORT=9091 go run main.go
-
-docker-network:
-	docker network inspect go-network >/dev/null 2>&1 || docker network create --driver bridge go-network
-
-docker-volume:
-	docker volume inspect mysql-data >/dev/null 2>&1 || docker volume create mysql-data
-
-mysql-client-run: docker-network
-	docker run -it --network go-network mysql:8.0.31 mysql -hmysql-server -uroot -p
-
-mysql-server-run: docker-network docker-volume
-	docker run --name mysql-server \
-		--network go-network \
-		-v mysql-data:/var/lib/mysql \
-		-p 3306:3306 \
-		-e MYSQL_ROOT_PASSWORD=secret \
-		mysql:8.0.31
-
-mysql-stop-force:
-	docker stop mysql-server
-	docker rm mysql-server

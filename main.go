@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-openapi/runtime/middleware"
-	gohandlers "github.com/gorilla/handlers"
+	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/go-hclog"
-	gService "github.com/oleksiivelychko/go-grpc-service/proto/grpc_service"
-	"github.com/oleksiivelychko/go-microservice/backends"
+	grpcService "github.com/oleksiivelychko/go-grpc-service/proto/grpc_service"
 	"github.com/oleksiivelychko/go-microservice/handlers"
 	"github.com/oleksiivelychko/go-microservice/service"
 	"github.com/oleksiivelychko/go-microservice/utils"
+	localStorage "github.com/oleksiivelychko/go-utils/local_storage"
 	"github.com/oleksiivelychko/go-utils/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -28,16 +28,12 @@ func main() {
 	var addr = fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
 	var grpcAddr = fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("GRPC_PORT"))
 
-	var origins = []string{
-		"http://" + addr,
-	}
-
 	hcLogger := logger.NewLogger("go-microservice")
 	validation := utils.NewValidation()
 
-	storage, err := backends.NewLocal(fileStoreBasePath, 1024*1000*5) // max file size is 5Mb
+	storage, err := localStorage.NewLocalStorage(fileStoreBasePath, 1024*1000*5) // max file size is 5Mb
 	if err != nil {
-		hcLogger.Error("unable to create storage", "error", err)
+		hcLogger.Error("unable to create localStorage", "error", err)
 		os.Exit(1)
 	}
 
@@ -47,7 +43,7 @@ func main() {
 	}
 	defer grpcConnection.Close()
 
-	currencyClient := gService.NewCurrencyClient(grpcConnection)
+	currencyClient := grpcService.NewCurrencyClient(grpcConnection)
 	currencyService := service.NewCurrencyService(hcLogger, currencyClient, "USD")
 	productService := service.NewProductService(currencyService)
 
@@ -88,17 +84,19 @@ func main() {
 	postMultipartFormRouter.HandleFunc("/products-form", multipartHandler.ProcessForm)
 
 	var swaggerPath = "/sdk/swagger.yaml"
-	opts := middleware.RedocOpts{SpecURL: swaggerPath}
-	apiHandler := middleware.Redoc(opts, nil)
+	redocOpts := middleware.RedocOpts{SpecURL: swaggerPath}
+	apiHandler := middleware.Redoc(redocOpts, nil)
 	getRouter.Handle("/docs", apiHandler)
 	getRouter.Handle(swaggerPath, http.FileServer(http.Dir("./")))
 
 	// Cross-Origin Resource Sharing
-	goHandler := gohandlers.CORS(gohandlers.AllowedOrigins(origins))
+	handler := gorillaHandlers.CORS(gorillaHandlers.AllowedOrigins([]string{
+		"http://" + addr,
+	}))
 
 	server := &http.Server{
 		Addr:         addr,
-		Handler:      goHandler(serveMux),
+		Handler:      handler(serveMux),
 		ErrorLog:     hcLogger.StandardLogger(&hclog.StandardLoggerOptions{InferLevels: true}),
 		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
 		ReadTimeout:  10 * time.Second,  // max time to read request from the client

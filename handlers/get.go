@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/oleksiivelychko/go-microservice/utils"
-	io "github.com/oleksiivelychko/go-utils/json_io"
+	jsonUtils "github.com/oleksiivelychko/go-utils/json_io"
 	"net/http"
 )
 
@@ -12,20 +12,20 @@ import (
 // responses:
 // 200: productsResponse
 // 400: grpcResponseWrapper
-func (handler *ProductHandler) GetAll(writer http.ResponseWriter, request *http.Request) {
-	handler.logger.Debug("GET /products GetAll")
-	writer.Header().Add("Content-Type", "application/json")
+func (productHandler *ProductHandler) GetAll(responseWriter http.ResponseWriter, request *http.Request) {
+	productHandler.logger.Debug("GET /products GetAll")
+	responseWriter.Header().Add("Content-Type", "application/json")
 
-	list, err := handler.productService.GetProducts()
+	products, err := productHandler.productService.GetProducts()
 	if err != nil {
-		handler.logger.Error("request to gRPC service", "error", err)
-		writer.WriteHeader(http.StatusBadRequest)
-		_ = io.ToJSON(&GrpcError{Message: err.Error()}, writer)
+		productHandler.logger.Error("request to gRPC service", "error", err)
+		responseWriter.WriteHeader(http.StatusBadRequest)
+		_ = jsonUtils.ToJSON(&GrpcError{Message: err.Error()}, responseWriter)
 		return
 	}
 
-	if err = io.ToJSON(list, writer); err != nil {
-		handler.logger.Error("JSON encode", "error", err)
+	if err = jsonUtils.ToJSON(products, responseWriter); err != nil {
+		productHandler.logger.Error("JSON encode", "error", err)
 	}
 }
 
@@ -37,27 +37,27 @@ func (handler *ProductHandler) GetAll(writer http.ResponseWriter, request *http.
 // 400: grpcResponseWrapper
 // 404: notFoundResponse
 // 500: errorResponse
-func (handler *ProductHandler) GetOne(writer http.ResponseWriter, request *http.Request) {
-	handler.logger.Debug("GET /products GetOne")
-	writer.Header().Add("Content-Type", "application/json")
+func (productHandler *ProductHandler) GetOne(responseWriter http.ResponseWriter, request *http.Request) {
+	productHandler.logger.Debug("GET /products GetOne")
+	responseWriter.Header().Add("Content-Type", "application/json")
 
-	id := handler.getProductID(request)
-	product, err := handler.productService.GetProduct(id)
+	id := productHandler.getProductID(request)
+	product, err := productHandler.productService.GetProduct(id)
 
 	switch e := err.(type) {
 	case *utils.GrpcServiceErr:
-		handler.logger.Error("request to gRPC service", "error", err)
-		writer.WriteHeader(http.StatusBadRequest)
-		_ = io.ToJSON(&GrpcError{Message: e.Error()}, writer)
+		productHandler.logger.Error("request to gRPC service", "error", err)
+		responseWriter.WriteHeader(http.StatusBadRequest)
+		_ = jsonUtils.ToJSON(&GrpcError{Message: e.Error()}, responseWriter)
 		return
 	case *utils.ProductNotFoundErr:
-		handler.logger.Error("product not found", "id", id)
-		writer.WriteHeader(http.StatusNotFound)
-		_ = io.ToJSON(&NotFound{Message: e.Error()}, writer)
+		productHandler.logger.Error("product not found", "id", id)
+		responseWriter.WriteHeader(http.StatusNotFound)
+		_ = jsonUtils.ToJSON(&NotFound{Message: e.Error()}, responseWriter)
 		return
 	}
 
-	if err = io.ToJSON(product, writer); err != nil {
-		handler.logger.Error("JSON encode", "error", err)
+	if err = jsonUtils.ToJSON(product, responseWriter); err != nil {
+		productHandler.logger.Error("JSON encode", "error", err)
 	}
 }

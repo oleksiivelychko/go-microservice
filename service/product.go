@@ -8,23 +8,23 @@ import (
 )
 
 type ProductService struct {
-	Currency *CurrencyService
-	data     []*api.Product
+	CurrencyService *CurrencyService
+	data            []*api.Product
 }
 
-func NewProductService(currency *CurrencyService) *ProductService {
+func NewProductService(currencyService *CurrencyService) *ProductService {
 	var productsList = data.LoadProductsFromJson("./data/products.json")
-	return &ProductService{currency, productsList}
+	return &ProductService{currencyService, productsList}
 }
 
-func (ps *ProductService) GetProducts() (api.Products, error) {
-	rate, err := ps.Currency.GetRate()
+func (productService *ProductService) GetProducts() (api.Products, error) {
+	rate, err := productService.CurrencyService.GetRate()
 	if err != nil {
-		return ps.data, &utils.GrpcServiceErr{Err: err.Error()}
+		return productService.data, &utils.GrpcServiceErr{Err: err.Error()}
 	}
 
 	ratedProductsList := api.Products{}
-	for _, product := range ps.data {
+	for _, product := range productService.data {
 		ratedProduct := *product
 		ratedProduct.Price *= rate
 		ratedProductsList = append(ratedProductsList, &ratedProduct)
@@ -33,70 +33,70 @@ func (ps *ProductService) GetProducts() (api.Products, error) {
 	return ratedProductsList, nil
 }
 
-func (ps *ProductService) GetProduct(id int) (*api.Product, error) {
-	i := ps.findIndexByProductID(id)
-	if i == -1 {
+func (productService *ProductService) GetProduct(id int) (*api.Product, error) {
+	index := productService.findIndexByProductID(id)
+	if index == -1 {
 		return nil, &utils.ProductNotFoundErr{Err: fmt.Sprintf("id=%d", id)}
 	}
 
-	rate, err := ps.Currency.GetRate()
+	rate, err := productService.CurrencyService.GetRate()
 	if err != nil {
-		return ps.data[i], &utils.GrpcServiceErr{Err: err.Error()}
+		return productService.data[index], &utils.GrpcServiceErr{Err: err.Error()}
 	}
 
-	ratedProduct := *ps.data[i]
+	ratedProduct := *productService.data[index]
 	ratedProduct.Price *= rate
 
 	return &ratedProduct, nil
 }
 
-func (ps *ProductService) AddProduct(p *api.Product) error {
-	p.ID = ps.GetNextProductId()
+func (productService *ProductService) AddProduct(product *api.Product) error {
+	product.ID = productService.GetNextProductId()
 
-	rate, err := ps.Currency.GetRate()
+	rate, err := productService.CurrencyService.GetRate()
 	if err != nil {
 		err = &utils.GrpcServiceErr{Err: err.Error()}
 	} else {
-		p.Price *= rate
+		product.Price *= rate
 	}
 
-	ps.data = append(ps.data, p)
+	productService.data = append(productService.data, product)
 	return err
 }
 
-func (ps *ProductService) UpdateProduct(p *api.Product) error {
-	i := ps.findIndexByProductID(p.ID)
-	if i == -1 {
-		return &utils.ProductNotFoundErr{Err: fmt.Sprintf("id=%d", p.ID)}
+func (productService *ProductService) UpdateProduct(product *api.Product) error {
+	index := productService.findIndexByProductID(product.ID)
+	if index == -1 {
+		return &utils.ProductNotFoundErr{Err: fmt.Sprintf("id=%d", product.ID)}
 	}
 
-	rate, err := ps.Currency.GetRate()
+	rate, err := productService.CurrencyService.GetRate()
 	if err != nil {
 		err = &utils.GrpcServiceErr{Err: err.Error()}
 	} else {
-		p.Price *= rate
+		product.Price *= rate
 	}
 
-	ps.data[i] = p
+	productService.data[index] = product
 	return err
 }
 
-func (ps *ProductService) DeleteProduct(id int) error {
-	index := ps.findIndexByProductID(id)
+func (productService *ProductService) DeleteProduct(id int) error {
+	index := productService.findIndexByProductID(id)
 	if index == -1 {
 		return &utils.ProductNotFoundErr{Err: fmt.Sprintf("id=%d", id)}
 	}
 
-	ps.data = ps.deleteProductByIndex(index)
+	productService.data = productService.deleteProductByIndex(index)
 	return nil
 }
 
-func (ps *ProductService) GetNextProductId() int {
-	if len(ps.data) == 0 {
+func (productService *ProductService) GetNextProductId() int {
+	if len(productService.data) == 0 {
 		return 1
 	}
 
-	return ps.data[len(ps.data)-1].ID + 1
+	return productService.data[len(productService.data)-1].ID + 1
 }
 
 /*
@@ -104,16 +104,16 @@ func (ps *ProductService) GetNextProductId() int {
 findIndexByProductID finds the index of a product.
 Returns -1 when product not found.
 */
-func (ps *ProductService) findIndexByProductID(id int) int {
-	for i, p := range ps.data {
-		if p.ID == id {
-			return i
+func (productService *ProductService) findIndexByProductID(id int) int {
+	for index, product := range productService.data {
+		if product.ID == id {
+			return index
 		}
 	}
 
 	return -1
 }
 
-func (ps *ProductService) deleteProductByIndex(index int) []*api.Product {
-	return append(ps.data[:index], ps.data[index+1:]...)
+func (productService *ProductService) deleteProductByIndex(index int) []*api.Product {
+	return append(productService.data[:index], productService.data[index+1:]...)
 }

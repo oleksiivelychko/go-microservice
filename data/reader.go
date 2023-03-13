@@ -3,11 +3,11 @@ package data
 import (
 	"encoding/json"
 	"github.com/oleksiivelychko/go-microservice/api"
-	fileReader "github.com/oleksiivelychko/go-utils/json_file_reader"
+	jsonUtils "github.com/oleksiivelychko/go-utils/json_file_reader"
 )
 
-func LoadProductsFromJson(jsonFilename string) []*api.Product {
-	bytes, _ := fileReader.ReadJsonFile(jsonFilename)
+func LoadProductsFromJson(filename string) []*api.Product {
+	bytes, _ := jsonUtils.ReadJsonFile(filename)
 	var items []*api.Product
 
 	err := json.Unmarshal(bytes, &items)

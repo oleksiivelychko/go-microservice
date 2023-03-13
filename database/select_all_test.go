@@ -2,13 +2,13 @@ package database
 
 import (
 	"github.com/oleksiivelychko/go-microservice/api"
-	mysql "github.com/oleksiivelychko/go-utils/mysql_connection"
+	mysqlUtils "github.com/oleksiivelychko/go-utils/mysql_connection"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestSelectAllProductFromDb(t *testing.T) {
-	connection, err := mysql.NewMySQLConnection("gouser", "secret", "go_microservice")
+	connection, err := mysqlUtils.NewMySQLConnection("gouser", "secret", "go_microservice")
 	if err != nil {
 		t.Error(err)
 	}

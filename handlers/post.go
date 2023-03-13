@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/oleksiivelychko/go-microservice/api"
-	io "github.com/oleksiivelychko/go-utils/json_io"
+	jsonUtils "github.com/oleksiivelychko/go-utils/json_io"
 	"net/http"
 )
 
@@ -13,20 +13,20 @@ import (
 // 201: productResponse
 // 400: grpcResponseWrapper
 // 422: validationErrorsResponse
-func (handler *ProductHandler) CreateProduct(writer http.ResponseWriter, request *http.Request) {
-	handler.logger.Debug("POST /products CreateProduct")
+func (productHandler *ProductHandler) CreateProduct(responseWriter http.ResponseWriter, request *http.Request) {
+	productHandler.logger.Debug("POST /products CreateProduct")
 
 	// fetch the product from the context
 	product := request.Context().Value(KeyProduct{}).(*api.Product)
 
-	err := handler.productService.AddProduct(product)
+	err := productHandler.productService.AddProduct(product)
 	if err != nil {
-		handler.logger.Error("request to gRPC service", "error", err)
-		writer.WriteHeader(http.StatusBadRequest)
-		_ = io.ToJSON(&GrpcError{Message: err.Error()}, writer)
+		productHandler.logger.Error("request to gRPC service", "error", err)
+		responseWriter.WriteHeader(http.StatusBadRequest)
+		_ = jsonUtils.ToJSON(&GrpcError{Message: err.Error()}, responseWriter)
 		return
 	}
 
-	writer.WriteHeader(http.StatusCreated)
-	io.ToJSON(product, writer)
+	responseWriter.WriteHeader(http.StatusCreated)
+	jsonUtils.ToJSON(product, responseWriter)
 }

@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/utils"
-	io "github.com/oleksiivelychko/go-utils/json_io"
+	jsonUtils "github.com/oleksiivelychko/go-utils/json_io"
 	"net/http"
 )
 
@@ -15,28 +15,28 @@ import (
 // 400: grpcResponseWrapper
 // 404: errorResponse
 // 422: validationErrorsResponse
-func (handler *ProductHandler) UpdateProduct(writer http.ResponseWriter, request *http.Request) {
-	handler.logger.Debug("PUT /products UpdateProduct")
+func (productHandler *ProductHandler) UpdateProduct(responseWriter http.ResponseWriter, request *http.Request) {
+	productHandler.logger.Debug("PUT /products UpdateProduct")
 
 	// fetch the product from the context
 	product := request.Context().Value(KeyProduct{}).(*api.Product)
-	product.ID = handler.getProductID(request)
+	product.ID = productHandler.getProductID(request)
 
-	err := handler.productService.UpdateProduct(product)
+	err := productHandler.productService.UpdateProduct(product)
 
 	switch e := err.(type) {
 	case *utils.GrpcServiceErr:
-		handler.logger.Error("request to gRPC service", "error", err)
-		writer.WriteHeader(http.StatusBadRequest)
-		_ = io.ToJSON(&GrpcError{Message: err.Error()}, writer)
+		productHandler.logger.Error("request to gRPC service", "error", err)
+		responseWriter.WriteHeader(http.StatusBadRequest)
+		_ = jsonUtils.ToJSON(&GrpcError{Message: err.Error()}, responseWriter)
 		return
 	case *utils.ProductNotFoundErr:
-		handler.logger.Error("product not found", "id", product.ID)
-		writer.WriteHeader(http.StatusNotFound)
-		_ = io.ToJSON(&NotFound{Message: e.Error()}, writer)
+		productHandler.logger.Error("product not found", "id", product.ID)
+		responseWriter.WriteHeader(http.StatusNotFound)
+		_ = jsonUtils.ToJSON(&NotFound{Message: e.Error()}, responseWriter)
 		return
 	}
 
-	writer.WriteHeader(http.StatusOK)
-	io.ToJSON(product, writer)
+	responseWriter.WriteHeader(http.StatusOK)
+	jsonUtils.ToJSON(product, responseWriter)
 }

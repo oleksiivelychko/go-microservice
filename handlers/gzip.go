@@ -20,32 +20,32 @@ type GzipResponseWriter struct {
 	gzipWriter     *gzip.Writer
 }
 
-func NewGzipResponseWriter(writer http.ResponseWriter) *GzipResponseWriter {
-	gzipWriter := gzip.NewWriter(writer)
-	return &GzipResponseWriter{responseWriter: writer, gzipWriter: gzipWriter}
+func NewGzipResponseWriter(responseWriter http.ResponseWriter) *GzipResponseWriter {
+	gzipWriter := gzip.NewWriter(responseWriter)
+	return &GzipResponseWriter{responseWriter: responseWriter, gzipWriter: gzipWriter}
 }
 
-func (writer *GzipResponseWriter) Header() http.Header {
-	return writer.responseWriter.Header()
+func (gzipResponseWriter *GzipResponseWriter) Header() http.Header {
+	return gzipResponseWriter.responseWriter.Header()
 }
 
-func (writer *GzipResponseWriter) Write(bytes []byte) (int, error) {
-	return writer.gzipWriter.Write(bytes)
+func (gzipResponseWriter *GzipResponseWriter) Write(bytes []byte) (int, error) {
+	return gzipResponseWriter.gzipWriter.Write(bytes)
 }
 
-func (writer *GzipResponseWriter) WriteHeader(statuscode int) {
-	writer.responseWriter.WriteHeader(statuscode)
+func (gzipResponseWriter *GzipResponseWriter) WriteHeader(statusCode int) {
+	gzipResponseWriter.responseWriter.WriteHeader(statusCode)
 }
 
-func (writer *GzipResponseWriter) Flush() {
-	_ = writer.gzipWriter.Flush()
-	_ = writer.gzipWriter.Close()
+func (gzipResponseWriter *GzipResponseWriter) Flush() {
+	_ = gzipResponseWriter.gzipWriter.Flush()
+	_ = gzipResponseWriter.gzipWriter.Close()
 }
 
-func (handler *GzipHandler) MiddlewareGzip(next http.Handler) http.Handler {
+func (gzipHandler *GzipHandler) MiddlewareGzip(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if strings.Contains(request.Header.Get("Accept-Encoding"), "gzip") {
-			handler.logger.Info("discovered `gzip` content-encoding")
+			gzipHandler.logger.Info("discovered `gzip` content-encoding")
 
 			gzipResponseWriter := NewGzipResponseWriter(writer)
 			gzipResponseWriter.Header().Set("Content-Encoding", "gzip")

@@ -4,32 +4,42 @@ import (
 	"context"
 	"fmt"
 	"github.com/hashicorp/go-hclog"
-	"github.com/oleksiivelychko/go-grpc-service/proto/grpc_service"
+	grpcService "github.com/oleksiivelychko/go-grpc-service/proto/grpc_service"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type CurrencyService struct {
-	logger      hclog.Logger
-	client      grpc_service.CurrencyClient
-	currency    string
-	cachedRates map[string]float64
-	subscriber  grpc_service.Currency_SubscriberClient
+	logger                   hclog.Logger
+	currencyClient           grpcService.CurrencyClient
+	currency                 string
+	cachedRates              map[string]float64
+	currencySubscriberClient grpcService.Currency_SubscriberClient
 }
 
-func NewCurrencyService(l hclog.Logger, cc grpc_service.CurrencyClient, c string) *CurrencyService {
-	cs := &CurrencyService{l, cc, c, make(map[string]float64), nil}
-	go cs.handleUpdates()
-	return cs
+func NewCurrencyService(
+	logger hclog.Logger,
+	currencyClient grpcService.CurrencyClient,
+	currency string,
+) *CurrencyService {
+	service := &CurrencyService{
+		logger,
+		currencyClient,
+		currency,
+		make(map[string]float64),
+		nil,
+	}
+	go service.handleUpdates()
+	return service
 }
 
-func (cs *CurrencyService) GetRate() (float64, error) {
-	exchangeRequest := &grpc_service.ExchangeRequest{
-		From: grpc_service.Currencies_EUR,
-		To:   grpc_service.Currencies(grpc_service.Currencies_value[cs.currency]),
+func (currencyService *CurrencyService) GetRate() (float64, error) {
+	exchangeRequest := &grpcService.ExchangeRequest{
+		From: grpcService.Currencies_EUR,
+		To:   grpcService.Currencies(grpcService.Currencies_value[currencyService.currency]),
 	}
 
-	exchangeResponse, err := cs.client.MakeExchange(context.Background(), exchangeRequest)
+	exchangeResponse, err := currencyService.currencyClient.MakeExchange(context.Background(), exchangeRequest)
 	if err != nil {
 		// convert the gRPC error message
 		grpcErr, ok := status.FromError(err)
@@ -42,50 +52,50 @@ func (cs *CurrencyService) GetRate() (float64, error) {
 		}
 	}
 
-	cs.logResponse(exchangeResponse)
-	cs.cachedRates[cs.currency] = exchangeResponse.GetRate()
+	currencyService.logResponse(exchangeResponse)
+	currencyService.cachedRates[currencyService.currency] = exchangeResponse.GetRate()
 
 	// subscribe for updates
-	if err = cs.subscriber.Send(exchangeRequest); err != nil {
-		cs.logger.Error("unable to send exchange request", "error", err)
+	if err = currencyService.currencySubscriberClient.Send(exchangeRequest); err != nil {
+		currencyService.logger.Error("unable to send exchange request", "error", err)
 	}
 
 	return exchangeResponse.GetRate(), nil
 }
 
-func (cs *CurrencyService) SetCurrency(currency string) {
-	cs.currency = currency
+func (currencyService *CurrencyService) SetCurrency(currency string) {
+	currencyService.currency = currency
 }
 
-func (cs *CurrencyService) handleUpdates() {
-	subscribedClient, err := cs.client.Subscriber(context.Background())
+func (currencyService *CurrencyService) handleUpdates() {
+	subscribedClient, err := currencyService.currencyClient.Subscriber(context.Background())
 	if err != nil {
-		cs.logger.Error("unable to subscribe for updates", "error", err)
+		currencyService.logger.Error("unable to subscribe for updates", "error", err)
 	}
 
-	cs.subscriber = subscribedClient
+	currencyService.currencySubscriberClient = subscribedClient
 
 	for {
 		streamExchangeResponse, recvErr := subscribedClient.Recv()
 		if grpcErr := streamExchangeResponse.GetError(); grpcErr != nil {
-			cs.logger.Error("subscriber", "error", grpcErr)
+			currencyService.logger.Error("currencySubscriberClient", "error", grpcErr)
 			continue
 		}
 
 		if exchangeResponse := streamExchangeResponse.GetExchangeResponse(); exchangeResponse != nil {
 			if recvErr != nil {
-				cs.logger.Error("unable to receive the message", "error", recvErr)
+				currencyService.logger.Error("unable to receive the message", "error", recvErr)
 				return
 			}
 
-			cs.logResponse(exchangeResponse)
-			cs.cachedRates[exchangeResponse.GetTo().String()] = exchangeResponse.GetRate()
+			currencyService.logResponse(exchangeResponse)
+			currencyService.cachedRates[exchangeResponse.GetTo().String()] = exchangeResponse.GetRate()
 		}
 	}
 }
 
-func (cs *CurrencyService) logResponse(response *grpc_service.ExchangeResponse) {
-	cs.logger.Info("got gRPC response",
+func (currencyService *CurrencyService) logResponse(response *grpcService.ExchangeResponse) {
+	currencyService.logger.Info("got gRPC response",
 		"from", response.GetFrom(),
 		"to", response.GetTo(),
 		"rate", response.GetRate(),

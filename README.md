@@ -1,6 +1,6 @@
 # go-microservice
 
-### Completely ready-for-production API microservice waits to deploy on AWS cloud. Communicates with gRPC service as well.
+### Demo API microservice waits to deploy on cloud. Communicates with gRPC service as well.
 
 📌 CRUD actions:
 ```

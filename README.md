@@ -28,7 +28,9 @@ curl -v localhost:9090/products-form -X POST -F 'id=1' -F 'name=ice tea' -F 'pri
 
 ⚠️ Install **swagger** locally before generate:
 ```
-which swagger || (brew tap go-swagger/go-swagger && brew install go-swagger)
+git clone https://github.com/go-swagger/go-swagger && cd go-swagger
+git checkout v0.30.4
+go install -ldflags "-X github.com/go-swagger/go-swagger/cmd/swagger/commands.Version=$(git describe --tags) -X github.com/go-swagger/go-swagger/cmd/swagger/commands.Commit=$(git rev-parse HEAD)" ./cmd/swagger
 npm i -g redoc-cli
 ```
 

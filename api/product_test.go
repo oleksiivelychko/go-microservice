@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/oleksiivelychko/go-microservice/utils"
-	jsonUtils "github.com/oleksiivelychko/go-utils/json_io"
+	"github.com/oleksiivelychko/go-utils/io_json"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -72,6 +72,6 @@ func TestProductsToJSON(t *testing.T) {
 	}
 
 	b := bytes.NewBufferString("")
-	err := jsonUtils.ToJSON(productList, b)
+	err := io_json.ToJSON(productList, b)
 	assert.NoError(t, err)
 }

@@ -1,7 +1,7 @@
 package api
 
 import (
-	jsonUtils "github.com/oleksiivelychko/go-utils/json_datetime"
+	"github.com/oleksiivelychko/go-utils/datetime_json"
 )
 
 // Product structure for an API model.
@@ -34,7 +34,7 @@ type Product struct {
 	SKU string `json:"sku" validate:"required,sku"`
 
 	// required: false
-	UpdatedAt jsonUtils.JsonDateTime `json:"updatedAt,omitempty"`
+	UpdatedAt datetime_json.DateTimeJSON `json:"updatedAt,omitempty"`
 }
 
 type Products []*Product

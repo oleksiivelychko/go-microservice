@@ -12,7 +12,7 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// GRPCServiceError GRPCServiceError g RPC service error
+// GRPCServiceError g RPC service error
 //
 // swagger:model GRPCServiceError
 type GRPCServiceError struct {

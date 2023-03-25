@@ -12,13 +12,13 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// ProductNotFoundError ProductNotFoundError product not found error
+// ProductNotFoundError product not found error
 //
 // swagger:model ProductNotFoundError
 type ProductNotFoundError struct {
 
-	// message
-	Message string `json:"message,omitempty"`
+	// ID
+	ID int64 `json:"id,omitempty"`
 }
 
 // Validate validates this product not found error

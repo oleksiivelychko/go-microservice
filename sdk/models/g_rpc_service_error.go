@@ -12,27 +12,27 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// GrpcError GrpcError means that request to gRPC service failed.
+// GRPCServiceError GRPCServiceError g RPC service error
 //
-// swagger:model GrpcError
-type GrpcError struct {
+// swagger:model GRPCServiceError
+type GRPCServiceError struct {
 
 	// message
 	Message string `json:"message,omitempty"`
 }
 
-// Validate validates this grpc error
-func (m *GrpcError) Validate(formats strfmt.Registry) error {
+// Validate validates this g RPC service error
+func (m *GRPCServiceError) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this grpc error based on context it is used
-func (m *GrpcError) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this g RPC service error based on context it is used
+func (m *GRPCServiceError) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *GrpcError) MarshalBinary() ([]byte, error) {
+func (m *GRPCServiceError) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -40,8 +40,8 @@ func (m *GrpcError) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *GrpcError) UnmarshalBinary(b []byte) error {
-	var res GrpcError
+func (m *GRPCServiceError) UnmarshalBinary(b []byte) error {
+	var res GRPCServiceError
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

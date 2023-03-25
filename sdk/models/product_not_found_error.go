@@ -12,27 +12,27 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// NotFound not found
+// ProductNotFoundError ProductNotFoundError product not found error
 //
-// swagger:model NotFound
-type NotFound struct {
+// swagger:model ProductNotFoundError
+type ProductNotFoundError struct {
 
 	// message
 	Message string `json:"message,omitempty"`
 }
 
-// Validate validates this not found
-func (m *NotFound) Validate(formats strfmt.Registry) error {
+// Validate validates this product not found error
+func (m *ProductNotFoundError) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this not found based on context it is used
-func (m *NotFound) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this product not found error based on context it is used
+func (m *ProductNotFoundError) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *NotFound) MarshalBinary() ([]byte, error) {
+func (m *ProductNotFoundError) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -40,8 +40,8 @@ func (m *NotFound) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *NotFound) UnmarshalBinary(b []byte) error {
-	var res NotFound
+func (m *ProductNotFoundError) UnmarshalBinary(b []byte) error {
+	var res ProductNotFoundError
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

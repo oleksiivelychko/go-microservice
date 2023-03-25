@@ -42,10 +42,10 @@ func (gzipResponseWriter *GzipResponseWriter) Flush() {
 	_ = gzipResponseWriter.gzipWriter.Close()
 }
 
-func (gzipHandler *GzipHandler) MiddlewareGzip(next http.Handler) http.Handler {
+func (gzipHandler *GzipHandler) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if strings.Contains(request.Header.Get("Accept-Encoding"), "gzip") {
-			gzipHandler.logger.Info("discovered `gzip` content-encoding")
+			gzipHandler.logger.Info("discovered 'gzip' content-encoding")
 
 			gzipResponseWriter := NewGzipResponseWriter(writer)
 			gzipResponseWriter.Header().Set("Content-Encoding", "gzip")

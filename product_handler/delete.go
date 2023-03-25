@@ -17,11 +17,11 @@ func (productHandler *ProductHandler) DeleteProduct(responseWriter http.Response
 
 	id := productHandler.getProductID(request)
 
-	productNotFoundError := productHandler.productService.DeleteProduct(id)
-	if productNotFoundError != nil {
-		productHandler.logger.Error(productNotFoundError.Error())
+	productNotFoundErr := productHandler.productService.DeleteProduct(id)
+	if productNotFoundErr != nil {
+		productHandler.logger.Error(productNotFoundErr.Error())
 		responseWriter.WriteHeader(http.StatusNotFound)
-		io_json.ToJSON(&productNotFoundError, responseWriter)
+		io_json.ToJSON(&productNotFoundErr, responseWriter)
 		return
 	}
 

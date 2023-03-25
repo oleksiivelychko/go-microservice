@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/errors"
+	"github.com/oleksiivelychko/go-microservice/utils"
 	"github.com/oleksiivelychko/go-utils/io_json"
 	"net/http"
 )
@@ -42,7 +43,7 @@ func (productHandler *ProductHandler) MiddlewareValidation(next http.Handler) ht
 
 func (productHandler *ProductHandler) MiddlewareCurrency(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		currency := request.URL.Query().Get("currency")
+		currency := request.URL.Query().Get(utils.CurrencyQueryParam)
 		if currency != "" {
 			productHandler.productService.CurrencyService.SetCurrency(currency)
 		}

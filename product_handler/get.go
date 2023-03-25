@@ -1,7 +1,9 @@
 package product_handler
 
 import (
+	"fmt"
 	"github.com/oleksiivelychko/go-microservice/errors"
+	"github.com/oleksiivelychko/go-microservice/utils"
 	"github.com/oleksiivelychko/go-utils/io_json"
 	"net/http"
 )
@@ -13,7 +15,7 @@ import (
 // 200: productsResponse
 // 400: grpcErrorResponse
 func (productHandler *ProductHandler) GetAll(responseWriter http.ResponseWriter, request *http.Request) {
-	productHandler.logger.Debug("LIST /products")
+	productHandler.logger.Debug(fmt.Sprintf("LIST %s", utils.ProductsURL))
 	responseWriter.Header().Add("Content-Type", "application/json")
 
 	products, grpcServiceErr := productHandler.productService.GetProducts()
@@ -38,7 +40,7 @@ func (productHandler *ProductHandler) GetAll(responseWriter http.ResponseWriter,
 // 404: notFoundResponse
 // 500: errorResponse
 func (productHandler *ProductHandler) GetOne(responseWriter http.ResponseWriter, request *http.Request) {
-	productHandler.logger.Debug("GET /products")
+	productHandler.logger.Debug(fmt.Sprintf("GET %s", utils.ProductsURL))
 	responseWriter.Header().Add("Content-Type", "application/json")
 
 	id := productHandler.getProductID(request)

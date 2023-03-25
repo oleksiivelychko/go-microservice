@@ -1,8 +1,10 @@
 package product_handler
 
 import (
+	"fmt"
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/errors"
+	"github.com/oleksiivelychko/go-microservice/utils"
 	"github.com/oleksiivelychko/go-utils/io_json"
 	"net/http"
 )
@@ -16,7 +18,7 @@ import (
 // 404: errorResponse
 // 422: validationErrorsResponse
 func (productHandler *ProductHandler) UpdateProduct(responseWriter http.ResponseWriter, request *http.Request) {
-	productHandler.logger.Debug("PUT /products")
+	productHandler.logger.Debug(fmt.Sprintf("PUT %s", utils.ProductsURL))
 
 	product := request.Context().Value(KeyProduct{}).(*api.Product)
 	product.ID = productHandler.getProductID(request)

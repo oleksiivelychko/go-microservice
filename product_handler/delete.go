@@ -1,6 +1,8 @@
 package product_handler
 
 import (
+	"fmt"
+	"github.com/oleksiivelychko/go-microservice/utils"
 	"github.com/oleksiivelychko/go-utils/io_json"
 	"net/http"
 )
@@ -12,7 +14,7 @@ import (
 // 204: noContentResponse
 // 404: notFoundResponse
 func (productHandler *ProductHandler) DeleteProduct(responseWriter http.ResponseWriter, request *http.Request) {
-	productHandler.logger.Debug("DELETE /products")
+	productHandler.logger.Debug(fmt.Sprintf("DELETE %s", utils.ProductsURL))
 	responseWriter.Header().Add("Content-Type", "application/json")
 
 	id := productHandler.getProductID(request)

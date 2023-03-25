@@ -60,7 +60,7 @@ func NewUpdateProductOK() *UpdateProductOK {
 /*
 UpdateProductOK describes a response with status code 200, with default header values.
 
-Data structure representing a single product.
+Data structure is representing a single product.
 */
 type UpdateProductOK struct {
 	Payload *models.Product
@@ -89,6 +89,11 @@ func (o *UpdateProductOK) IsServerError() bool {
 // IsCode returns true when this update product o k response a status code equal to that given
 func (o *UpdateProductOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the update product o k response
+func (o *UpdateProductOK) Code() int {
+	return 200
 }
 
 func (o *UpdateProductOK) Error() string {
@@ -123,10 +128,10 @@ func NewUpdateProductBadRequest() *UpdateProductBadRequest {
 /*
 UpdateProductBadRequest describes a response with status code 400, with default header values.
 
-gRPC service request error message.
+UpdateProductBadRequest update product bad request
 */
 type UpdateProductBadRequest struct {
-	Payload *models.GrpcError
+	Payload *models.GRPCServiceError
 }
 
 // IsSuccess returns true when this update product bad request response has a 2xx status code
@@ -154,6 +159,11 @@ func (o *UpdateProductBadRequest) IsCode(code int) bool {
 	return code == 400
 }
 
+// Code gets the status code for the update product bad request response
+func (o *UpdateProductBadRequest) Code() int {
+	return 400
+}
+
 func (o *UpdateProductBadRequest) Error() string {
 	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductBadRequest  %+v", 400, o.Payload)
 }
@@ -162,13 +172,13 @@ func (o *UpdateProductBadRequest) String() string {
 	return fmt.Sprintf("[PUT /products/{id}][%d] updateProductBadRequest  %+v", 400, o.Payload)
 }
 
-func (o *UpdateProductBadRequest) GetPayload() *models.GrpcError {
+func (o *UpdateProductBadRequest) GetPayload() *models.GRPCServiceError {
 	return o.Payload
 }
 
 func (o *UpdateProductBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.GrpcError)
+	o.Payload = new(models.GRPCServiceError)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -186,7 +196,7 @@ func NewUpdateProductNotFound() *UpdateProductNotFound {
 /*
 UpdateProductNotFound describes a response with status code 404, with default header values.
 
-Generic error message returned as a string.
+UpdateProductNotFound update product not found
 */
 type UpdateProductNotFound struct {
 	Payload *models.GenericError
@@ -215,6 +225,11 @@ func (o *UpdateProductNotFound) IsServerError() bool {
 // IsCode returns true when this update product not found response a status code equal to that given
 func (o *UpdateProductNotFound) IsCode(code int) bool {
 	return code == 404
+}
+
+// Code gets the status code for the update product not found response
+func (o *UpdateProductNotFound) Code() int {
+	return 404
 }
 
 func (o *UpdateProductNotFound) Error() string {
@@ -249,7 +264,7 @@ func NewUpdateProductUnprocessableEntity() *UpdateProductUnprocessableEntity {
 /*
 UpdateProductUnprocessableEntity describes a response with status code 422, with default header values.
 
-Validation errors defined as an array of strings.
+Validation errors are an array of strings.
 */
 type UpdateProductUnprocessableEntity struct {
 	Payload *models.ValidationErrors
@@ -278,6 +293,11 @@ func (o *UpdateProductUnprocessableEntity) IsServerError() bool {
 // IsCode returns true when this update product unprocessable entity response a status code equal to that given
 func (o *UpdateProductUnprocessableEntity) IsCode(code int) bool {
 	return code == 422
+}
+
+// Code gets the status code for the update product unprocessable entity response
+func (o *UpdateProductUnprocessableEntity) Code() int {
+	return 422
 }
 
 func (o *UpdateProductUnprocessableEntity) Error() string {

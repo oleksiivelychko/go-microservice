@@ -54,7 +54,7 @@ func NewCreateProductCreated() *CreateProductCreated {
 /*
 CreateProductCreated describes a response with status code 201, with default header values.
 
-Data structure representing a single product.
+Data structure is representing a single product.
 */
 type CreateProductCreated struct {
 	Payload *models.Product
@@ -83,6 +83,11 @@ func (o *CreateProductCreated) IsServerError() bool {
 // IsCode returns true when this create product created response a status code equal to that given
 func (o *CreateProductCreated) IsCode(code int) bool {
 	return code == 201
+}
+
+// Code gets the status code for the create product created response
+func (o *CreateProductCreated) Code() int {
+	return 201
 }
 
 func (o *CreateProductCreated) Error() string {
@@ -117,10 +122,10 @@ func NewCreateProductBadRequest() *CreateProductBadRequest {
 /*
 CreateProductBadRequest describes a response with status code 400, with default header values.
 
-gRPC service request error message.
+CreateProductBadRequest create product bad request
 */
 type CreateProductBadRequest struct {
-	Payload *models.GrpcError
+	Payload *models.GRPCServiceError
 }
 
 // IsSuccess returns true when this create product bad request response has a 2xx status code
@@ -148,6 +153,11 @@ func (o *CreateProductBadRequest) IsCode(code int) bool {
 	return code == 400
 }
 
+// Code gets the status code for the create product bad request response
+func (o *CreateProductBadRequest) Code() int {
+	return 400
+}
+
 func (o *CreateProductBadRequest) Error() string {
 	return fmt.Sprintf("[POST /products][%d] createProductBadRequest  %+v", 400, o.Payload)
 }
@@ -156,13 +166,13 @@ func (o *CreateProductBadRequest) String() string {
 	return fmt.Sprintf("[POST /products][%d] createProductBadRequest  %+v", 400, o.Payload)
 }
 
-func (o *CreateProductBadRequest) GetPayload() *models.GrpcError {
+func (o *CreateProductBadRequest) GetPayload() *models.GRPCServiceError {
 	return o.Payload
 }
 
 func (o *CreateProductBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.GrpcError)
+	o.Payload = new(models.GRPCServiceError)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -180,7 +190,7 @@ func NewCreateProductUnprocessableEntity() *CreateProductUnprocessableEntity {
 /*
 CreateProductUnprocessableEntity describes a response with status code 422, with default header values.
 
-Validation errors defined as an array of strings.
+Validation errors are an array of strings.
 */
 type CreateProductUnprocessableEntity struct {
 	Payload *models.ValidationErrors
@@ -209,6 +219,11 @@ func (o *CreateProductUnprocessableEntity) IsServerError() bool {
 // IsCode returns true when this create product unprocessable entity response a status code equal to that given
 func (o *CreateProductUnprocessableEntity) IsCode(code int) bool {
 	return code == 422
+}
+
+// Code gets the status code for the create product unprocessable entity response
+func (o *CreateProductUnprocessableEntity) Code() int {
+	return 422
 }
 
 func (o *CreateProductUnprocessableEntity) Error() string {

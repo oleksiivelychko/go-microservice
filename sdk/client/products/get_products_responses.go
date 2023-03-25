@@ -48,7 +48,7 @@ func NewGetProductsOK() *GetProductsOK {
 /*
 GetProductsOK describes a response with status code 200, with default header values.
 
-Data structure representing a list of product.
+Data structure is representing a list of products.
 */
 type GetProductsOK struct {
 	Payload []*models.Product
@@ -77,6 +77,11 @@ func (o *GetProductsOK) IsServerError() bool {
 // IsCode returns true when this get products o k response a status code equal to that given
 func (o *GetProductsOK) IsCode(code int) bool {
 	return code == 200
+}
+
+// Code gets the status code for the get products o k response
+func (o *GetProductsOK) Code() int {
+	return 200
 }
 
 func (o *GetProductsOK) Error() string {
@@ -109,10 +114,10 @@ func NewGetProductsBadRequest() *GetProductsBadRequest {
 /*
 GetProductsBadRequest describes a response with status code 400, with default header values.
 
-gRPC service request error message.
+GetProductsBadRequest get products bad request
 */
 type GetProductsBadRequest struct {
-	Payload *models.GrpcError
+	Payload *models.GRPCServiceError
 }
 
 // IsSuccess returns true when this get products bad request response has a 2xx status code
@@ -140,6 +145,11 @@ func (o *GetProductsBadRequest) IsCode(code int) bool {
 	return code == 400
 }
 
+// Code gets the status code for the get products bad request response
+func (o *GetProductsBadRequest) Code() int {
+	return 400
+}
+
 func (o *GetProductsBadRequest) Error() string {
 	return fmt.Sprintf("[GET /products][%d] getProductsBadRequest  %+v", 400, o.Payload)
 }
@@ -148,13 +158,13 @@ func (o *GetProductsBadRequest) String() string {
 	return fmt.Sprintf("[GET /products][%d] getProductsBadRequest  %+v", 400, o.Payload)
 }
 
-func (o *GetProductsBadRequest) GetPayload() *models.GrpcError {
+func (o *GetProductsBadRequest) GetPayload() *models.GRPCServiceError {
 	return o.Payload
 }
 
 func (o *GetProductsBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.GrpcError)
+	o.Payload = new(models.GRPCServiceError)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

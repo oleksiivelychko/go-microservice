@@ -78,6 +78,11 @@ func (o *DeleteProductNoContent) IsCode(code int) bool {
 	return code == 204
 }
 
+// Code gets the status code for the delete product no content response
+func (o *DeleteProductNoContent) Code() int {
+	return 204
+}
+
 func (o *DeleteProductNoContent) Error() string {
 	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNoContent ", 204)
 }
@@ -102,7 +107,7 @@ DeleteProductNotFound describes a response with status code 404, with default he
 DeleteProductNotFound delete product not found
 */
 type DeleteProductNotFound struct {
-	Payload *models.NotFound
+	Payload *models.ProductNotFoundError
 }
 
 // IsSuccess returns true when this delete product not found response has a 2xx status code
@@ -130,6 +135,11 @@ func (o *DeleteProductNotFound) IsCode(code int) bool {
 	return code == 404
 }
 
+// Code gets the status code for the delete product not found response
+func (o *DeleteProductNotFound) Code() int {
+	return 404
+}
+
 func (o *DeleteProductNotFound) Error() string {
 	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotFound  %+v", 404, o.Payload)
 }
@@ -138,13 +148,13 @@ func (o *DeleteProductNotFound) String() string {
 	return fmt.Sprintf("[DELETE /products/{id}][%d] deleteProductNotFound  %+v", 404, o.Payload)
 }
 
-func (o *DeleteProductNotFound) GetPayload() *models.NotFound {
+func (o *DeleteProductNotFound) GetPayload() *models.ProductNotFoundError {
 	return o.Payload
 }
 
 func (o *DeleteProductNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.NotFound)
+	o.Payload = new(models.ProductNotFoundError)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

@@ -2,39 +2,88 @@ basePath: /
 consumes:
     - application/json
 definitions:
+    GRPCServiceError:
+        description: GRPCServiceError g RPC service error
+        properties:
+            message:
+                description: message
+                type: string
+                x-go-name: Message
+        type: object
+        x-go-package: github.com/oleksiivelychko/go-microservice/sdk/models
     GenericError:
         properties:
             message:
+                description: message
                 type: string
                 x-go-name: Message
-        title: GenericError is a generic error message returned by a server.
+        title: GenericError GenericError is a generic error message returned by a server.
         type: object
-        x-go-package: github.com/oleksiivelychko/go-microservice/handlers
-    GrpcError:
+        x-go-package: github.com/oleksiivelychko/go-microservice/sdk/models
+    Product:
+        properties:
+            id:
+                description: ID
+                format: int64
+                minimum: 1
+                type: integer
+                x-go-name: ID
+            name:
+                description: name
+                maxLength: 255
+                type: string
+                x-go-name: Name
+            price:
+                description: price
+                format: double
+                minimum: 0.01
+                type: number
+                x-go-name: Price
+            sku:
+                description: |-
+                    SKU - in the field of inventory management, a stock keeping unit is a distinct type of item for sale, purchased, or tracked in inventory,
+                    such as a product or service, and all attributes associated with the item type that distinguish it from other item types.
+                    For a product, these attributes can include manufacturer, description, material, size, color, packaging, and warranty terms.
+                    When a business takes inventory of its stock, it counts the quantity it has of each SKU.
+                    SKU can also refer to a unique identifier or code, sometimes represented via a barcode for scanning and tracking, that refers to the particular stock keeping unit.
+                    These identifiers are not regulated or standardized.
+                    When a company receives items from a vendor, it has a choice of maintaining the vendor's SKU or creating its own.
+
+                    Original source: https://en.wikipedia.org/wiki/Stock_keeping_unit
+                pattern: '[a-z]+-[a-z]+-[a-z]+'
+                type: string
+                x-go-name: SKU
+            updatedAt:
+                description: updated at
+                type: string
+                x-go-name: UpdatedAt
+        required:
+            - name
+            - price
+            - sku
+        title: Product Product structure for an API model.
+        type: object
+        x-go-package: github.com/oleksiivelychko/go-microservice/sdk/models
+    ProductNotFoundError:
+        description: ProductNotFoundError product not found error
         properties:
             message:
-                type: string
-                x-go-name: Message
-        title: GrpcError means that request to gRPC service failed.
-        type: object
-        x-go-package: github.com/oleksiivelychko/go-microservice/handlers
-    NotFound:
-        properties:
-            message:
+                description: message
                 type: string
                 x-go-name: Message
         type: object
-        x-go-package: github.com/oleksiivelychko/go-microservice/handlers
+        x-go-package: github.com/oleksiivelychko/go-microservice/sdk/models
     ValidationErrors:
         properties:
             messages:
+                description: messages
                 items:
                     type: string
                 type: array
                 x-go-name: Messages
-        title: ValidationErrors is a collection of validation error messages.
+        title: ValidationErrors ValidationErrors is a collection of validation error messages.
         type: object
-        x-go-package: github.com/oleksiivelychko/go-microservice/handlers
+        x-go-package: github.com/oleksiivelychko/go-microservice/sdk/models
     product:
         properties:
             id:
@@ -81,7 +130,6 @@ info:
     description: |-
         Schemes:
         http
-        https
     title: Documentation of microservice API
     version: 1.0.0
 paths:
@@ -96,7 +144,7 @@ paths:
                 "200":
                     $ref: '#/responses/productsResponse'
                 "400":
-                    $ref: '#/responses/grpcResponseWrapper'
+                    $ref: '#/responses/grpcErrorResponse'
             summary: Returns a list of products.
             tags:
                 - products
@@ -107,12 +155,12 @@ paths:
                   name: Body
                   required: true
                   schema:
-                      $ref: '#/definitions/product'
+                    $ref: '#/definitions/product'
             responses:
                 "201":
                     $ref: '#/responses/productResponse'
                 "400":
-                    $ref: '#/responses/grpcResponseWrapper'
+                    $ref: '#/responses/grpcErrorResponse'
                 "422":
                     $ref: '#/responses/validationErrorsResponse'
             summary: Create a new product.
@@ -152,7 +200,7 @@ paths:
                 "200":
                     $ref: '#/responses/productResponse'
                 "400":
-                    $ref: '#/responses/grpcResponseWrapper'
+                    $ref: '#/responses/grpcErrorResponse'
                 "404":
                     $ref: '#/responses/notFoundResponse'
                 "500":
@@ -173,12 +221,12 @@ paths:
                   name: Body
                   required: true
                   schema:
-                      $ref: '#/definitions/product'
+                    $ref: '#/definitions/product'
             responses:
                 "200":
                     $ref: '#/responses/productResponse'
                 "400":
-                    $ref: '#/responses/grpcResponseWrapper'
+                    $ref: '#/responses/grpcErrorResponse'
                 "404":
                     $ref: '#/responses/errorResponse'
                 "422":
@@ -190,31 +238,31 @@ produces:
     - application/json
 responses:
     errorResponse:
-        description: Generic error message returned as a string.
+        description: ""
         schema:
             $ref: '#/definitions/GenericError'
-    grpcResponseWrapper:
-        description: gRPC service request error message.
+    grpcErrorResponse:
+        description: ""
         schema:
-            $ref: '#/definitions/GrpcError'
+            $ref: '#/definitions/GRPCServiceError'
     noContentResponse:
         description: Empty response has no data.
     notFoundResponse:
         description: ""
         schema:
-            $ref: '#/definitions/NotFound'
+            $ref: '#/definitions/ProductNotFoundError'
     productResponse:
-        description: Data structure representing a single product.
+        description: Data structure is representing a single product.
         schema:
             $ref: '#/definitions/product'
     productsResponse:
-        description: Data structure representing a list of product.
+        description: Data structure is representing a list of products.
         schema:
             items:
                 $ref: '#/definitions/product'
             type: array
     validationErrorsResponse:
-        description: Validation errors defined as an array of strings.
+        description: Validation errors are an array of strings.
         schema:
             $ref: '#/definitions/ValidationErrors'
 swagger: "2.0"

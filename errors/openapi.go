@@ -3,7 +3,6 @@ Documentation of microservice API
 
 	Schemes:
 	  http
-	  https
 	Host: localhost
 	BasePath: /
 	Version: 1.0.0
@@ -14,7 +13,7 @@ Documentation of microservice API
 
 swagger:meta
 */
-package handlers
+package errors
 
 import (
 	"github.com/oleksiivelychko/go-microservice/api"
@@ -22,62 +21,60 @@ import (
 
 // NOTE: Types defined here are purely for documentation purposes, these types are not used by any of the handlers.
 
-// Generic error message returned as a string.
 // swagger:response errorResponse
-type errorResponseWrapper struct {
+type errorResponse struct {
 	// in: body
 	Body GenericError
 }
 
-// Validation errors defined as an array of strings.
+// Validation errors are an array of strings.
 // swagger:response validationErrorsResponse
-type validationErrorsResponseWrapper struct {
+type validationErrorsResponse struct {
 	// in: body
 	Body ValidationErrors
 }
 
+// swagger:response grpcErrorResponse
+type grpcErrorResponse struct {
+	// in: body
+	Body GRPCServiceError
+}
+
 // swagger:response notFoundResponse
-type notFoundResponseWrapper struct {
+type notFoundResponse struct {
 	// in: body
-	Body NotFound
+	Body ProductNotFoundError
 }
 
-// gRPC service request error message.
-// swagger:response grpcResponseWrapper
-type grpcResponseWrapper struct {
-	// in: body
-	Body GrpcError
-}
-
-// Data structure representing a list of product.
+// Data structure is representing a list of products.
 // swagger:response productsResponse
-type productsResponseWrapper struct {
+type productsResponse struct {
 	// in: body
 	Body []api.Product
 }
 
-// Data structure representing a single product.
+// Data structure is representing a single product.
 // swagger:response productResponse
-type productResponseWrapper struct {
+type productResponse struct {
 	// in: body
 	Body api.Product
 }
 
 // Empty response has no data.
 // swagger:response noContentResponse
-type noContentResponseWrapper struct{}
+type noContentResponse struct{}
 
 // Send product data as part of HTTP request (ID field would be ignored).
 // swagger:parameters createProduct
-type productRequestBodyWrapper struct {
+type productPostRequest struct {
 	// in: body
 	// required: true
 	Body api.Product
 }
 
-// Request product by ID parameter in URL and send data in body.
+// Request product by ID parameter from URL and send data in body.
 // swagger:parameters updateProduct
-type productRequestIdBodyWrapper struct {
+type productPutRequest struct {
 	// in: path
 	// required: true
 	ID int `json:"id"`
@@ -88,7 +85,7 @@ type productRequestIdBodyWrapper struct {
 
 // Request product by ID parameter.
 // swagger:parameters getProduct deleteProduct
-type productRequestIdWrapper struct {
+type productGetRequest struct {
 	// in: path
 	// required: true
 	ID int `json:"id"`
@@ -96,7 +93,7 @@ type productRequestIdWrapper struct {
 
 // Hand over currency optional parameter.
 // swagger:parameters getProducts getProduct
-type productQueryCurrencyWrapper struct {
+type productQueryParameters struct {
 	// in: query
 	// required: false
 	Currency string

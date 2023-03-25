@@ -2,30 +2,30 @@ package main
 
 import (
 	"fmt"
-	httpClient "github.com/oleksiivelychko/go-microservice/sdk/client"
+	"github.com/oleksiivelychko/go-microservice/sdk/client"
 	"github.com/oleksiivelychko/go-microservice/sdk/client/products"
 	"github.com/oleksiivelychko/go-microservice/sdk/models"
-	jsonUtils "github.com/oleksiivelychko/go-utils/json_indent"
+	"github.com/oleksiivelychko/go-microservice/utils"
+	"github.com/oleksiivelychko/go-utils/indent_json"
 	"testing"
 )
 
 /*
-*
 Warning: main and gRPC servers must be running before.
 */
-var client = createHttpClient("localhost:9090")
+var sdkClient = makeClient()
 
 func TestHttpClientGetProducts(t *testing.T) {
 	productsParams := products.NewGetProductsParams()
-	productsList, err := client.Products.GetProducts(productsParams)
+	productsList, err := sdkClient.Products.GetProducts(productsParams)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	for _, productItem := range productsList.GetPayload() {
 		p, _ := productItem.MarshalBinary()
-		out := jsonUtils.JsonIndent(string(p))
+		out := indent_json.IndentJSON(string(p))
 		fmt.Printf("%s\n", out)
 	}
 }
@@ -34,11 +34,11 @@ func TestHttpClientGetProduct(t *testing.T) {
 	product, err := fetchProduct(1)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	productBytes, _ := product.GetPayload().MarshalBinary()
-	out := jsonUtils.JsonIndent(string(productBytes))
+	out := indent_json.IndentJSON(string(productBytes))
 	fmt.Printf("%s\n", out)
 }
 
@@ -55,26 +55,26 @@ func TestHttpClientCreateProduct(t *testing.T) {
 		SKU:   &productSKU,
 	}
 
-	_, err := client.Products.CreateProduct(productParams)
+	_, err := sdkClient.Products.CreateProduct(productParams)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	product, err := fetchProduct(3)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if *product.GetPayload().Name != productName {
-		t.Errorf("product.Name `%s` doesn't match `%s`", *product.GetPayload().Name, productName)
+		t.Errorf("product.Name '%s' from payload doesn't match the '%s'", *product.GetPayload().Name, productName)
 	}
 
 	if *product.GetPayload().SKU != productSKU {
-		t.Errorf("product.SKU `%s` doesn't match `%s`", *product.GetPayload().SKU, productSKU)
+		t.Errorf("product.SKU '%s' from payload doesn't match the '%s'", *product.GetPayload().SKU, productSKU)
 	}
 
-	if *product.GetPayload().Price < productPrice {
-		t.Errorf("product.Price `%f` didn't update `%f`", *product.GetPayload().Price, productPrice)
+	if *product.GetPayload().Price > productPrice {
+		t.Errorf("product.Price '%f' from payload is greater than '%f'", *product.GetPayload().Price, productPrice)
 	}
 }
 
@@ -97,26 +97,26 @@ func TestHttpClientUpdateProduct(t *testing.T) {
 		SKU:   &productSKU,
 	}
 
-	_, err := client.Products.UpdateProduct(productParams)
+	_, err := sdkClient.Products.UpdateProduct(productParams)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	product, err := fetchProduct(3)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if *product.GetPayload().Name != productName {
-		t.Errorf("product.Name `%s` doesn't match `%s`", *product.GetPayload().Name, productName)
+		t.Errorf("product.Name '%s' from payload doesn't match the '%s'", *product.GetPayload().Name, productName)
 	}
 
 	if *product.GetPayload().SKU != productSKU {
-		t.Errorf("product.SKU `%s` doesn't match `%s`", *product.GetPayload().SKU, productSKU)
+		t.Errorf("product.SKU '%s' from payload doesn't match the '%s'", *product.GetPayload().SKU, productSKU)
 	}
 
-	if *product.GetPayload().Price < productPrice {
-		t.Errorf("product.Price `%f` didn't update `%f`", *product.GetPayload().Price, productPrice)
+	if *product.GetPayload().Price > productPrice {
+		t.Errorf("product.Price '%f' from payload is greater than '%f'", *product.GetPayload().Price, productPrice)
 	}
 }
 
@@ -124,24 +124,23 @@ func TestHttpClientDeleteProduct(t *testing.T) {
 	productParams := products.NewDeleteProductParams()
 	productParams.ID = 3
 
-	_, err := client.Products.DeleteProduct(productParams)
+	_, err := sdkClient.Products.DeleteProduct(productParams)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	product, err := fetchProduct(3)
 	if product != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 }
 
-func createHttpClient(addr string) *httpClient.GoMicroservice {
-	config := httpClient.DefaultTransportConfig().WithHost(addr)
-	return httpClient.NewHTTPClientWithConfig(nil, config)
+func makeClient() *client.GoMicroservice {
+	return client.NewHTTPClientWithConfig(nil, client.DefaultTransportConfig().WithHost(utils.TestClientHostAddr))
 }
 
 func fetchProduct(id int64) (*products.GetProductOK, error) {
 	productParams := products.NewGetProductParams()
 	productParams.ID = id
-	return client.Products.GetProduct(productParams)
+	return sdkClient.Products.GetProduct(productParams)
 }

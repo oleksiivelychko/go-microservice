@@ -4,8 +4,8 @@ import (
 	"github.com/hashicorp/go-hclog"
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/service"
-	"github.com/oleksiivelychko/go-utils/storage"
-	validatorUtils "github.com/oleksiivelychko/go-utils/validator_helper"
+	"github.com/oleksiivelychko/go-utils/local_storage"
+	"github.com/oleksiivelychko/go-utils/validator_helper"
 	"io"
 	"net/http"
 	"path/filepath"
@@ -15,15 +15,15 @@ import (
 // MultipartHandler for CRUD actions regarding api.Product objects as multipart/form-data.
 type MultipartHandler struct {
 	logger         hclog.Logger
-	validation     *validatorUtils.Validation
-	storage        storage.LocalStorage
+	validation     *validator_helper.Validation
+	storage        local_storage.ILocalStorage
 	productService *service.ProductService
 }
 
 func NewMultipartHandler(
 	logger hclog.Logger,
-	validation *validatorUtils.Validation,
-	storage storage.LocalStorage,
+	validation *validator_helper.Validation,
+	storage local_storage.ILocalStorage,
 	productService *service.ProductService,
 ) *MultipartHandler {
 	return &MultipartHandler{logger, validation, storage, productService}
@@ -38,20 +38,20 @@ func (multipartHandler *MultipartHandler) ProcessForm(responseWriter http.Respon
 	}
 
 	id := request.FormValue("id")
-	productId, err := strconv.Atoi(id)
+	productID, err := strconv.Atoi(id)
 	if err != nil {
-		productId = multipartHandler.productService.GetNextProductId()
+		productID = multipartHandler.productService.GetNextProductID()
 	}
 
 	price, err := strconv.ParseFloat(request.FormValue("price"), 64)
 	if err != nil {
-		multipartHandler.logger.Error("unable to parse price value to float type", "error", err)
-		http.Error(responseWriter, "unable to parse price value to float type", http.StatusUnprocessableEntity)
+		multipartHandler.logger.Error("unable to parse price value", "error", err)
+		http.Error(responseWriter, "unable to parse price value", http.StatusUnprocessableEntity)
 		return
 	}
 
 	product := api.Product{
-		ID:    productId,
+		ID:    productID,
 		Name:  request.FormValue("name"),
 		Price: price,
 		SKU:   request.FormValue("SKU"),
@@ -59,12 +59,12 @@ func (multipartHandler *MultipartHandler) ProcessForm(responseWriter http.Respon
 
 	imageFile, fileHeader, err := request.FormFile("image")
 	if err != nil {
-		multipartHandler.logger.Error("expected file", "error", err)
-		http.Error(responseWriter, "expected file", http.StatusUnprocessableEntity)
+		multipartHandler.logger.Error("expected image file", "error", err)
+		http.Error(responseWriter, "expected image file", http.StatusUnprocessableEntity)
 		return
 	}
 
-	err = multipartHandler.saveFile(strconv.Itoa(productId), fileHeader.Filename, imageFile)
+	err = multipartHandler.saveFile(strconv.Itoa(productID), fileHeader.Filename, imageFile)
 	if err != nil {
 		multipartHandler.logger.Error("unable to save file", "error", err)
 		http.Error(responseWriter, "unable to save file", http.StatusInternalServerError)
@@ -88,7 +88,11 @@ func (multipartHandler *MultipartHandler) saveFile(id, path string, readCloser i
 
 	_, err := multipartHandler.storage.Save(filePath, readCloser)
 	if err != nil {
-		multipartHandler.logger.Info("file from multipart/form-data has been successfully uploaded to", "filePath", filePath)
+		multipartHandler.logger.Info(
+			"file from multipart/form-data has been successfully uploaded to",
+			"filePath",
+			filePath,
+		)
 	}
 
 	return err

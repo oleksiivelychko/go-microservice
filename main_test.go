@@ -15,7 +15,7 @@ Warning: main and gRPC servers must be running before.
 */
 var sdkClient = makeClient()
 
-func TestHttpClientGetProducts(t *testing.T) {
+func TestMain_GetProducts(t *testing.T) {
 	productsParams := products.NewGetProductsParams()
 	productsList, err := sdkClient.Products.GetProducts(productsParams)
 
@@ -30,7 +30,7 @@ func TestHttpClientGetProducts(t *testing.T) {
 	}
 }
 
-func TestHttpClientGetProduct(t *testing.T) {
+func TestMain_GetProduct(t *testing.T) {
 	product, err := fetchProduct(1)
 
 	if err != nil {
@@ -42,7 +42,7 @@ func TestHttpClientGetProduct(t *testing.T) {
 	fmt.Printf("%s\n", out)
 }
 
-func TestHttpClientCreateProduct(t *testing.T) {
+func TestMain_CreateProduct(t *testing.T) {
 	productParams := products.NewCreateProductParams()
 
 	var productName = "Coffee"
@@ -79,11 +79,10 @@ func TestHttpClientCreateProduct(t *testing.T) {
 }
 
 /*
-*
-TestHttpClientUpdateProduct
+TestMain_UpdateProduct
 https://github.com/go-swagger/go-swagger/discussions/2742
 */
-func TestHttpClientUpdateProduct(t *testing.T) {
+func TestMain_UpdateProduct(t *testing.T) {
 	productParams := products.NewUpdateProductParams()
 
 	var productName = "Coffee with milk"
@@ -120,7 +119,7 @@ func TestHttpClientUpdateProduct(t *testing.T) {
 	}
 }
 
-func TestHttpClientDeleteProduct(t *testing.T) {
+func TestMain_DeleteProduct(t *testing.T) {
 	productParams := products.NewDeleteProductParams()
 	productParams.ID = 3
 

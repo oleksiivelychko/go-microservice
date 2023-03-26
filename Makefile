@@ -11,4 +11,4 @@ generate-client:
 	swagger generate client -A go-microservice --spec=./sdk/swagger.yaml --target=./sdk
 
 start:
-	HOST=localhost PORT=9090 GRPC_PORT=9091 go run main.go
+	HOST=localhost PORT=9090 PORT_GRPC=9091 go run main.go

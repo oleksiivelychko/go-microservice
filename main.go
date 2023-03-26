@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-openapi/runtime/middleware"
 	gorillahandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -23,8 +22,7 @@ import (
 )
 
 func main() {
-	var hostAddr = fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
-	var grpcAddr = fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("GRPC_PORT"))
+	serverAddr, grpcServerAddr := utils.GetServerAddr()
 
 	hcLogger := logger.NewLogger("go-microservice")
 	validation := utils.NewValidation()
@@ -35,7 +33,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	grpcConnection, err := grpc.Dial(grpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	grpcConnection, err := grpc.Dial(grpcServerAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		hcLogger.Error("unable to connect to gRPC server", "error", err)
 	}
@@ -83,11 +81,11 @@ func main() {
 	postMultipartFormRouter := serveMux.Methods(http.MethodPost).Subrouter()
 	postMultipartFormRouter.HandleFunc(utils.ProductsFormURL, multipartHandler.ProcessForm)
 
-	swaggerUIOpts := middleware.SwaggerUIOpts{SpecURL: utils.SwaggerYAML}
+	swaggerUIOpts := middleware.SwaggerUIOpts{Path: utils.SwaggerURL, SpecURL: utils.SwaggerYAML}
 	swaggerUI := middleware.SwaggerUI(swaggerUIOpts, nil)
 	getRouter.Handle(utils.SwaggerURL, swaggerUI)
 
-	redocOpts := middleware.RedocOpts{SpecURL: utils.SwaggerYAML}
+	redocOpts := middleware.RedocOpts{Path: utils.RedocURL, SpecURL: utils.SwaggerYAML}
 	redoc := middleware.Redoc(redocOpts, nil)
 	getRouter.Handle(utils.RedocURL, redoc)
 
@@ -95,11 +93,11 @@ func main() {
 
 	// Cross-Origin Resource Sharing
 	handler := gorillahandlers.CORS(gorillahandlers.AllowedOrigins([]string{
-		"http://" + hostAddr,
+		"http://" + serverAddr,
 	}))
 
 	server := &http.Server{
-		Addr:         hostAddr,
+		Addr:         serverAddr,
 		Handler:      handler(serveMux),
 		ErrorLog:     hcLogger.StandardLogger(&hclog.StandardLoggerOptions{InferLevels: true}),
 		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
@@ -108,7 +106,7 @@ func main() {
 	}
 
 	go func() {
-		hcLogger.Info("starting server", "listening", hostAddr)
+		hcLogger.Info("starting server", "listening", serverAddr)
 		err = server.ListenAndServe()
 		if err != nil {
 			hcLogger.Error("unable to start server", "error", err)

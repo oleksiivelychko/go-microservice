@@ -6,17 +6,17 @@ import (
 )
 
 func GetServerAddr() (string, string) {
-	host, ok := os.LookupEnv(os.Getenv("HOST"))
+	host, ok := os.LookupEnv("HOST")
 	if !ok {
 		host = ServerName
 	}
 
-	port, ok := os.LookupEnv(os.Getenv("PORT"))
+	port, ok := os.LookupEnv("PORT")
 	if !ok {
 		port = ServerPort
 	}
 
-	portGRPC, ok := os.LookupEnv(os.Getenv("PORT_GRPC"))
+	portGRPC, ok := os.LookupEnv("PORT_GRPC")
 	if !ok {
 		portGRPC = ServerPortGRPC
 	}

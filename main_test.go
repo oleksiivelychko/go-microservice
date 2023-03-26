@@ -136,7 +136,7 @@ func TestHttpClientDeleteProduct(t *testing.T) {
 }
 
 func makeClient() *client.GoMicroservice {
-	return client.NewHTTPClientWithConfig(nil, client.DefaultTransportConfig().WithHost(utils.TestClientHostAddr))
+	return client.NewHTTPClientWithConfig(nil, client.DefaultTransportConfig().WithHost(utils.ServerAddr))
 }
 
 func fetchProduct(id int64) (*products.GetProductOK, error) {

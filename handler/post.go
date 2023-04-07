@@ -1,9 +1,7 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/oleksiivelychko/go-microservice/api"
-	"github.com/oleksiivelychko/go-microservice/utils"
 	"github.com/oleksiivelychko/go-utils/response"
 	"github.com/oleksiivelychko/go-utils/serializer"
 	"net/http"
@@ -17,7 +15,7 @@ import (
 // 400: grpcErrorResponse
 // 422: validationErrorsResponse
 func (handler *ProductHandler) CreateProduct(responseWriter http.ResponseWriter, request *http.Request) {
-	handler.logger.Debug(fmt.Sprintf("POST %s", utils.ProductsURL))
+	handler.logger.Debug("POST /products")
 	response.HeaderContentTypeJSON(responseWriter)
 
 	product := request.Context().Value(KeyProduct{}).(*api.Product)

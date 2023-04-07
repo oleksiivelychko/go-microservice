@@ -4,25 +4,25 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/oleksiivelychko/go-microservice/utils"
-	"github.com/oleksiivelychko/go-utils/io_json"
+	"github.com/oleksiivelychko/go-utils/serializer"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestProductName(t *testing.T) {
+func TestAPI_ValidateProductName(t *testing.T) {
 	validation := utils.NewValidation()
 	err := validation.Validate(Product{
 		Price: 1.2,
 	})
 
 	if err == nil {
-		t.Fatal("product.Name validation failed")
+		t.Fatal("unable to validate product.Name")
 	}
 
-	fmt.Println(err.Errors())
+	t.Log(err.Errors())
 }
 
-func TestProductPrice(t *testing.T) {
+func TestAPI_ValidateProductPrice(t *testing.T) {
 	validation := utils.NewValidation()
 	err := validation.Validate(Product{
 		Name:  "abc",
@@ -30,13 +30,13 @@ func TestProductPrice(t *testing.T) {
 	})
 
 	if err == nil {
-		t.Fatal("product.Price validation failed")
+		t.Fatal("unable to validate product.Price")
 	}
 
-	fmt.Println(err.Errors())
+	t.Log(err.Errors())
 }
 
-func TestProductSKU(t *testing.T) {
+func TestAPI_ValidateProductSKU(t *testing.T) {
 	validation := utils.NewValidation()
 	err := validation.Validate(Product{
 		Name:  "abc",
@@ -45,13 +45,13 @@ func TestProductSKU(t *testing.T) {
 	})
 
 	if err == nil {
-		t.Fatal("product.SKU validation failed")
+		t.Fatal("unable to validate product.SKU")
 	}
 
 	fmt.Println(err.Errors())
 }
 
-func TestProductIsValid(t *testing.T) {
+func TestAPI_ValidateProduct(t *testing.T) {
 	validation := utils.NewValidation()
 	err := validation.Validate(Product{
 		Name:  "abc",
@@ -60,18 +60,18 @@ func TestProductIsValid(t *testing.T) {
 	})
 
 	if len(err) > 0 {
-		t.Fatal(err.Errors())
+		t.Error(err.Errors())
 	}
 }
 
-func TestProductsToJSON(t *testing.T) {
-	productList := []*Product{
+func TestAPI_ProductsToJSON(t *testing.T) {
+	products := []*Product{
 		{
 			Name: "abc",
 		},
 	}
 
-	b := bytes.NewBufferString("")
-	err := io_json.ToJSON(productList, b)
+	bufferString := bytes.NewBufferString("")
+	err := serializer.ToJSON(products, bufferString)
 	assert.NoError(t, err)
 }

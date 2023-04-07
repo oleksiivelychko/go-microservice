@@ -17,16 +17,16 @@ func NewFileHandler(storage storage.ILocal, logger hclog.Logger) *FileHandler {
 	return &FileHandler{storage: storage, logger: logger}
 }
 
-func (fileHandler *FileHandler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
+func (handler *FileHandler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
 	// mux already has checked parameters according to regex rules
 	muxVars := mux.Vars(request)
 	filePath := filepath.Join(muxVars["id"], muxVars["filename"])
 
-	_, err := fileHandler.storage.Save(filePath, request.Body)
+	_, err := handler.storage.Save(filePath, request.Body)
 	if err != nil {
-		fileHandler.logger.Error("unable to save file", "error", err)
+		handler.logger.Error("unable to save file", "error", err)
 		http.Error(responseWriter, "unable to save file", http.StatusInternalServerError)
 	}
 
-	fileHandler.logger.Info("file has been successfully uploaded to", "filePath", filePath)
+	handler.logger.Info("file has been successfully uploaded to", "filePath", filePath)
 }

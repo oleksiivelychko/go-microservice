@@ -3,17 +3,17 @@ package handlers
 import (
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/go-hclog"
-	"github.com/oleksiivelychko/go-utils/local_storage"
+	"github.com/oleksiivelychko/go-utils/storage"
 	"net/http"
 	"path/filepath"
 )
 
 type FileHandler struct {
 	logger  hclog.Logger
-	storage local_storage.ILocalStorage
+	storage storage.ILocal
 }
 
-func NewFileHandler(storage local_storage.ILocalStorage, logger hclog.Logger) *FileHandler {
+func NewFileHandler(storage storage.ILocal, logger hclog.Logger) *FileHandler {
 	return &FileHandler{storage: storage, logger: logger}
 }
 

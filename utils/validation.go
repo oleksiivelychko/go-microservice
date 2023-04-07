@@ -2,14 +2,14 @@ package utils
 
 import (
 	"github.com/go-playground/validator/v10"
-	"github.com/oleksiivelychko/go-utils/validator_helper"
+	"github.com/oleksiivelychko/go-utils/validation"
 	"regexp"
 )
 
-func NewValidation() *validator_helper.Validation {
+func NewValidation() *validation.Validate {
 	validate := validator.New()
 	_ = validate.RegisterValidation("sku", validateSKU)
-	return &validator_helper.Validation{ValidatorValidate: validate}
+	return &validation.Validate{ValidatorValidate: validate}
 }
 
 func validateSKU(fl validator.FieldLevel) bool {

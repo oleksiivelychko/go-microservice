@@ -3,6 +3,7 @@ package utils
 const CurrencyQueryParam = "currency"
 const CurrencyRegex = "{[A-Z]{3}}"
 const DefaultCurrency = "USD"
+const FormDataMaxMemory32MB = 128 * 1024
 const LocalDataPath = "./data/products.json"
 const LocalStorageBasePath = "/files/"
 const LocalStoragePath = "./public" + LocalStorageBasePath

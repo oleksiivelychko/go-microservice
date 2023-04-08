@@ -3,16 +3,16 @@ package main
 import (
 	"context"
 	"github.com/go-openapi/runtime/middleware"
-	gorillahandlers "github.com/gorilla/handlers"
+	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/hashicorp/go-hclog"
-	"github.com/oleksiivelychko/go-grpc-service/proto/grpc_service"
+	"github.com/oleksiivelychko/go-grpc-service/proto/grpcservice"
+	"github.com/oleksiivelychko/go-microservice/handler"
 	"github.com/oleksiivelychko/go-microservice/handlers"
-	"github.com/oleksiivelychko/go-microservice/product_handler"
 	"github.com/oleksiivelychko/go-microservice/service"
 	"github.com/oleksiivelychko/go-microservice/utils"
-	"github.com/oleksiivelychko/go-utils/local_storage"
 	"github.com/oleksiivelychko/go-utils/logger"
+	"github.com/oleksiivelychko/go-utils/server"
+	"github.com/oleksiivelychko/go-utils/storage"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net/http"
@@ -24,10 +24,10 @@ import (
 func main() {
 	serverAddr, grpcServerAddr := utils.GetServerAddr()
 
-	hcLogger := logger.NewLogger("go-microservice")
+	hcLogger := logger.NewHashicorp("go-microservice")
 	validation := utils.NewValidation()
 
-	localStorage, err := local_storage.NewLocalStorage(utils.LocalStoragePath, utils.MaxFileSize5MB)
+	localStorage, err := storage.NewLocal(utils.LocalStoragePath, utils.MaxFileSize5MB)
 	if err != nil {
 		hcLogger.Error("unable to create local storage", "error", err)
 		os.Exit(1)
@@ -39,26 +39,26 @@ func main() {
 	}
 	defer grpcConnection.Close()
 
-	currencyClient := grpc_service.NewCurrencyClient(grpcConnection)
-	currencyService := service.NewCurrencyService(hcLogger, currencyClient, utils.DefaultCurrency)
+	exchangerClient := grpcservice.NewExchangerClient(grpcConnection)
+	currencyService := service.NewCurrencyService(hcLogger, exchangerClient, utils.DefaultCurrency)
 	productService := service.NewProductService(currencyService, utils.LocalDataPath)
 
-	productHandler := product_handler.NewProductHandler(hcLogger, validation, productService)
+	productHandler := handler.NewProductHandler(hcLogger, validation, productService)
 	fileHandler := handlers.NewFileHandler(localStorage, hcLogger)
 	multipartHandler := handlers.NewMultipartHandler(hcLogger, validation, localStorage, productService)
-	gzipHandler := handlers.NewGzipHandler(hcLogger)
+	gzipHandler := handlers.NewHandlerGZIP(hcLogger)
 
 	serveMux := mux.NewRouter()
 
 	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc(utils.ProductsURL, productHandler.GetAll)
-	getRouter.HandleFunc(utils.ProductsURL, productHandler.GetAll).Queries(utils.CurrencyQueryParam, utils.CurrencyRegex)
+	getRouter.HandleFunc("/products", productHandler.GetAll)
+	getRouter.HandleFunc("/products", productHandler.GetAll).Queries(utils.CurrencyQueryParam, utils.CurrencyRegex)
 	getRouter.HandleFunc(utils.ProductURL, productHandler.GetOne)
 	getRouter.HandleFunc(utils.ProductURL, productHandler.GetOne).Queries(utils.CurrencyQueryParam, utils.CurrencyRegex)
 	getRouter.Use(productHandler.MiddlewareCurrency)
 
 	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc(utils.ProductsURL, productHandler.CreateProduct)
+	postRouter.HandleFunc("/products", productHandler.CreateProduct)
 	postRouter.Use(productHandler.MiddlewareValidation)
 
 	putRouter := serveMux.Methods(http.MethodPut).Subrouter()
@@ -79,7 +79,7 @@ func main() {
 
 	// multipart/form-data processing
 	postMultipartFormRouter := serveMux.Methods(http.MethodPost).Subrouter()
-	postMultipartFormRouter.HandleFunc(utils.ProductsFormURL, multipartHandler.ProcessForm)
+	postMultipartFormRouter.HandleFunc("/products-form", multipartHandler.ProcessForm)
 
 	swaggerUIOpts := middleware.SwaggerUIOpts{Path: utils.SwaggerURL, SpecURL: utils.SwaggerYAML}
 	swaggerUI := middleware.SwaggerUI(swaggerUIOpts, nil)
@@ -92,29 +92,22 @@ func main() {
 	getRouter.Handle(utils.SwaggerYAML, http.FileServer(http.Dir("./")))
 
 	// Cross-Origin Resource Sharing
-	handler := gorillahandlers.CORS(gorillahandlers.AllowedOrigins([]string{
+	goHandler := gohandlers.CORS(gohandlers.AllowedOrigins([]string{
 		"http://" + serverAddr,
 	}))
 
-	server := &http.Server{
-		Addr:         serverAddr,
-		Handler:      handler(serveMux),
-		ErrorLog:     hcLogger.StandardLogger(&hclog.StandardLoggerOptions{InferLevels: true}),
-		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
-		ReadTimeout:  10 * time.Second,  // max time to read request from the client
-		WriteTimeout: 10 * time.Second,  // max time to write response to the client
-	}
+	httpServer := server.NewHTTP(serverAddr, goHandler(serveMux), hcLogger)
 
 	go func() {
 		hcLogger.Info("starting server", "listening", serverAddr)
-		err = server.ListenAndServe()
+		err = httpServer.ListenAndServe()
 		if err != nil {
 			hcLogger.Error("unable to start server", "error", err)
 			os.Exit(1)
 		}
 	}()
 
-	// trap sigterm or interrupt and gracefully shutdown the server
+	// trap sigterm or interrupt and gracefully shutdown the httpServer
 	signalChannel := make(chan os.Signal)
 	signal.Notify(signalChannel, os.Interrupt)
 	signal.Notify(signalChannel, os.Kill)
@@ -126,6 +119,6 @@ func main() {
 	contextWithTimeout, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
-	server.Shutdown(contextWithTimeout)
+	// gracefully shutdown the httpServer, waiting max 30 seconds for current operations to complete
+	httpServer.Shutdown(contextWithTimeout)
 }

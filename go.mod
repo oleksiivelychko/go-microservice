@@ -12,8 +12,8 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/go-hclog v1.5.0
-	github.com/oleksiivelychko/go-grpc-service v1.1.3
-	github.com/oleksiivelychko/go-utils v1.3.11
+	github.com/oleksiivelychko/go-grpc-service v1.3.4
+	github.com/oleksiivelychko/go-utils v1.3.12
 	github.com/stretchr/testify v1.8.2
 	google.golang.org/grpc v1.54.0
 )

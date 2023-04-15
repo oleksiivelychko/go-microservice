@@ -2,15 +2,19 @@ package api
 
 import (
 	"bytes"
-	"github.com/oleksiivelychko/go-microservice/utils/serializer"
-	"github.com/oleksiivelychko/go-microservice/utils/validation"
+	"github.com/oleksiivelychko/go-microservice/utils"
+	"github.com/oleksiivelychko/go-microservice/validation"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestAPI_ValidateProductName(t *testing.T) {
-	validate := validation.New()
-	err := validate.Validate(Product{
+	validate, err := validation.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	validatorErrors := validate.Validate(Product{
 		Price: 1.2,
 	})
 
@@ -18,48 +22,60 @@ func TestAPI_ValidateProductName(t *testing.T) {
 		t.Fatal("unable to validate product.Name")
 	}
 
-	t.Log(err.Errors())
+	t.Log(validatorErrors.Errors())
 }
 
 func TestAPI_ValidateProductPrice(t *testing.T) {
-	validate := validation.New()
-	err := validate.Validate(Product{
+	validate, err := validation.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	validatorErrors := validate.Validate(Product{
 		Name:  "abc",
 		Price: -1,
 	})
 
-	if err == nil {
+	if validatorErrors == nil {
 		t.Fatal("unable to validate product.Price")
 	}
 
-	t.Log(err.Errors())
+	t.Log(validatorErrors.Errors())
 }
 
 func TestAPI_ValidateProductSKU(t *testing.T) {
-	validate := validation.New()
-	err := validate.Validate(Product{
+	validate, err := validation.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	validatorErrors := validate.Validate(Product{
 		Name:  "abc",
 		Price: 1.2,
 		SKU:   "123-456-789",
 	})
 
-	if err == nil {
+	if validatorErrors == nil {
 		t.Fatal("unable to validate product.SKU")
 	}
 
-	t.Log(err.Errors())
+	t.Log(validatorErrors.Errors())
 }
 
 func TestAPI_ValidateProduct(t *testing.T) {
-	validate := validation.New()
-	err := validate.Validate(Product{
+	validate, err := validation.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	validatorErrors := validate.Validate(Product{
 		Name:  "abc",
 		Price: 1.2,
 		SKU:   "123-456-789",
 	})
 
-	if len(err) > 0 {
-		t.Error(err.Errors())
+	if len(validatorErrors) > 0 {
+		t.Error(validatorErrors.Errors())
 	}
 }
 
@@ -71,6 +87,6 @@ func TestAPI_ProductsToJSON(t *testing.T) {
 	}
 
 	bufStr := bytes.NewBufferString("")
-	err := serializer.ToJSON(products, bufStr)
+	err := utils.ToJSON(products, bufStr)
 	assert.NoError(t, err)
 }

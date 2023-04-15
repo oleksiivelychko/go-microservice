@@ -10,11 +10,11 @@ import (
 const sampleRFC3339 = "2002-10-02T10:00:00-05:00"
 
 type TestDateTimeJSON struct {
-	DateTime TimeJSON `json:"datetime"`
+	DateTime JSON `json:"datetime"`
 }
 
 func TestDateTime_MarshalNowTimeJSON(t *testing.T) {
-	toMarshal := &TestDateTimeJSON{DateTime: TimeJSON{}}
+	toMarshal := &TestDateTimeJSON{DateTime: JSON{}}
 	marshaledJSON, err := json.Marshal(toMarshal)
 	if err != nil {
 		t.Fatal(err)
@@ -39,7 +39,7 @@ func TestDateTime_MarshalTimeJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	toMarshal := &TestDateTimeJSON{DateTime: TimeJSON{parsedTime}}
+	toMarshal := &TestDateTimeJSON{DateTime: JSON{parsedTime}}
 	marshaledJSON, err := json.Marshal(toMarshal)
 	if err != nil {
 		t.Fatal(err)
@@ -71,7 +71,7 @@ func TestDateTime_UnmarshalTimeJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	datetimeJSON := &TestDateTimeJSON{DateTime: TimeJSON{parsedTime}}
+	datetimeJSON := &TestDateTimeJSON{DateTime: JSON{parsedTime}}
 	datetime := datetimeJSON.DateTime.Format(time.RFC3339)
 	if datetime != sampleRFC3339 {
 		t.Errorf("time mismatch: %s != %s", datetime, sampleRFC3339)

@@ -1,4 +1,4 @@
-package data
+package reader
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestData_ReadFile(t *testing.T) {
+func TestReader_ReadFile(t *testing.T) {
 	data := map[string]int{
 		"id": 1,
 	}

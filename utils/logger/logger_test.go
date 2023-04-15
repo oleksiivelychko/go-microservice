@@ -9,17 +9,17 @@ import (
 )
 
 func TestLogger_Hashicorp(t *testing.T) {
-	var buffer bytes.Buffer
+	var buf bytes.Buffer
 
 	logger := hclog.New(&hclog.LoggerOptions{
 		Name:   "test",
 		Level:  hclog.LevelFromString("DEBUG"),
-		Output: &buffer,
+		Output: &buf,
 	})
 
 	logger.Debug("this is test", "who", "programmer", "why", "testing")
 
-	bufStr := buffer.String()
+	bufStr := buf.String()
 	idxByte := strings.IndexByte(bufStr, ' ')
 	rest := bufStr[idxByte+1:]
 

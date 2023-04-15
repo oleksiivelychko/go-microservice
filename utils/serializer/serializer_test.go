@@ -1,4 +1,4 @@
-package utils
+package serializer
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ type Test struct {
 	Field string
 }
 
-func TestUtils_ToJSON(t *testing.T) {
+func TestSerializer_ToJSON(t *testing.T) {
 	buf := new(bytes.Buffer)
 	err := ToJSON(&Test{Field: "test"}, buf)
 
@@ -22,7 +22,7 @@ func TestUtils_ToJSON(t *testing.T) {
 	}
 }
 
-func TestUtils_FromJSON(t *testing.T) {
+func TestSerializer_FromJSON(t *testing.T) {
 	buf := new(bytes.Buffer)
 	buf.Write([]byte("{\"Field\":\"test\"}\n"))
 

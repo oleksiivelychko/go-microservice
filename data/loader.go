@@ -3,10 +3,11 @@ package data
 import (
 	"encoding/json"
 	"github.com/oleksiivelychko/go-microservice/api"
+	"github.com/oleksiivelychko/go-microservice/utils/reader"
 )
 
 func LoadProductsFromJSON(filename string) []*api.Product {
-	bytesArr, err := ReadFile(filename)
+	bytesArr, err := reader.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}

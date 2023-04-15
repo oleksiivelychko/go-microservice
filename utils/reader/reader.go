@@ -1,8 +1,8 @@
 package reader
 
 import (
+	"errors"
 	"fmt"
-	"github.com/oleksiivelychko/go-microservice/utils"
 	"io"
 	"os"
 	"path/filepath"
@@ -14,7 +14,7 @@ func ReadFile(path string) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	if !utils.IsPathValid(path) {
+	if _, err = os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		return []byte{}, fmt.Errorf("path %s is invalid", path)
 	}
 

@@ -1,8 +1,9 @@
-package handler
+package product
 
 import (
 	"github.com/oleksiivelychko/go-microservice/api"
-	"github.com/oleksiivelychko/go-microservice/utils"
+	"github.com/oleksiivelychko/go-microservice/utils/header"
+	"github.com/oleksiivelychko/go-microservice/utils/serializer"
 	"net/http"
 )
 
@@ -13,9 +14,9 @@ import (
 // 201: productResponse
 // 400: grpcErrorResponse
 // 422: validationErrorsResponse
-func (handler *Product) CreateProduct(resp http.ResponseWriter, req *http.Request) {
+func (handler *Handler) CreateProduct(resp http.ResponseWriter, req *http.Request) {
 	handler.logger.Debug("POST /products")
-	utils.HeaderContentTypeJSON(resp)
+	header.ContentTypeJSON(resp)
 
 	product := req.Context().Value(KeyProduct{}).(*api.Product)
 
@@ -23,10 +24,10 @@ func (handler *Product) CreateProduct(resp http.ResponseWriter, req *http.Reques
 	if grpcServiceErr != nil {
 		handler.logger.Error(grpcServiceErr.Error())
 		resp.WriteHeader(http.StatusBadRequest)
-		utils.ToJSON(&grpcServiceErr, resp)
+		serializer.ToJSON(&grpcServiceErr, resp)
 		return
 	}
 
 	resp.WriteHeader(http.StatusCreated)
-	utils.ToJSON(product, resp)
+	serializer.ToJSON(product, resp)
 }

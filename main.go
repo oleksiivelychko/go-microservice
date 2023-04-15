@@ -2,18 +2,18 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-openapi/runtime/middleware"
 	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/oleksiivelychko/go-grpc-service/proto/grpcservice"
-	"github.com/oleksiivelychko/go-microservice/env"
-	"github.com/oleksiivelychko/go-microservice/handler"
 	"github.com/oleksiivelychko/go-microservice/handlers"
-	"github.com/oleksiivelychko/go-microservice/logger"
-	"github.com/oleksiivelychko/go-microservice/server"
+	"github.com/oleksiivelychko/go-microservice/handlers/product"
 	"github.com/oleksiivelychko/go-microservice/services"
-	"github.com/oleksiivelychko/go-microservice/storage"
-	"github.com/oleksiivelychko/go-microservice/validation"
+	"github.com/oleksiivelychko/go-microservice/utils/logger"
+	"github.com/oleksiivelychko/go-microservice/utils/server"
+	"github.com/oleksiivelychko/go-microservice/utils/storage"
+	"github.com/oleksiivelychko/go-microservice/utils/validation"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net/http"
@@ -22,8 +22,19 @@ import (
 	"time"
 )
 
+const defaultCurrency = "USD"
+const localDataPath = "./public/data/products.json"
+const localStorageBasePath = "/files/"
+const localStoragePath = "./public" + localStorageBasePath
+const maxFileSize5MB = 1024 * 1000 * 5
+const RedocURL = "/redoc"
+const SwaggerURL = "/swagger"
+const SwaggerYAML = "/sdk/swagger.yaml"
+
 func main() {
-	serverAddr, grpcServerAddr := env.ServerAddr()
+	serverAddr := fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
+	grpcServerAddr := fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT_GRPC"))
+
 	hcLogger := logger.New("go-microservice", "DEBUG")
 
 	validate, err := validation.New()
@@ -32,7 +43,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	localStorage, err := storage.New(env.LocalStoragePath, env.MaxFileSize5MB)
+	localStorage, err := storage.New(localStoragePath, maxFileSize5MB)
 	if err != nil {
 		hcLogger.Error("unable to create local storage", "error", err)
 		os.Exit(1)
@@ -45,10 +56,10 @@ func main() {
 	defer grpcConnection.Close()
 
 	exchangerClient := grpcservice.NewExchangerClient(grpcConnection)
-	currencyService := services.NewCurrency(hcLogger, exchangerClient, env.DefaultCurrency)
-	productService := services.NewProduct(currencyService, env.LocalDataPath)
+	currencyService := services.NewCurrency(hcLogger, exchangerClient, defaultCurrency)
+	productService := services.NewProduct(currencyService, localDataPath)
 
-	productHandler := handler.New(hcLogger, validate, productService)
+	productHandler := product.NewHandler(hcLogger, validate, productService)
 	fileHandler := handlers.NewFile(localStorage, hcLogger)
 	multipartHandler := handlers.NewMultipart(hcLogger, validate, localStorage, productService)
 	gzipHandler := handlers.NewGZIP(hcLogger)
@@ -74,27 +85,25 @@ func main() {
 	deleteRouter.HandleFunc("/products/{id:[0-9]+}", productHandler.DeleteProduct)
 
 	// GET/POST file handling
-	var fileNameRegex = env.LocalStorageBasePath + env.ProductFileURL
+	fileNameRegex := localStorageBasePath + "{id:[0-9]+}/{filename:[a-zA-Z]+\\.(?:png|jpe?g)}"
 	postFileRouter := serveMux.Methods(http.MethodPost).Subrouter()
 	postFileRouter.HandleFunc(fileNameRegex, fileHandler.ServeHTTP)
-	getRouter.Handle(fileNameRegex, http.StripPrefix(
-		env.LocalStorageBasePath, http.FileServer(http.Dir(env.LocalStoragePath)),
-	))
+	getRouter.Handle(fileNameRegex, http.StripPrefix(localStorageBasePath, http.FileServer(http.Dir(localStoragePath))))
 	getRouter.Use(gzipHandler.Middleware)
 
 	// multipart/form-data processing
 	postMultipartFormRouter := serveMux.Methods(http.MethodPost).Subrouter()
 	postMultipartFormRouter.HandleFunc("/products-form", multipartHandler.ProcessForm)
 
-	swaggerUIOpts := middleware.SwaggerUIOpts{Path: env.SwaggerURL, SpecURL: env.SwaggerYAML}
+	swaggerUIOpts := middleware.SwaggerUIOpts{Path: SwaggerURL, SpecURL: SwaggerYAML}
 	swaggerUI := middleware.SwaggerUI(swaggerUIOpts, nil)
-	getRouter.Handle(env.SwaggerURL, swaggerUI)
+	getRouter.Handle(SwaggerURL, swaggerUI)
 
-	redocOpts := middleware.RedocOpts{Path: env.RedocURL, SpecURL: env.SwaggerYAML}
+	redocOpts := middleware.RedocOpts{Path: RedocURL, SpecURL: SwaggerYAML}
 	redoc := middleware.Redoc(redocOpts, nil)
-	getRouter.Handle(env.RedocURL, redoc)
+	getRouter.Handle(RedocURL, redoc)
 
-	getRouter.Handle(env.SwaggerYAML, http.FileServer(http.Dir("./")))
+	getRouter.Handle(SwaggerYAML, http.FileServer(http.Dir("./")))
 
 	// Cross-Origin Resource Sharing
 	goHandler := gohandlers.CORS(gohandlers.AllowedOrigins([]string{

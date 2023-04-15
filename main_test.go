@@ -1,10 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/oleksiivelychko/go-microservice/sdk/client"
 	"github.com/oleksiivelychko/go-microservice/sdk/client/products"
 	"github.com/oleksiivelychko/go-microservice/sdk/models"
-	"github.com/oleksiivelychko/go-utils/formatter"
 	"testing"
 )
 
@@ -21,7 +22,7 @@ func TestMain_GetProducts(t *testing.T) {
 
 	for _, productItem := range productsList.GetPayload() {
 		productBytes, _ := productItem.MarshalBinary()
-		productJSON := formatter.IndentJSON(string(productBytes))
+		productJSON := indentJSON(string(productBytes))
 		t.Logf("%s\n", productJSON)
 	}
 }
@@ -33,7 +34,7 @@ func TestMain_GetProduct(t *testing.T) {
 	}
 
 	productBytes, _ := product.GetPayload().MarshalBinary()
-	productJSON := formatter.IndentJSON(string(productBytes))
+	productJSON := indentJSON(string(productBytes))
 	t.Logf("%s\n", productJSON)
 }
 
@@ -137,4 +138,10 @@ func fetchProduct(id int64) (*products.GetProductOK, error) {
 	params := products.NewGetProductParams()
 	params.ID = id
 	return sdkClient.Products.GetProduct(params)
+}
+
+func indentJSON(stringJSON string) []byte {
+	var out bytes.Buffer
+	_ = json.Indent(&out, []byte(stringJSON), "", "	")
+	return out.Bytes()
 }

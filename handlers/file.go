@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/go-hclog"
-	"github.com/oleksiivelychko/go-microservice/storage"
+	"github.com/oleksiivelychko/go-microservice/utils/storage"
 	"net/http"
 	"path/filepath"
 )

@@ -1,4 +1,4 @@
-package service
+package services
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type CurrencyService struct {
+type Currency struct {
 	logger           hclog.Logger
 	exchangerClient  grpcservice.ExchangerClient
 	currency         string
@@ -18,8 +18,8 @@ type CurrencyService struct {
 	subscriberClient grpcservice.Exchanger_SubscriberClient
 }
 
-func NewCurrencyService(logger hclog.Logger, exchangerClient grpcservice.ExchangerClient, currency string) *CurrencyService {
-	service := &CurrencyService{
+func NewCurrency(logger hclog.Logger, exchangerClient grpcservice.ExchangerClient, currency string) *Currency {
+	service := &Currency{
 		logger,
 		exchangerClient,
 		currency,
@@ -31,7 +31,7 @@ func NewCurrencyService(logger hclog.Logger, exchangerClient grpcservice.Exchang
 	return service
 }
 
-func (service *CurrencyService) GetRate() (float64, *errors.GRPCServiceError) {
+func (service *Currency) GetRate() (float64, *errors.GRPCServiceError) {
 	exchangeRequest := &grpcservice.ExchangeRequest{
 		From: grpcservice.Currencies_EUR,
 		To:   grpcservice.Currencies(grpcservice.Currencies_value[service.currency]),
@@ -63,11 +63,11 @@ func (service *CurrencyService) GetRate() (float64, *errors.GRPCServiceError) {
 	return exchangeResponse.GetRate(), nil
 }
 
-func (service *CurrencyService) SetCurrency(currency string) {
+func (service *Currency) SetCurrency(currency string) {
 	service.currency = currency
 }
 
-func (service *CurrencyService) handleUpdates() {
+func (service *Currency) handleUpdates() {
 	subscribedClient, err := service.exchangerClient.Subscriber(context.Background())
 	if err != nil {
 		service.logger.Error("unable to subscribe for updates", "error", err)
@@ -94,7 +94,7 @@ func (service *CurrencyService) handleUpdates() {
 	}
 }
 
-func (service *CurrencyService) logResponse(response *grpcservice.ExchangeResponse) {
+func (service *Currency) logResponse(response *grpcservice.ExchangeResponse) {
 	service.logger.Info("got gRPC response",
 		"from", response.GetFrom(),
 		"to", response.GetTo(),

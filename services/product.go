@@ -1,4 +1,4 @@
-package service
+package services
 
 import (
 	"github.com/oleksiivelychko/go-microservice/api"
@@ -6,17 +6,17 @@ import (
 	"github.com/oleksiivelychko/go-microservice/errors"
 )
 
-type ProductService struct {
-	CurrencyService *CurrencyService
+type Product struct {
+	CurrencyService *Currency
 	products        []*api.Product
 }
 
-func NewProductService(currencyService *CurrencyService, filePath string) *ProductService {
-	var products = data.LoadProductsFromJson(filePath)
-	return &ProductService{currencyService, products}
+func NewProduct(currencyService *Currency, filePath string) *Product {
+	var products = data.LoadProductsFromJSON(filePath)
+	return &Product{currencyService, products}
 }
 
-func (service *ProductService) GetProducts() (api.Products, *errors.GRPCServiceError) {
+func (service *Product) GetProducts() (api.Products, *errors.GRPCServiceError) {
 	rate, grpcErr := service.CurrencyService.GetRate()
 	if grpcErr != nil {
 		return service.products, grpcErr
@@ -32,24 +32,24 @@ func (service *ProductService) GetProducts() (api.Products, *errors.GRPCServiceE
 	return ratedProductsList, nil
 }
 
-func (service *ProductService) GetProduct(id int) (*api.Product, error) {
-	index := service.findIndexByProductID(id)
-	if index == -1 {
+func (service *Product) GetProduct(id int) (*api.Product, error) {
+	idx := service.findIndexByProductID(id)
+	if idx == -1 {
 		return nil, &errors.ProductNotFoundError{ID: id}
 	}
 
 	rate, grpcErr := service.CurrencyService.GetRate()
 	if grpcErr != nil {
-		return service.products[index], grpcErr
+		return service.products[idx], grpcErr
 	}
 
-	ratedProduct := *service.products[index]
+	ratedProduct := *service.products[idx]
 	ratedProduct.Price *= rate
 
 	return &ratedProduct, nil
 }
 
-func (service *ProductService) AddProduct(product *api.Product) *errors.GRPCServiceError {
+func (service *Product) AddProduct(product *api.Product) *errors.GRPCServiceError {
 	product.ID = service.GetNextProductID()
 
 	rate, grpcErr := service.CurrencyService.GetRate()
@@ -63,9 +63,9 @@ func (service *ProductService) AddProduct(product *api.Product) *errors.GRPCServ
 	return nil
 }
 
-func (service *ProductService) UpdateProduct(product *api.Product) error {
-	index := service.findIndexByProductID(product.ID)
-	if index == -1 {
+func (service *Product) UpdateProduct(product *api.Product) error {
+	idx := service.findIndexByProductID(product.ID)
+	if idx == -1 {
 		return &errors.ProductNotFoundError{ID: product.ID}
 	}
 
@@ -75,22 +75,22 @@ func (service *ProductService) UpdateProduct(product *api.Product) error {
 	}
 
 	product.Price *= rate
-	service.products[index] = product
+	service.products[idx] = product
 
 	return nil
 }
 
-func (service *ProductService) DeleteProduct(id int) *errors.ProductNotFoundError {
-	index := service.findIndexByProductID(id)
-	if index == -1 {
+func (service *Product) DeleteProduct(id int) *errors.ProductNotFoundError {
+	idx := service.findIndexByProductID(id)
+	if idx == -1 {
 		return &errors.ProductNotFoundError{ID: id}
 	}
 
-	service.products = service.deleteProductByIndex(index)
+	service.products = service.deleteProductByIndex(idx)
 	return nil
 }
 
-func (service *ProductService) GetNextProductID() int {
+func (service *Product) GetNextProductID() int {
 	if len(service.products) == 0 {
 		return 1
 	}
@@ -102,16 +102,16 @@ func (service *ProductService) GetNextProductID() int {
 *
 findIndexByProductID finds the index of a product. Returns -1 when product not found.
 */
-func (service *ProductService) findIndexByProductID(id int) int {
-	for index, product := range service.products {
+func (service *Product) findIndexByProductID(id int) int {
+	for idx, product := range service.products {
 		if product.ID == id {
-			return index
+			return idx
 		}
 	}
 
 	return -1
 }
 
-func (service *ProductService) deleteProductByIndex(index int) []*api.Product {
-	return append(service.products[:index], service.products[index+1:]...)
+func (service *Product) deleteProductByIndex(idx int) []*api.Product {
+	return append(service.products[:idx], service.products[idx+1:]...)
 }

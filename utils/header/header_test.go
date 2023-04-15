@@ -1,4 +1,4 @@
-package utils
+package header
 
 import (
 	"io"
@@ -7,13 +7,13 @@ import (
 	"testing"
 )
 
-func TestUtils_HeaderContentTypeJSON(t *testing.T) {
+func TestHeader_ContentTypeJSON(t *testing.T) {
 	handler := createHandler()
 
 	req := httptest.NewRequest("GET", "https://example.com", nil)
 	resp := httptest.NewRecorder()
 
-	HeaderContentTypeJSON(resp)
+	ContentTypeJSON(resp)
 	handler(resp, req)
 
 	response := resp.Result()

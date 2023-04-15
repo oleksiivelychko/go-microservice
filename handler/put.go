@@ -3,8 +3,7 @@ package handler
 import (
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/errors"
-	"github.com/oleksiivelychko/go-utils/response"
-	"github.com/oleksiivelychko/go-utils/serializer"
+	"github.com/oleksiivelychko/go-microservice/utils"
 	"net/http"
 )
 
@@ -16,28 +15,28 @@ import (
 // 400: grpcErrorResponse
 // 404: errorResponse
 // 422: validationErrorsResponse
-func (handler *ProductHandler) UpdateProduct(responseWriter http.ResponseWriter, request *http.Request) {
-	response.HeaderContentTypeJSON(responseWriter)
+func (handler *Product) UpdateProduct(resp http.ResponseWriter, req *http.Request) {
 	handler.logger.Debug("PUT /products")
+	utils.HeaderContentTypeJSON(resp)
 
-	product := request.Context().Value(KeyProduct{}).(*api.Product)
-	product.ID = handler.getProductID(request)
+	product := req.Context().Value(KeyProduct{}).(*api.Product)
+	product.ID = handler.getProductID(req)
 
 	err := handler.productService.UpdateProduct(product)
 
 	switch errType := err.(type) {
 	case *errors.GRPCServiceError:
 		handler.logger.Error(errType.Error())
-		responseWriter.WriteHeader(http.StatusBadRequest)
-		_ = serializer.ToJSON(&errType, responseWriter)
+		resp.WriteHeader(http.StatusBadRequest)
+		utils.ToJSON(&errType, resp)
 		return
 	case *errors.ProductNotFoundError:
 		handler.logger.Error(errType.Error())
-		responseWriter.WriteHeader(http.StatusNotFound)
-		_ = serializer.ToJSON(&errType, responseWriter)
+		resp.WriteHeader(http.StatusNotFound)
+		utils.ToJSON(&errType, resp)
 		return
 	}
 
-	responseWriter.WriteHeader(http.StatusOK)
-	serializer.ToJSON(product, responseWriter)
+	resp.WriteHeader(http.StatusOK)
+	utils.ToJSON(product, resp)
 }

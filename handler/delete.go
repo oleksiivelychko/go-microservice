@@ -1,8 +1,7 @@
 package handler
 
 import (
-	"github.com/oleksiivelychko/go-utils/response"
-	"github.com/oleksiivelychko/go-utils/serializer"
+	"github.com/oleksiivelychko/go-microservice/utils"
 	"net/http"
 )
 
@@ -12,19 +11,19 @@ import (
 // responses:
 // 204: noContentResponse
 // 404: notFoundResponse
-func (handler *ProductHandler) DeleteProduct(responseWriter http.ResponseWriter, request *http.Request) {
+func (handler *Product) DeleteProduct(resp http.ResponseWriter, req *http.Request) {
 	handler.logger.Debug("DELETE /products")
-	response.HeaderContentTypeJSON(responseWriter)
+	utils.HeaderContentTypeJSON(resp)
 
-	id := handler.getProductID(request)
+	id := handler.getProductID(req)
 
 	productNotFoundErr := handler.productService.DeleteProduct(id)
 	if productNotFoundErr != nil {
 		handler.logger.Error(productNotFoundErr.Error())
-		responseWriter.WriteHeader(http.StatusNotFound)
-		serializer.ToJSON(&productNotFoundErr, responseWriter)
+		resp.WriteHeader(http.StatusNotFound)
+		utils.ToJSON(&productNotFoundErr, resp)
 		return
 	}
 
-	responseWriter.WriteHeader(http.StatusNoContent)
+	resp.WriteHeader(http.StatusNoContent)
 }

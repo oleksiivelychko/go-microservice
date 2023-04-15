@@ -2,8 +2,7 @@ package handler
 
 import (
 	"github.com/oleksiivelychko/go-microservice/errors"
-	"github.com/oleksiivelychko/go-utils/response"
-	"github.com/oleksiivelychko/go-utils/serializer"
+	"github.com/oleksiivelychko/go-microservice/utils"
 	"net/http"
 )
 
@@ -13,19 +12,19 @@ import (
 // responses:
 // 200: productsResponse
 // 400: grpcErrorResponse
-func (handler *ProductHandler) GetAll(responseWriter http.ResponseWriter, request *http.Request) {
+func (handler *Product) GetAll(resp http.ResponseWriter, req *http.Request) {
 	handler.logger.Debug("LIST /products")
-	response.HeaderContentTypeJSON(responseWriter)
+	utils.HeaderContentTypeJSON(resp)
 
 	products, grpcServiceErr := handler.productService.GetProducts()
 	if grpcServiceErr != nil {
 		handler.logger.Error(grpcServiceErr.Error())
-		responseWriter.WriteHeader(http.StatusBadRequest)
-		_ = serializer.ToJSON(&grpcServiceErr, responseWriter)
+		resp.WriteHeader(http.StatusBadRequest)
+		utils.ToJSON(&grpcServiceErr, resp)
 		return
 	}
 
-	if serializerErr := serializer.ToJSON(products, responseWriter); serializerErr != nil {
+	if serializerErr := utils.ToJSON(products, resp); serializerErr != nil {
 		handler.logger.Error("serializer", "error", serializerErr)
 	}
 }
@@ -38,27 +37,27 @@ func (handler *ProductHandler) GetAll(responseWriter http.ResponseWriter, reques
 // 400: grpcErrorResponse
 // 404: notFoundResponse
 // 500: errorResponse
-func (handler *ProductHandler) GetOne(responseWriter http.ResponseWriter, request *http.Request) {
+func (handler *Product) GetOne(resp http.ResponseWriter, req *http.Request) {
 	handler.logger.Debug("GET /products")
-	response.HeaderContentTypeJSON(responseWriter)
+	utils.HeaderContentTypeJSON(resp)
 
-	id := handler.getProductID(request)
+	id := handler.getProductID(req)
 	product, err := handler.productService.GetProduct(id)
 
 	switch errType := err.(type) {
 	case *errors.GRPCServiceError:
 		handler.logger.Error(errType.Error())
-		responseWriter.WriteHeader(http.StatusBadRequest)
-		_ = serializer.ToJSON(&errType, responseWriter)
+		resp.WriteHeader(http.StatusBadRequest)
+		utils.ToJSON(&errType, resp)
 		return
 	case *errors.ProductNotFoundError:
 		handler.logger.Error(errType.Error())
-		responseWriter.WriteHeader(http.StatusNotFound)
-		_ = serializer.ToJSON(&errType, responseWriter)
+		resp.WriteHeader(http.StatusNotFound)
+		utils.ToJSON(&errType, resp)
 		return
 	}
 
-	if serializerErr := serializer.ToJSON(product, responseWriter); serializerErr != nil {
+	if serializerErr := utils.ToJSON(product, resp); serializerErr != nil {
 		handler.logger.Error("serializer", "error", serializerErr)
 	}
 }

@@ -14,7 +14,7 @@ generate-client:
 	$(info 'swagger generate client --help')
 	swagger generate client -A go-microservice --spec=./sdk/swagger.yaml --target=./sdk
 
-start:
+run:
 	HOST=$(HOST_NAME) PORT=$(HOST_PORT) PORT_GRPC=9091 go run main.go
 
 curl-list:

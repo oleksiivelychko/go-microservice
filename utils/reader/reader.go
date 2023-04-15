@@ -1,4 +1,4 @@
-package data
+package reader
 
 import (
 	"fmt"

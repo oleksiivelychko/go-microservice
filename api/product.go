@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/oleksiivelychko/go-microservice/datetime"
+	"github.com/oleksiivelychko/go-microservice/utils/datetime"
 )
 
 // Product structure for an API model.
@@ -34,7 +34,7 @@ type Product struct {
 	SKU string `json:"sku" validate:"required,sku"`
 
 	// required: false
-	UpdatedAt datetime.TimeJSON `json:"updatedAt,omitempty"`
+	UpdatedAt datetime.JSON `json:"updatedAt,omitempty"`
 }
 
 type Products []*Product

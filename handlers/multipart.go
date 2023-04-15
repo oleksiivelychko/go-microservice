@@ -3,15 +3,16 @@ package handlers
 import (
 	"github.com/hashicorp/go-hclog"
 	"github.com/oleksiivelychko/go-microservice/api"
-	"github.com/oleksiivelychko/go-microservice/env"
 	"github.com/oleksiivelychko/go-microservice/services"
 	"github.com/oleksiivelychko/go-microservice/storage"
-	"github.com/oleksiivelychko/go-microservice/validation"
+	"github.com/oleksiivelychko/go-microservice/utils/validation"
 	"io"
 	"net/http"
 	"path/filepath"
 	"strconv"
 )
+
+const formDataMaxMemory32MB = 128 * 1024
 
 // Multipart for CRUD actions regarding api.Product objects as multipart/form-data.
 type Multipart struct {
@@ -31,7 +32,7 @@ func NewMultipart(
 }
 
 func (handler *Multipart) ProcessForm(resp http.ResponseWriter, req *http.Request) {
-	err := req.ParseMultipartForm(env.FormDataMaxMemory32MB)
+	err := req.ParseMultipartForm(formDataMaxMemory32MB)
 	if err != nil {
 		handler.logger.Error("expected multipart form data", "error", err)
 		http.Error(resp, "expected multipart form data", http.StatusUnprocessableEntity)

@@ -2,7 +2,7 @@ package data
 
 import (
 	"fmt"
-	"github.com/oleksiivelychko/go-utils/system"
+	"github.com/oleksiivelychko/go-microservice/utils"
 	"io"
 	"os"
 	"path/filepath"
@@ -14,7 +14,7 @@ func ReadFile(path string) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	if !system.IsPathValid(path) {
+	if !utils.IsPathValid(path) {
 		return []byte{}, fmt.Errorf("path %s is invalid", path)
 	}
 

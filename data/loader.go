@@ -3,7 +3,7 @@ package data
 import (
 	"encoding/json"
 	"github.com/oleksiivelychko/go-microservice/api"
-	"github.com/oleksiivelychko/go-utils/reader"
+	"github.com/oleksiivelychko/go-microservice/utils/reader"
 )
 
 func LoadProductsFromJson(filename string) []*api.Product {

@@ -3,59 +3,58 @@ package handlers
 import (
 	"compress/gzip"
 	"github.com/hashicorp/go-hclog"
-	"github.com/oleksiivelychko/go-utils/response"
 	"net/http"
 	"strings"
 )
 
-type HandlerGZIP struct {
+type GZIP struct {
 	logger hclog.Logger
 }
 
-func NewHandlerGZIP(logger hclog.Logger) *HandlerGZIP {
-	return &HandlerGZIP{logger}
+func NewGZIP(logger hclog.Logger) *GZIP {
+	return &GZIP{logger}
 }
 
-type ResponseWriterGZIP struct {
+type ResponseGZIP struct {
 	responseWriter http.ResponseWriter
 	gzipWriter     *gzip.Writer
 }
 
-func NewResponseWriterGZIP(responseWriter http.ResponseWriter) *ResponseWriterGZIP {
-	return &ResponseWriterGZIP{responseWriter: responseWriter, gzipWriter: gzip.NewWriter(responseWriter)}
+func NewResponseGZIP(resp http.ResponseWriter) *ResponseGZIP {
+	return &ResponseGZIP{responseWriter: resp, gzipWriter: gzip.NewWriter(resp)}
 }
 
-func (gzipResponseWriter *ResponseWriterGZIP) Header() http.Header {
-	return gzipResponseWriter.responseWriter.Header()
+func (resp *ResponseGZIP) Header() http.Header {
+	return resp.responseWriter.Header()
 }
 
-func (gzipResponseWriter *ResponseWriterGZIP) Write(bytes []byte) (int, error) {
-	return gzipResponseWriter.gzipWriter.Write(bytes)
+func (resp *ResponseGZIP) Write(bytes []byte) (int, error) {
+	return resp.gzipWriter.Write(bytes)
 }
 
-func (gzipResponseWriter *ResponseWriterGZIP) WriteHeader(statusCode int) {
-	gzipResponseWriter.responseWriter.WriteHeader(statusCode)
+func (resp *ResponseGZIP) WriteHeader(statusCode int) {
+	resp.responseWriter.WriteHeader(statusCode)
 }
 
-func (gzipResponseWriter *ResponseWriterGZIP) Flush() {
-	_ = gzipResponseWriter.gzipWriter.Flush()
-	_ = gzipResponseWriter.gzipWriter.Close()
+func (resp *ResponseGZIP) Flush() {
+	resp.gzipWriter.Flush()
+	resp.gzipWriter.Close()
 }
 
-func (handler *HandlerGZIP) Middleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		if strings.Contains(request.Header.Get("Accept-Encoding"), "gzip") {
+func (handler *GZIP) Middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(resp http.ResponseWriter, req *http.Request) {
+		if strings.Contains(req.Header.Get("Accept-Encoding"), "gzip") {
 			handler.logger.Info("discovered gzip content-encoding")
 
-			gzipResponseWriter := NewResponseWriterGZIP(writer)
-			response.HeaderContentEncodingGZIP(gzipResponseWriter)
+			respGZIP := NewResponseGZIP(resp)
+			resp.Header().Set("Content-Encoding", "gzip")
 
-			next.ServeHTTP(gzipResponseWriter, request)
-			defer gzipResponseWriter.Flush()
+			next.ServeHTTP(respGZIP, req)
+			defer respGZIP.Flush()
 
 			return
 		}
 
-		next.ServeHTTP(writer, request)
+		next.ServeHTTP(resp, req)
 	})
 }

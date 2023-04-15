@@ -3,72 +3,72 @@ package handlers
 import (
 	"github.com/hashicorp/go-hclog"
 	"github.com/oleksiivelychko/go-microservice/api"
+	"github.com/oleksiivelychko/go-microservice/env"
 	"github.com/oleksiivelychko/go-microservice/service"
-	"github.com/oleksiivelychko/go-microservice/utils"
+	"github.com/oleksiivelychko/go-microservice/validation"
 	"github.com/oleksiivelychko/go-utils/storage"
-	"github.com/oleksiivelychko/go-utils/validation"
 	"io"
 	"net/http"
 	"path/filepath"
 	"strconv"
 )
 
-// MultipartHandler for CRUD actions regarding api.Product objects as multipart/form-data.
-type MultipartHandler struct {
+// Multipart for CRUD actions regarding api.Product objects as multipart/form-data.
+type Multipart struct {
 	logger         hclog.Logger
 	validation     *validation.Validate
 	storage        storage.ILocal
 	productService *service.ProductService
 }
 
-func NewMultipartHandler(
+func NewMultipart(
 	logger hclog.Logger,
 	validation *validation.Validate,
 	storage storage.ILocal,
 	productService *service.ProductService,
-) *MultipartHandler {
-	return &MultipartHandler{logger, validation, storage, productService}
+) *Multipart {
+	return &Multipart{logger, validation, storage, productService}
 }
 
-func (handler *MultipartHandler) ProcessForm(responseWriter http.ResponseWriter, request *http.Request) {
-	err := request.ParseMultipartForm(utils.FormDataMaxMemory32MB)
+func (handler *Multipart) ProcessForm(resp http.ResponseWriter, req *http.Request) {
+	err := req.ParseMultipartForm(env.FormDataMaxMemory32MB)
 	if err != nil {
 		handler.logger.Error("expected multipart form data", "error", err)
-		http.Error(responseWriter, "expected multipart form data", http.StatusUnprocessableEntity)
+		http.Error(resp, "expected multipart form data", http.StatusUnprocessableEntity)
 		return
 	}
 
-	id := request.FormValue("id")
+	id := req.FormValue("id")
 	productID, err := strconv.Atoi(id)
 	if err != nil {
 		productID = handler.productService.GetNextProductID()
 	}
 
-	price, err := strconv.ParseFloat(request.FormValue("price"), 64)
+	price, err := strconv.ParseFloat(req.FormValue("price"), 64)
 	if err != nil {
 		handler.logger.Error("unable to parse price value", "error", err)
-		http.Error(responseWriter, "unable to parse price value", http.StatusUnprocessableEntity)
+		http.Error(resp, "unable to parse price value", http.StatusUnprocessableEntity)
 		return
 	}
 
 	product := api.Product{
 		ID:    productID,
-		Name:  request.FormValue("name"),
+		Name:  req.FormValue("name"),
 		Price: price,
-		SKU:   request.FormValue("SKU"),
+		SKU:   req.FormValue("SKU"),
 	}
 
-	imageFile, fileHeader, err := request.FormFile("image")
+	imageFile, fileHeader, err := req.FormFile("image")
 	if err != nil {
 		handler.logger.Error("expected image file", "error", err)
-		http.Error(responseWriter, "expected image file", http.StatusUnprocessableEntity)
+		http.Error(resp, "expected image file", http.StatusUnprocessableEntity)
 		return
 	}
 
 	err = handler.saveFile(strconv.Itoa(productID), fileHeader.Filename, imageFile)
 	if err != nil {
 		handler.logger.Error("unable to save file", "error", err)
-		http.Error(responseWriter, "unable to save file", http.StatusInternalServerError)
+		http.Error(resp, "unable to save file", http.StatusInternalServerError)
 		return
 	}
 
@@ -79,15 +79,15 @@ func (handler *MultipartHandler) ProcessForm(responseWriter http.ResponseWriter,
 	}
 
 	if err != nil {
-		handler.logger.Error("request to gRPC service", "error", err)
-		http.Error(responseWriter, "request to gRPC service", http.StatusBadRequest)
+		handler.logger.Error("req to gRPC service", "error", err)
+		http.Error(resp, "req to gRPC service", http.StatusBadRequest)
 	}
 }
 
-func (handler *MultipartHandler) saveFile(id, path string, readCloser io.ReadCloser) error {
+func (handler *Multipart) saveFile(id, path string, closer io.ReadCloser) error {
 	filePath := filepath.Join(id, path)
 
-	_, err := handler.storage.Save(filePath, readCloser)
+	_, err := handler.storage.Save(filePath, closer)
 	if err != nil {
 		handler.logger.Info(
 			"file from multipart/form-data has been successfully uploaded to",

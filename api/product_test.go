@@ -2,16 +2,15 @@ package api
 
 import (
 	"bytes"
-	"fmt"
-	"github.com/oleksiivelychko/go-microservice/utils"
-	"github.com/oleksiivelychko/go-utils/serializer"
+	"github.com/oleksiivelychko/go-microservice/utils/serializer"
+	"github.com/oleksiivelychko/go-microservice/utils/validation"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestAPI_ValidateProductName(t *testing.T) {
-	validation := utils.NewValidation()
-	err := validation.Validate(Product{
+	validate := validation.New()
+	err := validate.Validate(Product{
 		Price: 1.2,
 	})
 
@@ -23,8 +22,8 @@ func TestAPI_ValidateProductName(t *testing.T) {
 }
 
 func TestAPI_ValidateProductPrice(t *testing.T) {
-	validation := utils.NewValidation()
-	err := validation.Validate(Product{
+	validate := validation.New()
+	err := validate.Validate(Product{
 		Name:  "abc",
 		Price: -1,
 	})
@@ -37,8 +36,8 @@ func TestAPI_ValidateProductPrice(t *testing.T) {
 }
 
 func TestAPI_ValidateProductSKU(t *testing.T) {
-	validation := utils.NewValidation()
-	err := validation.Validate(Product{
+	validate := validation.New()
+	err := validate.Validate(Product{
 		Name:  "abc",
 		Price: 1.2,
 		SKU:   "123-456-789",
@@ -48,12 +47,12 @@ func TestAPI_ValidateProductSKU(t *testing.T) {
 		t.Fatal("unable to validate product.SKU")
 	}
 
-	fmt.Println(err.Errors())
+	t.Log(err.Errors())
 }
 
 func TestAPI_ValidateProduct(t *testing.T) {
-	validation := utils.NewValidation()
-	err := validation.Validate(Product{
+	validate := validation.New()
+	err := validate.Validate(Product{
 		Name:  "abc",
 		Price: 1.2,
 		SKU:   "123-456-789",
@@ -71,7 +70,7 @@ func TestAPI_ProductsToJSON(t *testing.T) {
 		},
 	}
 
-	bufferString := bytes.NewBufferString("")
-	err := serializer.ToJSON(products, bufferString)
+	bufStr := bytes.NewBufferString("")
+	err := serializer.ToJSON(products, bufStr)
 	assert.NoError(t, err)
 }

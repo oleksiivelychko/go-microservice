@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/go-hclog"
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/env"
-	"github.com/oleksiivelychko/go-microservice/service"
+	"github.com/oleksiivelychko/go-microservice/services"
 	"github.com/oleksiivelychko/go-microservice/validation"
 	"github.com/oleksiivelychko/go-utils/storage"
 	"io"
@@ -18,14 +18,14 @@ type Multipart struct {
 	logger         hclog.Logger
 	validation     *validation.Validate
 	storage        storage.ILocal
-	productService *service.ProductService
+	productService *services.Product
 }
 
 func NewMultipart(
 	logger hclog.Logger,
 	validation *validation.Validate,
 	storage storage.ILocal,
-	productService *service.ProductService,
+	productService *services.Product,
 ) *Multipart {
 	return &Multipart{logger, validation, storage, productService}
 }

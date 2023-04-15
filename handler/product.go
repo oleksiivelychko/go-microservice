@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/go-hclog"
-	"github.com/oleksiivelychko/go-microservice/service"
+	"github.com/oleksiivelychko/go-microservice/services"
 	"github.com/oleksiivelychko/go-microservice/validation"
 	"net/http"
 	"strconv"
@@ -16,10 +16,10 @@ type KeyProduct struct{}
 type Product struct {
 	logger         hclog.Logger
 	validation     *validation.Validate
-	productService *service.ProductService
+	productService *services.Product
 }
 
-func New(logger hclog.Logger, validation *validation.Validate, productService *service.ProductService) *Product {
+func New(logger hclog.Logger, validation *validation.Validate, productService *services.Product) *Product {
 	return &Product{logger, validation, productService}
 }
 

@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/go-hclog"
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/services"
-	"github.com/oleksiivelychko/go-microservice/storage"
+	"github.com/oleksiivelychko/go-microservice/utils/storage"
 	"github.com/oleksiivelychko/go-microservice/utils/validation"
 	"io"
 	"net/http"
@@ -85,10 +85,10 @@ func (handler *Multipart) ProcessForm(resp http.ResponseWriter, req *http.Reques
 	}
 }
 
-func (handler *Multipart) saveFile(id, path string, closer io.ReadCloser) error {
+func (handler *Multipart) saveFile(id, path string, reader io.ReadCloser) error {
 	filePath := filepath.Join(id, path)
 
-	_, err := handler.storage.Save(filePath, closer)
+	_, err := handler.storage.Save(filePath, reader)
 	if err != nil {
 		handler.logger.Info(
 			"file from multipart/form-data has been successfully uploaded to",

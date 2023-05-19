@@ -11,7 +11,7 @@ require (
 	github.com/go-playground/validator/v10 v10.13.0
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
-	github.com/oleksiivelychko/go-grpc-service v1.4.6
+	github.com/oleksiivelychko/go-grpc-service v1.4.7
 	github.com/stretchr/testify v1.8.2
 	google.golang.org/grpc v1.55.0
 )

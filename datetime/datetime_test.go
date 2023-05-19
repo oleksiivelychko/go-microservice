@@ -1,6 +1,7 @@
 package datetime
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"testing"
@@ -75,5 +76,40 @@ func TestDateTime_UnmarshalTimeJSON(t *testing.T) {
 	datetime := datetimeJSON.DateTime.Format(time.RFC3339)
 	if datetime != sampleRFC3339 {
 		t.Errorf("time mismatch: %s != %s", datetime, sampleRFC3339)
+	}
+}
+
+func TestDateTime_EncodeTimeJSON(t *testing.T) {
+	buf := new(bytes.Buffer)
+
+	parsedTime, err := time.Parse(time.RFC3339, sampleRFC3339)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	toMarshal := &TestDateTimeJSON{DateTime: JSON{parsedTime}}
+	err = json.NewEncoder(buf).Encode(toMarshal)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if buf.String() != fmt.Sprintf("{\"datetime\":\"%s\"}\n", sampleRFC3339) {
+		t.Errorf("JSON string %s and structure field are not equal", buf.String())
+	}
+}
+
+func TestDateTime_DecodeTimeJSON(t *testing.T) {
+	buf := new(bytes.Buffer)
+	buf.Write([]byte(fmt.Sprintf("{\"datetime\":\"%s\"}\n", sampleRFC3339)))
+
+	unmarshalTo := &TestDateTimeJSON{}
+	err := json.NewDecoder(buf).Decode(unmarshalTo)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	datetime := unmarshalTo.DateTime.Format(time.RFC3339)
+	if datetime != sampleRFC3339 {
+		t.Errorf("structure field %s and JSON string %s are not equal", datetime, buf.String())
 	}
 }

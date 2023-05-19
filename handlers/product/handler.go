@@ -2,9 +2,9 @@ package product
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/hashicorp/go-hclog"
+	"github.com/oleksiivelychko/go-grpc-service/logger"
 	"github.com/oleksiivelychko/go-microservice/services"
-	"github.com/oleksiivelychko/go-microservice/utils/validation"
+	"github.com/oleksiivelychko/go-microservice/validation"
 	"net/http"
 	"strconv"
 )
@@ -14,12 +14,12 @@ type KeyProduct struct{}
 
 // Handler for CRUD actions regarding api.Product objects.
 type Handler struct {
-	logger         hclog.Logger
+	logger         *logger.Logger
 	validation     *validation.Validate
 	productService *services.Product
 }
 
-func NewHandler(logger hclog.Logger, validation *validation.Validate, productService *services.Product) *Handler {
+func NewHandler(validation *validation.Validate, productService *services.Product, logger *logger.Logger) *Handler {
 	return &Handler{logger, validation, productService}
 }
 

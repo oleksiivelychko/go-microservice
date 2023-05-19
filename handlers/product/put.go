@@ -1,10 +1,9 @@
 package product
 
 import (
+	"encoding/json"
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/errors"
-	"github.com/oleksiivelychko/go-microservice/utils/header"
-	"github.com/oleksiivelychko/go-microservice/utils/serializer"
 	"net/http"
 )
 
@@ -17,8 +16,10 @@ import (
 // 404: errorResponse
 // 422: validationErrorsResponse
 func (handler *Handler) UpdateProduct(resp http.ResponseWriter, req *http.Request) {
-	handler.logger.Debug("PUT /products")
-	header.ContentTypeJSON(resp)
+	handler.logger.Info("PUT /products")
+	resp.Header().Set("Content-Type", "application/json")
+
+	respEncoder := json.NewEncoder(resp)
 
 	product := req.Context().Value(KeyProduct{}).(*api.Product)
 	product.ID = handler.getProductID(req)
@@ -29,15 +30,15 @@ func (handler *Handler) UpdateProduct(resp http.ResponseWriter, req *http.Reques
 	case *errors.GRPCServiceError:
 		handler.logger.Error(errType.Error())
 		resp.WriteHeader(http.StatusBadRequest)
-		serializer.ToJSON(&errType, resp)
+		respEncoder.Encode(&errType)
 		return
 	case *errors.ProductNotFoundError:
 		handler.logger.Error(errType.Error())
 		resp.WriteHeader(http.StatusNotFound)
-		serializer.ToJSON(&errType, resp)
+		respEncoder.Encode(&errType)
 		return
 	}
 
 	resp.WriteHeader(http.StatusOK)
-	serializer.ToJSON(product, resp)
+	respEncoder.Encode(product)
 }

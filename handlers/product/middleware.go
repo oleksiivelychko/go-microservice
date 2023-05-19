@@ -2,24 +2,23 @@ package product
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/errors"
-	"github.com/oleksiivelychko/go-microservice/utils/header"
-	"github.com/oleksiivelychko/go-microservice/utils/serializer"
 	"net/http"
 )
 
 func (handler *Handler) MiddlewareValidation(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(resp http.ResponseWriter, req *http.Request) {
-		header.ContentTypeJSON(resp)
+		resp.Header().Set("Content-Type", "application/json")
 
 		product := &api.Product{}
 
-		err := serializer.FromJSON(product, req.Body)
+		err := json.NewDecoder(req.Body).Decode(product)
 		if err != nil {
 			handler.logger.Error("deserializer", "error", err)
 			resp.WriteHeader(http.StatusUnprocessableEntity)
-			serializer.ToJSON(&errors.GenericError{Message: err.Error()}, resp)
+			json.NewEncoder(resp).Encode(&errors.GenericError{Message: err.Error()})
 			return
 		}
 
@@ -28,7 +27,7 @@ func (handler *Handler) MiddlewareValidation(next http.Handler) http.Handler {
 			handler.logger.Error("validation", "error", err)
 			resp.WriteHeader(http.StatusUnprocessableEntity)
 			// return the validation messages as an array
-			serializer.ToJSON(&errors.ValidationErrors{Messages: validationErrors.Errors()}, resp)
+			json.NewEncoder(resp).Encode(&errors.ValidationErrors{Messages: validationErrors.Errors()})
 			return
 		}
 

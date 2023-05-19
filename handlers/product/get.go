@@ -1,9 +1,8 @@
 package product
 
 import (
+	"encoding/json"
 	"github.com/oleksiivelychko/go-microservice/errors"
-	"github.com/oleksiivelychko/go-microservice/utils/header"
-	"github.com/oleksiivelychko/go-microservice/utils/serializer"
 	"net/http"
 )
 
@@ -14,18 +13,18 @@ import (
 // 200: productsResponse
 // 400: grpcErrorResponse
 func (handler *Handler) GetAll(resp http.ResponseWriter, req *http.Request) {
-	handler.logger.Debug("LIST /products")
-	header.ContentTypeJSON(resp)
+	handler.logger.Info("LIST /products")
+	resp.Header().Set("Content-Type", "application/json")
 
 	products, grpcServiceErr := handler.productService.GetProducts()
 	if grpcServiceErr != nil {
 		handler.logger.Error(grpcServiceErr.Error())
 		resp.WriteHeader(http.StatusBadRequest)
-		serializer.ToJSON(&grpcServiceErr, resp)
+		json.NewEncoder(resp).Encode(&grpcServiceErr)
 		return
 	}
 
-	if serializerErr := serializer.ToJSON(products, resp); serializerErr != nil {
+	if serializerErr := json.NewEncoder(resp).Encode(products); serializerErr != nil {
 		handler.logger.Error("serializer", "error", serializerErr)
 	}
 }
@@ -39,8 +38,8 @@ func (handler *Handler) GetAll(resp http.ResponseWriter, req *http.Request) {
 // 404: notFoundResponse
 // 500: errorResponse
 func (handler *Handler) GetOne(resp http.ResponseWriter, req *http.Request) {
-	handler.logger.Debug("GET /products")
-	header.ContentTypeJSON(resp)
+	handler.logger.Info("GET /products")
+	resp.Header().Set("Content-Type", "application/json")
 
 	id := handler.getProductID(req)
 	product, err := handler.productService.GetProduct(id)
@@ -49,16 +48,16 @@ func (handler *Handler) GetOne(resp http.ResponseWriter, req *http.Request) {
 	case *errors.GRPCServiceError:
 		handler.logger.Error(errType.Error())
 		resp.WriteHeader(http.StatusBadRequest)
-		serializer.ToJSON(&errType, resp)
+		json.NewEncoder(resp).Encode(&errType)
 		return
 	case *errors.ProductNotFoundError:
 		handler.logger.Error(errType.Error())
 		resp.WriteHeader(http.StatusNotFound)
-		serializer.ToJSON(&errType, resp)
+		json.NewEncoder(resp).Encode(&errType)
 		return
 	}
 
-	if serializerErr := serializer.ToJSON(product, resp); serializerErr != nil {
+	if serializerErr := json.NewEncoder(resp).Encode(product); serializerErr != nil {
 		handler.logger.Error("serializer", "error", serializerErr)
 	}
 }

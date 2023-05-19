@@ -2,8 +2,8 @@ package api
 
 import (
 	"bytes"
-	"github.com/oleksiivelychko/go-microservice/utils/serializer"
-	"github.com/oleksiivelychko/go-microservice/utils/validation"
+	"encoding/json"
+	"github.com/oleksiivelychko/go-microservice/validation"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -87,6 +87,6 @@ func TestAPI_ProductsToJSON(t *testing.T) {
 	}
 
 	bufStr := bytes.NewBufferString("")
-	err := serializer.ToJSON(products, bufStr)
+	err := json.NewEncoder(bufStr).Encode(products)
 	assert.NoError(t, err)
 }

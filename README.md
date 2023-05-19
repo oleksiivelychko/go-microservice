@@ -1,6 +1,6 @@
 # go-microservice
 
-### Demo API microservice covered by OpenAPI/Swagger-generated documentation. Communicates with gRPC service as well.
+### Demo API microservice is covered by OpenAPI/Swagger-generated documentation. Communicates with gRPC service.
 
 📌 OpenAPI/Swagger-generated API Documentation based on Swagger UI is available by [localhost:9090/swagger](http://localhost:9090/swagger)
 ![OpenAPI/Swagger-generated API Documentation based on Swagger UI](public/swagger_ui.png)

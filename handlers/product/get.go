@@ -25,7 +25,7 @@ func (handler *Handler) GetAll(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	if serializerErr := json.NewEncoder(resp).Encode(products); serializerErr != nil {
-		handler.logger.Error("serializer", "error", serializerErr)
+		handler.logger.Error("unable to serialize: %s", serializerErr)
 	}
 }
 
@@ -58,6 +58,6 @@ func (handler *Handler) GetOne(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	if serializerErr := json.NewEncoder(resp).Encode(product); serializerErr != nil {
-		handler.logger.Error("serializer", "error", serializerErr)
+		handler.logger.Error("unable to serialize: %s", serializerErr)
 	}
 }

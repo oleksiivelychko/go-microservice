@@ -29,7 +29,7 @@ func NewMultipart(validation *validation.Validate, storage storage.ILocal, produ
 func (handler *Multipart) ProcessForm(resp http.ResponseWriter, req *http.Request) {
 	err := req.ParseMultipartForm(formDataMaxMemory32MB)
 	if err != nil {
-		handler.logger.Error("expected multipart form data", "error", err)
+		handler.logger.Error("expected multipart form data: %s", err)
 		http.Error(resp, "expected multipart form data", http.StatusUnprocessableEntity)
 		return
 	}
@@ -42,7 +42,7 @@ func (handler *Multipart) ProcessForm(resp http.ResponseWriter, req *http.Reques
 
 	price, err := strconv.ParseFloat(req.FormValue("price"), 64)
 	if err != nil {
-		handler.logger.Error("unable to parse price value", "error", err)
+		handler.logger.Error("unable to parse price value: %s", err)
 		http.Error(resp, "unable to parse price value", http.StatusUnprocessableEntity)
 		return
 	}
@@ -56,14 +56,14 @@ func (handler *Multipart) ProcessForm(resp http.ResponseWriter, req *http.Reques
 
 	imageFile, fileHeader, err := req.FormFile("image")
 	if err != nil {
-		handler.logger.Error("expected image file", "error", err)
+		handler.logger.Error("expected image file: %s", err)
 		http.Error(resp, "expected image file", http.StatusUnprocessableEntity)
 		return
 	}
 
 	err = handler.saveFile(strconv.Itoa(productID), fileHeader.Filename, imageFile)
 	if err != nil {
-		handler.logger.Error("unable to save file", "error", err)
+		handler.logger.Error("unable to save file: %s", err)
 		http.Error(resp, "unable to save file", http.StatusInternalServerError)
 		return
 	}
@@ -75,8 +75,8 @@ func (handler *Multipart) ProcessForm(resp http.ResponseWriter, req *http.Reques
 	}
 
 	if err != nil {
-		handler.logger.Error("req to gRPC service", "error", err)
-		http.Error(resp, "req to gRPC service", http.StatusBadRequest)
+		handler.logger.Error("request to gRPC service: %s", err)
+		http.Error(resp, "request to gRPC service", http.StatusBadRequest)
 	}
 }
 
@@ -85,11 +85,7 @@ func (handler *Multipart) saveFile(id, path string, reader io.ReadCloser) error 
 
 	_, err := handler.storage.Save(filePath, reader)
 	if err != nil {
-		handler.logger.Info(
-			"file from multipart/form-data has been successfully uploaded to",
-			"filePath",
-			filePath,
-		)
+		handler.logger.Info("file from multipart/form-data has been successfully uploaded to %s", filePath)
 	}
 
 	return err

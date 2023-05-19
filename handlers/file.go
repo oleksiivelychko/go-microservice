@@ -24,9 +24,9 @@ func (handler *File) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 	_, err := handler.storage.Save(filePath, req.Body)
 	if err != nil {
-		handler.logger.Error("unable to save file", "error", err)
+		handler.logger.Error("unable to save file: %s", err)
 		http.Error(resp, "unable to save file", http.StatusInternalServerError)
 	}
 
-	handler.logger.Info("file has been successfully uploaded to", "filePath", filePath)
+	handler.logger.Info("file has been successfully uploaded to %s", filePath)
 }

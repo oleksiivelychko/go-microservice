@@ -16,7 +16,7 @@ func (handler *Handler) MiddlewareValidation(next http.Handler) http.Handler {
 
 		err := json.NewDecoder(req.Body).Decode(product)
 		if err != nil {
-			handler.logger.Error("deserializer", "error", err)
+			handler.logger.Error("unable to deserialize: %s", err)
 			resp.WriteHeader(http.StatusUnprocessableEntity)
 			json.NewEncoder(resp).Encode(&errors.GenericError{Message: err.Error()})
 			return
@@ -24,7 +24,7 @@ func (handler *Handler) MiddlewareValidation(next http.Handler) http.Handler {
 
 		validationErrors := handler.validation.Validate(product)
 		if len(validationErrors) > 0 {
-			handler.logger.Error("validation", "error", err)
+			handler.logger.Error("unable to validate: %s", err)
 			resp.WriteHeader(http.StatusUnprocessableEntity)
 			// return the validation messages as an array
 			json.NewEncoder(resp).Encode(&errors.ValidationErrors{Messages: validationErrors.Errors()})

@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"github.com/hashicorp/go-hclog"
+	"github.com/oleksiivelychko/go-grpc-service/logger"
 	"github.com/oleksiivelychko/go-microservice/api"
 	"github.com/oleksiivelychko/go-microservice/services"
-	"github.com/oleksiivelychko/go-microservice/utils/storage"
-	"github.com/oleksiivelychko/go-microservice/utils/validation"
+	"github.com/oleksiivelychko/go-microservice/storage"
+	"github.com/oleksiivelychko/go-microservice/validation"
 	"io"
 	"net/http"
 	"path/filepath"
@@ -16,18 +16,13 @@ const formDataMaxMemory32MB = 128 * 1024
 
 // Multipart for CRUD actions regarding api.Product objects as multipart/form-data.
 type Multipart struct {
-	logger         hclog.Logger
+	logger         *logger.Logger
 	validation     *validation.Validate
 	storage        storage.ILocal
 	productService *services.Product
 }
 
-func NewMultipart(
-	logger hclog.Logger,
-	validation *validation.Validate,
-	storage storage.ILocal,
-	productService *services.Product,
-) *Multipart {
+func NewMultipart(validation *validation.Validate, storage storage.ILocal, productService *services.Product, logger *logger.Logger) *Multipart {
 	return &Multipart{logger, validation, storage, productService}
 }
 

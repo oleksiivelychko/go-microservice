@@ -2,16 +2,16 @@ package handlers
 
 import (
 	"compress/gzip"
-	"github.com/hashicorp/go-hclog"
+	"github.com/oleksiivelychko/go-grpc-service/logger"
 	"net/http"
 	"strings"
 )
 
 type GZIP struct {
-	logger hclog.Logger
+	logger *logger.Logger
 }
 
-func NewGZIP(logger hclog.Logger) *GZIP {
+func NewGZIP(logger *logger.Logger) *GZIP {
 	return &GZIP{logger}
 }
 

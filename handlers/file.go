@@ -2,18 +2,18 @@ package handlers
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/hashicorp/go-hclog"
-	"github.com/oleksiivelychko/go-microservice/utils/storage"
+	"github.com/oleksiivelychko/go-grpc-service/logger"
+	"github.com/oleksiivelychko/go-microservice/storage"
 	"net/http"
 	"path/filepath"
 )
 
 type File struct {
-	logger  hclog.Logger
+	logger  *logger.Logger
 	storage storage.ILocal
 }
 
-func NewFile(storage storage.ILocal, logger hclog.Logger) *File {
+func NewFile(storage storage.ILocal, logger *logger.Logger) *File {
 	return &File{storage: storage, logger: logger}
 }
 

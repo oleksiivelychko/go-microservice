@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/oleksiivelychko/go-microservice/utils/datetime"
+	"github.com/oleksiivelychko/go-microservice/datetime"
 )
 
 // Product structure for an API model.

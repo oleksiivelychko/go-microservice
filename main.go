@@ -128,7 +128,7 @@ func main() {
 
 	// block until a signal is received
 	signalCh := <-signalChannel
-	log.Info("received terminate, graceful shutdown; signal %s", signalCh)
+	log.Info("received terminate, graceful shutdown; signal=%s", signalCh)
 
 	contextWithTimeout, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()

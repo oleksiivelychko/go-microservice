@@ -6,14 +6,14 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/oleksiivelychko/go-grpc-service/logger"
 	"github.com/oleksiivelychko/go-grpc-service/proto/grpcservice"
 	"github.com/oleksiivelychko/go-microservice/handlers"
 	"github.com/oleksiivelychko/go-microservice/handlers/product"
+	"github.com/oleksiivelychko/go-microservice/server"
 	"github.com/oleksiivelychko/go-microservice/services"
-	"github.com/oleksiivelychko/go-microservice/utils/logger"
-	"github.com/oleksiivelychko/go-microservice/utils/server"
-	"github.com/oleksiivelychko/go-microservice/utils/storage"
-	"github.com/oleksiivelychko/go-microservice/utils/validation"
+	"github.com/oleksiivelychko/go-microservice/storage"
+	"github.com/oleksiivelychko/go-microservice/validation"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net/http"
@@ -35,34 +35,34 @@ func main() {
 	serverAddr := fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
 	grpcServerAddr := fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT_GRPC"))
 
-	hcLogger := logger.New("go-microservice", "DEBUG")
+	log := logger.New()
 
 	validate, err := validation.New()
 	if err != nil {
-		hcLogger.Error("unable to create validator", "error", err)
+		log.Error("unable to create validator: %s", err)
 		os.Exit(1)
 	}
 
 	localStorage, err := storage.New(localStoragePath, maxFileSize5MB)
 	if err != nil {
-		hcLogger.Error("unable to create local storage", "error", err)
+		log.Error("unable to create local storage: %s", err)
 		os.Exit(1)
 	}
 
 	grpcConnection, err := grpc.Dial(grpcServerAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		hcLogger.Error("unable to connect to gRPC server", "error", err)
+		log.Error("unable to connect to gRPC server: %s", err)
 	}
 	defer grpcConnection.Close()
 
 	exchangerClient := grpcservice.NewExchangerClient(grpcConnection)
-	currencyService := services.NewCurrency(hcLogger, exchangerClient, defaultCurrency)
+	currencyService := services.NewCurrency(exchangerClient, defaultCurrency, log)
 	productService := services.NewProduct(currencyService, localDataPath)
 
-	productHandler := product.NewHandler(hcLogger, validate, productService)
-	fileHandler := handlers.NewFile(localStorage, hcLogger)
-	multipartHandler := handlers.NewMultipart(hcLogger, validate, localStorage, productService)
-	gzipHandler := handlers.NewGZIP(hcLogger)
+	productHandler := product.NewHandler(validate, productService, log)
+	fileHandler := handlers.NewFile(localStorage, log)
+	multipartHandler := handlers.NewMultipart(validate, localStorage, productService, log)
+	gzipHandler := handlers.NewGZIP(log)
 
 	serveMux := mux.NewRouter()
 
@@ -110,13 +110,13 @@ func main() {
 		"http://" + serverAddr,
 	}))
 
-	httpServer := server.NewHTTP(serverAddr, goHandler(serveMux), hcLogger)
+	httpServer := server.NewHTTP(serverAddr, goHandler(serveMux), log.GetErrorLogger())
 
 	go func() {
-		hcLogger.Info("starting server", "listening", serverAddr)
+		log.Info("starting server on %s", serverAddr)
 		err = httpServer.ListenAndServe()
 		if err != nil {
-			hcLogger.Error("unable to start server", "error", err)
+			log.Error("unable to start server: %s", err)
 			os.Exit(1)
 		}
 	}()
@@ -128,7 +128,7 @@ func main() {
 
 	// block until a signal is received
 	signalCh := <-signalChannel
-	hcLogger.Info("received terminate, graceful shutdown", "signal", signalCh)
+	log.Info("received terminate, graceful shutdown; signal %s", signalCh)
 
 	contextWithTimeout, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()

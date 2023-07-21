@@ -13,10 +13,10 @@
 ⚠️ Install **swagger** locally before generate:
 ```
 git clone https://github.com/go-swagger/go-swagger && cd go-swagger
-git checkout v0.30.4
+git checkout v0.30.5
 go install -ldflags "-X github.com/go-swagger/go-swagger/cmd/swagger/commands.Version=$(git describe --tags) -X github.com/go-swagger/go-swagger/cmd/swagger/commands.Commit=$(git rev-parse HEAD)" ./cmd/swagger
 ```
 
-⚠️ Clear `sdk` directory before generate documentation.
+⚠️ Clear **sdk** directory before generate documentation.
 
 🎥 Thanks [Nic Jackson](https://www.youtube.com/c/NicJackson) for sharing his knowledge.
